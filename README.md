@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Gold Souk Directory
 
-## Getting Started
+A listing platform for independent UAE gold jewellers. Customers browse
+designs and compare shops online, then contact the shop and buy in person.
 
-First, run the development server:
+There is no checkout, no online payment, no deposit, no booking fee and no
+instalment plan anywhere in this codebase. The sale always happens in the
+shop. Jewellers pay a monthly subscription, billed by hand outside the app.
+
+> The full step-by-step deployment guide for non-developers arrives in
+> Phase 6. This README covers local development.
+
+## Stack
+
+- Next.js 15 (App Router) + TypeScript + Tailwind CSS v4
+- Supabase: Postgres, auth and row-level security (free tier)
+- Cloudinary for product images (free tier, from Phase 3)
+- Cloudflare Workers via `@opennextjs/cloudflare`
+
+## Run it locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local      # fill in your Supabase URL and keys
+npm run dev                     # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Without Supabase keys the site still runs and shows a "not connected" note.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Database
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Migrations live in `supabase/migrations`, demo data in `supabase/seed.sql`.
 
-## Learn More
+- **Supabase CLI:** `npx supabase link --project-ref <ref>`, then
+  `npx supabase db push`. Load demo data with
+  `psql "$DATABASE_URL" -f supabase/seed.sql`.
+- **No CLI:** paste each migration file, in order, into the Supabase SQL
+  editor, then the seed file.
 
-To learn more about Next.js, take a look at the following resources:
+The seed contains three **demo** shops, 30 products and a week of **sample**
+gold rates. None of it is a real business or a live price. Delete it before
+launch:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```sql
+delete from public.shops where slug like 'demo-%';
+delete from public.gold_rates;
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Making someone an admin
 
-## Deploy on Vercel
+Sign-ups always become jewellers. Promote an admin by hand in the SQL editor:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```sql
+update public.profiles set role = 'admin'
+where id = (select id from auth.users where email = 'you@example.com');
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Who can see what
+
+| Role | Can see | Can change |
+|---|---|---|
+| Public | Approved, active shops; their available or reserved products confirmed in the last 30 days; gold rates | Nothing directly. Contact clicks, visit requests and shop applications go through server routes |
+| Jeweller | Everything for shops they belong to, including sold, hidden and stale stock, and their own results | Their own shop profile and products. Not approval, plan, featuring, owner or slug |
+| Admin | Everything | Everything |
+
+Stock nobody has confirmed for 30 days drops out of public view on its own,
+with no scheduled job. One tap on "Confirm stock" brings it back.
+
+## Checks
+
+```bash
+npm test            # pricing formula
+npm run typecheck
+npm run lint
+npm run test:db     # migrations + seed + 20 RLS checks against a local Postgres
+npm run preview     # build for Cloudflare and run on the Workers runtime
+```
+
+`test:db` needs `psql` and a local Postgres server. It creates and drops a
+throwaway database, and never touches your Supabase project.
+
+## Pricing
+
+```
+estimated price = gold rate (karat) × weight
+                + making charge (per gram × weight | % of gold value | fixed)
+                + 5% VAT on both
+```
+
+Always labelled "Estimated price — confirm in store. Gold rate as of [time]."
+When a shop turns prices off, only weight and karat are shown. See
+`lib/pricing.ts`.
