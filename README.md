@@ -1,92 +1,127 @@
-# Gold Souk Directory
+# Tibr — jewellery discovery prototype
 
-A listing platform for independent UAE gold jewellers. Customers browse
-designs and compare shops online, then contact the shop and buy in person.
+A visual prototype of a UAE jewellery discovery site. Customers browse pieces
+from different jewellers, see the price and the shop, and contact the shop
+directly. There is no cart, no checkout and no payment: the sale happens in
+the shop.
 
-There is no checkout, no online payment, no deposit, no booking fee and no
-instalment plan anywhere in this codebase. The sale always happens in the
-shop. Jewellers pay a monthly subscription, billed by hand outside the app.
+**Everything in the catalogue is demonstration data.** The jewellers are
+invented, the prices are illustrative, the images are 3D renders and no
+contact detail reaches a real person. The site says so at the top of every
+page.
 
-> The full step-by-step deployment guide for non-developers arrives in
-> Phase 6. This README covers local development.
+"Tibr" is a placeholder name. Change it in `data/site.ts`.
 
-## Stack
-
-- Next.js 15 (App Router) + TypeScript + Tailwind CSS v4
-- Supabase: Postgres, auth and row-level security (free tier)
-- Cloudinary for product images (free tier, from Phase 3)
-- Cloudflare Workers via `@opennextjs/cloudflare`
-
-## Run it locally
+## Run it
 
 ```bash
 npm install
-cp .env.example .env.local      # fill in your Supabase URL and keys
-npm run dev                     # http://localhost:3000
+npm run dev          # http://localhost:3000
 ```
 
-Without Supabase keys the site still runs and shows a "not connected" note.
+Build the static site, which is plain HTML, CSS and JS in `out/`:
 
-## Database
-
-Migrations live in `supabase/migrations`, demo data in `supabase/seed.sql`.
-
-- **Supabase CLI:** `npx supabase link --project-ref <ref>`, then
-  `npx supabase db push`. Load demo data with
-  `psql "$DATABASE_URL" -f supabase/seed.sql`.
-- **No CLI:** paste each migration file, in order, into the Supabase SQL
-  editor, then the seed file.
-
-The seed contains three **demo** shops, 30 products and a week of **sample**
-gold rates. None of it is a real business or a live price. Delete it before
-launch:
-
-```sql
-delete from public.shops where slug like 'demo-%';
-delete from public.gold_rates;
+```bash
+npm run build
 ```
 
-### Making someone an admin
+`out/` can be hosted on any static host. On Cloudflare Pages, connect the
+repository and set the build command to `npm run build` and the output
+directory to `out`.
 
-Sign-ups always become jewellers. Promote an admin by hand in the SQL editor:
+## Change the catalogue
 
-```sql
-update public.profiles set role = 'admin'
-where id = (select id from auth.users where email = 'you@example.com');
+All data is in two files, separate from the components:
+
+| File | Holds |
+|---|---|
+| `data/catalogue.ts` | Jewellers (`shops`) and pieces (`pieces`) |
+| `data/site.ts` | Site name, description, contact email, the demo notice |
+
+**Add a piece:** add an object to `pieces`. Each one needs a unique `slug`
+(its URL) and `code` (the reference customers quote). It also needs a
+`category`, a `shop` (a shop's `slug`), a `price`, and one or more `images`.
+`purity`, `weightGrams`, `makingCharge` and `stones` are optional, and the
+page shows only what is filled in.
+
+**Prices** come in three kinds, and the site labels each one differently:
+
+```ts
+price: { kind: "listed", aed: 3450 }                            // set by the jeweller
+price: { kind: "indicative", aed: 8450, asOf: "2026-10-20" }    // from the day's gold rate
+price: { kind: "on_request" }                                   // shown as "Request price"
 ```
 
-### Who can see what
+**Images** live in `public/images/pieces/`. Each image is four files: a 4:5
+ratio at 1200 × 1500 and 600 × 750, as both `.jpg` and `.webp`. For example:
+`my-ring-1.jpg`, `my-ring-1.webp`, `my-ring-1-600.jpg`, `my-ring-1-600.webp`.
+List it in the piece as `images: ["my-ring-1"]`, without the extension.
+Strip location data from real photos before adding them.
 
-| Role | Can see | Can change |
-|---|---|---|
-| Public | Approved, active shops; their available or reserved products confirmed in the last 30 days; gold rates | Nothing directly. Contact clicks, visit requests and shop applications go through server routes |
-| Jeweller | Everything for shops they belong to, including sold, hidden and stale stock, and their own results | Their own shop profile and products. Not approval, plan, featuring, owner or slug |
-| Admin | Everything | Everything |
+**Contact buttons:** give a shop a real `whatsapp` (digits only,
+international format, such as `9715…`) and `phone`, and set `demo: false`.
+The buttons then open WhatsApp, with a message naming the piece and its
+reference, or the phone's dialler. Without a number they show what would
+happen instead of calling anyone.
 
-Stock nobody has confirmed for 30 days drops out of public view on its own,
-with no scheduled job. One tap on "Confirm stock" brings it back.
+**Register your interest:** set `contactEmail` in `data/site.ts`. Until then
+the For jewellers and Contact pages say that registration is not open,
+rather than showing a form that goes nowhere.
+
+## What works
+
+- **Search:** across name, category, purity, stones, shop and area. Every
+  word must match.
+- **Category index:** text controls, each showing a live count.
+- **Filters:** price range, purity and location. Each option shows how many
+  pieces it would leave, and options with nothing behind them are disabled.
+  Purity shows only the values that exist in the data. On a phone, the
+  filters open in a bottom sheet.
+- **Sort:** newest, price low to high, price high to low. Price on request
+  always sorts last.
+- **Shareable views:** filters live in the URL, so a filtered view can be
+  shared and the back button works.
+- **Saved:** pieces are kept in this browser's local storage. There are no
+  accounts.
+- **Pages:** product pages with a gallery, shop pages, Saved, and the five
+  footer pages.
+
+## The images
+
+The catalogue images are rendered in 3D by `scripts/render/`, not
+photographed and not AI-generated. Each piece is modelled at real size: a
+cable chain from interlocking links, a solitaire with four claws and a
+faceted stone, a kada with a continuous twist. Each one is lit by the same
+studio on the same limestone surface, so the set reads as one shoot.
+
+```bash
+npm run render                    # every image (about 5 minutes)
+npm run render -- --fast ring     # quick half-resolution preview of matching shots
+```
+
+Shots are defined in `scripts/render/shots.js`, models in `pieces.js` and
+the lights and surface in `studio.js`. When real shop photography arrives,
+it replaces these files one for one. Keep the same 4:5 crop and a plain,
+light background so the grid stays coherent.
 
 ## Checks
 
 ```bash
-npm test            # pricing formula
+npm test             # catalogue search, filters, sorting and URL state; pricing formula
 npm run typecheck
 npm run lint
-npm run test:db     # migrations + seed + 20 RLS checks against a local Postgres
-npm run preview     # build for Cloudflare and run on the Workers runtime
 ```
 
-`test:db` needs `psql` and a local Postgres server. It creates and drops a
-throwaway database, and never touches your Supabase project.
+## Groundwork for later
 
-## Pricing
+The prototype has no backend, by design. The previous phase's work is kept
+for when it gets one:
 
-```
-estimated price = gold rate (karat) × weight
-                + making charge (per gram × weight | % of gold value | fixed)
-                + 5% VAT on both
-```
+- `supabase/` holds a Postgres schema with row-level security, for
+  jewellers managing their own listings, gold rates, contact logging and
+  visit requests. `npm run test:db` checks it against a local Postgres.
+- `lib/pricing.ts` holds the estimated-price formula (gold rate × weight,
+  plus making charge, plus 5% VAT), with tests.
 
-Always labelled "Estimated price — confirm in store. Gold rate as of [time]."
-When a shop turns prices off, only weight and karat are shown. See
-`lib/pricing.ts`.
+The fields in `data/catalogue.ts` match that schema, so the catalogue can
+later be read from the database without changing the components.

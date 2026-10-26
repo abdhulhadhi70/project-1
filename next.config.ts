@@ -1,13 +1,11 @@
 import type { NextConfig } from "next";
-import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 
+// A static site: every page is pre-rendered to HTML at build time, so it can
+// be hosted for free on Cloudflare Pages (or any static host).
 const nextConfig: NextConfig = {
-  // Cloudinary does resizing and format conversion, so Next's image
-  // optimiser (which would need a paid Cloudflare Images binding) is off.
+  output: "export",
   images: { unoptimized: true },
   poweredByHeader: false,
 };
 
 export default nextConfig;
-
-initOpenNextCloudflareForDev();
