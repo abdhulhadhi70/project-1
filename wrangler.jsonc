@@ -1,0 +1,12 @@
+// Lets Cloudflare serve the static build in out/ if the project is set up
+// as a Worker ("npx wrangler deploy"). A Pages project ignores this file.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "project-1",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./out",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  }
+}
