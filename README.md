@@ -29,62 +29,54 @@ npm run build
 repository and set the build command to `npm run build` and the output
 directory to `out`.
 
+## What's on the site
+
+The layout follows Property Finder's: search first, then results you can
+narrow fast, listings with the key facts up front, and a contact panel.
+
+| Page | What it does |
+|---|---|
+| `/` | Hero search with **Jewellery · Bridal · Coins & bars** tabs, sample gold rates, categories, newest pieces, bridal, coins and bars, gold districts, jewellers, a quick estimator, popular searches |
+| `/search` | Sticky filter bar (search box with suggestions, category, purity, price, more filters), dynamic title, sort, list / grid / map, active filter chips, pages, Save search, related searches |
+| `/pieces/[slug]` | Gallery with full-screen viewer, price and key facts, price breakdown, details, map and directions, jeweller panel with WhatsApp / Call / "I'll visit to see this", similar pieces |
+| `/jewellers` | Find a jeweller by name, area or language, as a list or on a map |
+| `/jewellers/[slug]` | Profile, hours, languages, map, all their pieces |
+| `/gold-price` | Price estimator: grams, tola or ounces, any making-charge type, VAT 0% for investment gold |
+| `/saved` | Saved pieces and saved searches, kept in this browser |
+
+Search state lives in the URL (`/search?location=karama&category=chains&purity=22K`),
+so every view can be shared and the back button works.
+
 ## Change the catalogue
 
-All data is in two files, separate from the components:
+All data is in `data/catalogue.ts`, separate from the components:
 
-| File | Holds |
-|---|---|
-| `data/catalogue.ts` | Jewellers (`shops`) and pieces (`pieces`) |
-| `data/site.ts` | Site name, description, contact email, the demo notice |
+- `areas`: real gold districts (Deira Gold Souk, Meena Bazaar, Karama, Gold &
+  Diamond Park, Hamdan Street, Madinat Zayed Gold Centre, Rolla, Central
+  Souk) with map coordinates.
+- `shops`: the jewellers, each in an area, with hours, languages, a
+  speciality and a cover piece.
+- `pieces`: what is listed. Each piece has a category, purity, weight,
+  making charge, occasions, who it is for, style, the shop, images, the
+  date it was listed and the date its stock was last confirmed.
+- `sampleRates`: the demo gold rates.
 
-**Add a piece:** add an object to `pieces`. Each one needs a unique `slug`
-(its URL) and `code` (the reference customers quote). It also needs a
-`category`, a `shop` (a shop's `slug`), a `price`, and one or more `images`.
-`purity`, `weightGrams`, `makingCharge` and `stones` are optional, and the
-page shows only what is filled in.
+**Prices are worked out, not typed.** Set a piece's `price` to `"listed"`,
+`"indicative"` or `"on_request"`. The figure comes from the sample rate ×
+weight, plus the making charge, plus VAT (0% for 24K bullion of 999 or more,
+5% otherwise), plus `stonesAed` if it has stones. So no demo price can be
+below the gold it contains, and a test checks this.
 
-**Prices** come in three kinds, and the site labels each one differently:
+**Images:** each one is four files in `public/images/pieces/`: `name.jpg`,
+`name.webp`, `name-600.jpg` and `name-600.webp`, at a 4:5 ratio. List it as
+`images: ["name"]`.
 
-```ts
-price: { kind: "listed", aed: 3450 }                            // set by the jeweller
-price: { kind: "indicative", aed: 8450, asOf: "2026-10-20" }    // from the day's gold rate
-price: { kind: "on_request" }                                   // shown as "Request price"
-```
+**Contact buttons:** give a shop a real `whatsapp` (digits only) and `phone`,
+and set `demo: false`. Until then, the buttons and the visit form say
+plainly that the listing is a demonstration, and nothing is sent.
 
-**Images** live in `public/images/pieces/`. Each image is four files: a 4:5
-ratio at 1200 × 1500 and 600 × 750, as both `.jpg` and `.webp`. For example:
-`my-ring-1.jpg`, `my-ring-1.webp`, `my-ring-1-600.jpg`, `my-ring-1-600.webp`.
-List it in the piece as `images: ["my-ring-1"]`, without the extension.
-Strip location data from real photos before adding them.
-
-**Contact buttons:** give a shop a real `whatsapp` (digits only,
-international format, such as `9715…`) and `phone`, and set `demo: false`.
-The buttons then open WhatsApp, with a message naming the piece and its
-reference, or the phone's dialler. Without a number they show what would
-happen instead of calling anyone.
-
-**Register your interest:** set `contactEmail` in `data/site.ts`. Until then
-the For jewellers and Contact pages say that registration is not open,
-rather than showing a form that goes nowhere.
-
-## What works
-
-- **Search:** across name, category, purity, stones, shop and area. Every
-  word must match.
-- **Category index:** text controls, each showing a live count.
-- **Filters:** price range, purity and location. Each option shows how many
-  pieces it would leave, and options with nothing behind them are disabled.
-  Purity shows only the values that exist in the data. On a phone, the
-  filters open in a bottom sheet.
-- **Sort:** newest, price low to high, price high to low. Price on request
-  always sorts last.
-- **Shareable views:** filters live in the URL, so a filtered view can be
-  shared and the back button works.
-- **Saved:** pieces are kept in this browser's local storage. There are no
-  accounts.
-- **Pages:** product pages with a gallery, shop pages, Saved, and the five
-  footer pages.
+**Map:** Leaflet with CARTO's free light basemap (attribution shown). For
+heavy traffic, move to a paid tile plan or self-hosted tiles.
 
 ## The images
 

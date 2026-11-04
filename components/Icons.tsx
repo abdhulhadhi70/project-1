@@ -37,3 +37,39 @@ export const GridIcon = ({ className = "size-5" }: P) => (
 export const StoreIcon = ({ className = "size-5" }: P) => (
   <svg viewBox="0 0 24 24" className={className} {...base}><path d="M4 9.5V20h16V9.5M3 9.5 5 4h14l2 5.5M3 9.5h18M10 20v-5h4v5" /></svg>
 );
+export const PurityIcon = ({ className = "size-4" }: P) => (
+  <svg viewBox="0 0 24 24" className={className} {...base}><path d="M6 4h12l3 5-9 11L3 9Z" /><path d="M3 9h18M9 4l3 16 3-16" /></svg>
+);
+export const ScaleIcon = ({ className = "size-4" }: P) => (
+  <svg viewBox="0 0 24 24" className={className} {...base}><path d="M12 4v16M6 20h12M5 7h14" /><path d="m5 7-2.5 6a2.5 2.5 0 0 0 5 0Zm14 0-2.5 6a2.5 2.5 0 0 0 5 0Z" /></svg>
+);
+export const HammerIcon = ({ className = "size-4" }: P) => (
+  <svg viewBox="0 0 24 24" className={className} {...base}><path d="m13 7 4 4M4 20l9-9M11 5l3-2 7 7-2 3-3-1-4-4Z" /></svg>
+);
+export const ListIcon = ({ className = "size-[18px]" }: P) => (
+  <svg viewBox="0 0 24 24" className={className} {...base}><rect x="3" y="4" width="7" height="6" /><rect x="3" y="14" width="7" height="6" /><path d="M13 6h8M13 9h5M13 16h8M13 19h5" /></svg>
+);
+export const MapIcon = ({ className = "size-[18px]" }: P) => (
+  <svg viewBox="0 0 24 24" className={className} {...base}><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Zm0 0v14m6-12v14" /></svg>
+);
+export const ChevronLeftIcon = ({ className = "size-4" }: P) => (
+  <svg viewBox="0 0 24 24" className={className} {...base}><path d="m15 6-6 6 6 6" /></svg>
+);
+export const ChevronRightIcon = ({ className = "size-4" }: P) => (
+  <svg viewBox="0 0 24 24" className={className} {...base}><path d="m9 6 6 6-6 6" /></svg>
+);
+export const MenuIcon = ({ className = "size-5" }: P) => (
+  <svg viewBox="0 0 24 24" className={className} {...base}><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+);
+export const BookmarkIcon = ({ className = "size-[18px]", filled = false }: P & { filled?: boolean }) => (
+  <svg viewBox="0 0 24 24" className={className} {...base} fill={filled ? "currentColor" : "none"}><path d="M6 4h12v16l-6-4-6 4Z" /></svg>
+);
+export const CheckIcon = ({ className = "size-4" }: P) => (
+  <svg viewBox="0 0 24 24" className={className} {...base}><path d="m5 12 4.5 4.5L19 7" /></svg>
+);
+export const CameraIcon = ({ className = "size-3.5" }: P) => (
+  <svg viewBox="0 0 24 24" className={className} {...base}><path d="M4 8h3l2-3h6l2 3h3v11H4Z" /><circle cx="12" cy="13" r="3.5" /></svg>
+);
+export const ExpandIcon = ({ className = "size-4" }: P) => (
+  <svg viewBox="0 0 24 24" className={className} {...base}><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></svg>
+);

@@ -20,3 +20,14 @@ const day = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", ye
 export const dateText = (iso: string) => day.format(new Date(`${iso}T12:00:00+04:00`));
 
 export const weightText = (g: number) => `${g.toLocaleString("en-US", { maximumFractionDigits: 2 })} g`;
+
+const short = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", timeZone: "Asia/Dubai" });
+export const dateShort = (iso: string) => short.format(new Date(`${iso.slice(0, 10)}T12:00:00+04:00`));
+
+export function makingShort(m: MakingCharge): string {
+  switch (m.type) {
+    case "per_gram": return `${aed(m.aed)}/g making`;
+    case "percent": return `${m.value}% making`;
+    case "fixed": return `${aed(m.aed)} making`;
+  }
+}

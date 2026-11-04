@@ -1,0 +1,120 @@
+"use client";
+import { useRef } from "react";
+import { CATEGORIES, TABS, type Tab } from "@/data/catalogue";
+import { EMPTY_QUERY, PRICE_BANDS, SORTS, activeFilterCount, moreFilterCount, type Query } from "@/lib/catalogue-query";
+import { ChevronIcon, SlidersIcon } from "../Icons";
+import { Sheet, type SheetHandle } from "../Sheet";
+import { LocationBox } from "./LocationBox";
+import { CategoryOptions, MoreOptions, PriceOptions, PurityOptions, type SetFn } from "./Options";
+import { Popover } from "./Popover";
+
+/** Switching tab keeps where and what you typed, and drops filters that may not apply. */
+export function tabPatch(tab: Tab, q: Query): Partial<Query> {
+  return { ...EMPTY_QUERY, tab, q: q.q, location: q.location, shop: q.shop, sort: q.sort };
+}
+
+export function TabSwitch({ query, set, className = "" }: { query: Query; set: SetFn; className?: string }) {
+  return (
+    <div role="tablist" aria-label="What are you looking for" className={`flex ${className}`}>
+      {TABS.map((t) => {
+        const on = query.tab === t.id;
+        return (
+          <button key={t.id} role="tab" type="button" aria-selected={on} onClick={() => !on && set(tabPatch(t.id, query))}
+            className={`h-11 flex-1 border px-4 text-[14px] transition-colors md:flex-none ${on ? "border-ink bg-ink text-chalk" : "border-line-strong text-ink-soft hover:text-ink"} [&:not(:first-child)]:-ml-px`}>
+            {t.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+export function FilterBar({ query, set, reset, resultCount }: { query: Query; set: SetFn; reset: () => void; resultCount: number }) {
+  const sheet = useRef<SheetHandle>(null);
+  const more = moreFilterCount(query);
+  const all = activeFilterCount(query);
+  const cat = CATEGORIES.find((c) => c.id === query.category);
+  const band = PRICE_BANDS.find((b) => b.id === query.price);
+  const chip = "inline-flex h-9 shrink-0 items-center gap-1.5 border px-3 text-[13px]";
+
+  return (
+    <div className="sticky top-[var(--header-h)] z-20 border-b border-line bg-chalk">
+      {/* Desktop */}
+      <div className="page page-x hidden items-center gap-2 py-3 lg:flex">
+        <TabSwitch query={query} set={set} />
+        <div className="min-w-0 flex-1"><LocationBox query={query} set={set} /></div>
+        <Popover label={cat?.label ?? "Category"} active={!!cat}><CategoryOptions query={query} set={set} /></Popover>
+        <Popover label={query.purity.length ? query.purity.join(", ") : "Purity"} active={query.purity.length > 0} width="w-60"><PurityOptions query={query} set={set} /></Popover>
+        <Popover label={band?.label ?? "Price"} active={!!band}><PriceOptions query={query} set={set} /></Popover>
+        <button type="button" onClick={() => sheet.current?.open()}
+          className={`inline-flex h-11 items-center gap-2 border px-3 text-[14px] ${more ? "border-ink text-ink" : "border-line-strong text-ink-soft hover:border-ink hover:text-ink"}`}>
+          <SlidersIcon className="size-4" /> More filters
+          {more > 0 && <span className="min-w-5 rounded-full bg-ink px-1.5 text-center text-[11px] leading-5 text-chalk">{more}</span>}
+        </button>
+        {all > 0 && (
+          <button type="button" onClick={reset} className="h-11 px-2 text-[13px] text-ink-soft underline decoration-line-strong underline-offset-4 hover:text-ink">
+            Reset
+          </button>
+        )}
+      </div>
+
+      {/* Phone and tablet: search box, then a row of filter chips. */}
+      <div className="page-x space-y-2 py-2.5 lg:hidden">
+        <LocationBox query={query} set={set} />
+        <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4">
+          <button type="button" onClick={() => sheet.current?.open()} className={`${chip} ${all ? "border-ink bg-ink text-chalk" : "border-line-strong text-ink"}`}>
+            <SlidersIcon className="size-4" /> Filters{all > 0 && ` · ${all}`}
+          </button>
+          {[
+            { label: cat?.label ?? "Category", on: !!cat },
+            { label: query.purity.length ? query.purity.join(", ") : "Purity", on: query.purity.length > 0 },
+            { label: band?.label ?? "Price", on: !!band },
+          ].map((c) => (
+            <button key={c.label} type="button" onClick={() => sheet.current?.open()} className={`${chip} ${c.on ? "border-ink text-ink" : "border-line-strong text-ink-soft"}`}>
+              {c.label} <ChevronIcon className="size-3 text-stone" />
+            </button>
+          ))}
+          <label className={`${chip} relative border-line-strong text-ink-soft`}>
+            {SORTS.find((s) => s.id === query.sort)!.label} <ChevronIcon className="size-3 text-stone" />
+            <select aria-label="Sort" value={query.sort} onChange={(e) => set({ sort: e.target.value as Query["sort"] })} className="absolute inset-0 opacity-0">
+              {SORTS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <Sheet
+        ref={sheet}
+        title="Filters"
+        wide
+        full
+        footer={
+          <div className="flex items-center gap-4">
+            <button type="button" onClick={reset} className="h-11 px-1 text-[14px] text-ink-soft underline decoration-line-strong underline-offset-4">Reset all</button>
+            <button type="button" onClick={() => sheet.current?.close()} className="h-11 flex-1 bg-ink text-[14px] font-medium text-chalk">
+              {resultCount === 0 ? "No pieces match" : `Show ${resultCount} ${resultCount === 1 ? "piece" : "pieces"}`}
+            </button>
+          </div>
+        }
+      >
+        <div className="lg:hidden">
+          <TabSwitch query={query} set={set} className="mb-5" />
+          <Block title="Category"><CategoryOptions query={query} set={set} /></Block>
+          <Block title="Purity"><PurityOptions query={query} set={set} /></Block>
+          <Block title="Price"><PriceOptions query={query} set={set} /></Block>
+        </div>
+        <MoreOptions query={query} set={set} />
+      </Sheet>
+    </div>
+  );
+}
+
+function Block({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <fieldset className="border-b border-line pb-4 pt-1 mb-4">
+      <legend className="sr-only">{title}</legend>
+      <p className="mb-1 text-[14px] font-medium">{title}</p>
+      {children}
+    </fieldset>
+  );
+}

@@ -26,12 +26,14 @@
 }
 
 @layer base {
+  :root { --header-h: 3.5rem; }
+  @media (width >= 64rem) { :root { --header-h: 4rem; } }
   html {
     background: var(--color-chalk);
     color: var(--color-ink);
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
-    scroll-padding-top: 8rem;
+    scroll-padding-top: calc(var(--header-h) + 6rem);
   }
   body {
     font-family: var(--font-sans);
@@ -71,3 +73,16 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Map pins and popups (Leaflet renders these outside React). */
+.tibr-pin {
+  display: grid; place-items: center; width: 34px; height: 34px; border-radius: 9999px;
+  background: var(--color-ink); color: var(--color-chalk); font: 600 13px/1 var(--font-sans);
+  box-shadow: 0 0 0 3px var(--color-chalk), 0 4px 10px rgb(37 36 31 / 0.35);
+}
+.leaflet-marker-icon:focus-visible .tibr-pin, .leaflet-marker-icon:hover .tibr-pin { background: var(--color-brass-deep); }
+.tibr-pop { display: grid; gap: 2px; font: 14px/1.35 var(--font-sans); color: var(--color-ink); min-width: 11rem; }
+.tibr-pop span { color: var(--color-stone); font-size: 12px; }
+.tibr-pop button { margin-top: 8px; height: 34px; background: var(--color-ink); color: var(--color-chalk); font-size: 13px; cursor: pointer; }
+.leaflet-popup-content-wrapper { border-radius: 2px; box-shadow: 0 12px 28px -18px rgb(37 36 31 / 0.6); }
+.leaflet-container { font-family: var(--font-sans); background: var(--color-limestone); }

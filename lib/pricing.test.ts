@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { effectiveMakingPerGram, estimatePrice } from "./pricing";
+import { effectiveMakingPerGram, estimatePrice, vatRateFor } from "./pricing";
 
 describe("estimatePrice", () => {
   it("per-gram making charge", () => {
@@ -44,5 +44,21 @@ describe("effectiveMakingPerGram", () => {
     expect(effectiveMakingPerGram({ ...base, makingChargeType: "per_gram", makingChargeValue: 20 })).toBe(20);
     expect(effectiveMakingPerGram({ ...base, makingChargeType: "percent", makingChargeValue: 5 })).toBe(20);
     expect(effectiveMakingPerGram({ ...base, makingChargeType: "fixed", makingChargeValue: 200 })).toBe(20);
+  });
+});
+
+describe("vatRateFor", () => {
+  it("zero-rates investment gold of 99% or more", () => {
+    expect(vatRateFor("24K", "999.9")).toBe(0);
+    expect(vatRateFor("24K", "999")).toBe(0);
+  });
+  it("charges 5% on jewellery and on coins below 99%", () => {
+    expect(vatRateFor("22K")).toBe(0.05);
+    expect(vatRateFor("24K")).toBe(0.05);
+  });
+  it("applies the rate it is given", () => {
+    const p = estimatePrice({ ratePerGramAed: 400, weightGrams: 10, makingChargeType: "fixed", makingChargeValue: 100, vatRate: 0 });
+    expect(p.vat).toBe(0);
+    expect(p.total).toBe(4100);
   });
 });

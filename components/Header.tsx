@@ -1,49 +1,87 @@
-import { Suspense } from "react";
+"use client";
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
+import { Suspense, useRef } from "react";
 import { site } from "@/data/site";
-import { LocationSelect } from "./LocationSelect";
-import { SavedLink } from "./SavedLink";
-import { SearchField } from "./SearchField";
+import { searchHref } from "@/lib/catalogue-query";
+import { useSaved } from "@/lib/saved";
+import { HeartIcon, MenuIcon } from "./Icons";
+import { Sheet, type SheetHandle } from "./Sheet";
 import { Wordmark } from "./Wordmark";
 
-function Shell({ children }: { children?: React.ReactNode }) {
-  return <>{children}</>;
+const NAV = [
+  { href: searchHref({ tab: "jewellery" }), label: "Jewellery", tab: "jewellery" },
+  { href: searchHref({ tab: "bridal" }), label: "Bridal", tab: "bridal" },
+  { href: searchHref({ tab: "coins_bars" }), label: "Coins & bars", tab: "coins_bars" },
+  { href: "/jewellers", label: "Jewellers" },
+  { href: "/gold-price", label: "Gold price" },
+];
+
+function NavLinks({ onClick, className, item }: { onClick?: () => void; className: string; item: (active: boolean) => string }) {
+  const pathname = usePathname();
+  const params = useSearchParams();
+  const tab = params.get("tab") ?? "jewellery";
+  return (
+    <ul className={className}>
+      {NAV.map((n) => {
+        const active = n.tab ? pathname === "/search" && tab === n.tab : pathname.startsWith(n.href);
+        return (
+          <li key={n.label}>
+            <Link href={n.href} onClick={onClick} aria-current={active ? "page" : undefined} className={item(active)}>{n.label}</Link>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function SavedCount() {
+  const { saved } = useSaved();
+  return saved.length > 0 ? (
+    <span className="absolute -right-1.5 -top-1 min-w-4 rounded-full bg-ink px-1 text-center text-[10px] leading-4 text-chalk">{saved.length}</span>
+  ) : null;
 }
 
 export function Header() {
+  const menu = useRef<SheetHandle>(null);
   return (
     <>
       <p className="bg-limestone page-x py-1.5 text-center text-[12px] leading-snug text-stone">
         <span className="hidden sm:inline">{site.demoNotice}</span>
         <span className="sm:hidden">{site.demoNoticeShort}</span>
       </p>
-      <header className="sticky top-0 z-30 border-b border-line bg-chalk">
-        {/* Desktop: one quiet line. */}
-        <div className="page page-x hidden h-16 grid-cols-[1fr_minmax(0,34rem)_1fr] items-center gap-8 md:grid">
+      <header className="sticky top-0 z-30 h-[var(--header-h)] border-b border-line bg-chalk">
+        <div className="page page-x flex h-full items-center gap-8">
           <Wordmark withDescriptor />
-          <Suspense fallback={<div className="h-10 rounded-[3px] bg-limestone" />}>
-            <SearchField />
-          </Suspense>
-          <div className="flex items-center justify-end gap-7">
+          <nav aria-label="Main" className="hidden flex-1 lg:block">
             <Suspense fallback={null}>
-              <LocationSelect />
+              <NavLinks className="flex gap-7 text-[14px]" item={(a) => `relative py-5 ${a ? "text-ink after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-ink" : "text-ink-soft hover:text-ink"}`} />
             </Suspense>
-            <SavedLink />
+          </nav>
+          <div className="ml-auto flex items-center gap-2 lg:gap-5">
+            <Link href="/saved" className="relative inline-flex h-10 items-center gap-2 px-2 text-[14px] text-ink hover:text-ink-soft" aria-label="Saved pieces and searches">
+              <span className="relative"><HeartIcon className="size-5" /><SavedCount /></span>
+              <span className="hidden lg:inline">Saved</span>
+            </Link>
+            <Link href="/for-jewellers" className="hidden h-10 items-center border border-ink px-4 text-[14px] hover:bg-ink hover:text-chalk lg:inline-flex">
+              List your shop
+            </Link>
+            <button type="button" onClick={() => menu.current?.open()} className="-mr-2 grid size-10 place-items-center lg:hidden" aria-label="Menu">
+              <MenuIcon />
+            </button>
           </div>
-        </div>
-        {/* Phone: name and place on one line, search on its own line. Saved
-            lives in the bottom bar, where a thumb can reach it. */}
-        <div className="page-x md:hidden">
-          <div className="flex h-12 items-center justify-between">
-            <Wordmark />
-            <Suspense fallback={<Shell />}>
-              <LocationSelect compact />
-            </Suspense>
-          </div>
-          <Suspense fallback={<div className="mb-2.5 h-10 rounded-[3px] bg-limestone" />}>
-            <SearchField className="pb-2.5" />
-          </Suspense>
         </div>
       </header>
+      <Sheet ref={menu} title="Menu">
+        <Suspense fallback={null}>
+          <NavLinks onClick={() => menu.current?.close()} className="divide-y divide-line border-y border-line"
+            item={(a) => `flex h-12 items-center text-[16px] ${a ? "text-ink" : "text-ink-soft"}`} />
+        </Suspense>
+        <div className="mt-5 grid gap-2">
+          <Link href="/saved" onClick={() => menu.current?.close()} className="inline-flex h-11 items-center justify-center border border-line-strong text-[14px]">Saved</Link>
+          <Link href="/for-jewellers" onClick={() => menu.current?.close()} className="inline-flex h-11 items-center justify-center bg-ink text-[14px] text-chalk">List your shop</Link>
+        </div>
+      </Sheet>
     </>
   );
 }

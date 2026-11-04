@@ -3,6 +3,7 @@
 // 6.4 cm bangle. Each builder returns a Group resting on y = 0.
 import * as THREE from 'three';
 import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { diamond, gem, gold, pearl } from './studio.js';
 
@@ -427,5 +428,174 @@ export function kada({ karat = '22', radius = 3.25, tube = 0.36, ridges = 9, tur
   geo.computeVertexNormals();
   const g = new THREE.Group();
   g.add(new THREE.Mesh(geo, gold(karat, { roughness: 0.11 })));
+  return g;
+}
+
+// ---------------------------------------------------------------------------
+// Bullion
+// ---------------------------------------------------------------------------
+
+/**
+ * Minted bar: polished body, a raised frame around a recessed panel and a
+ * small eight-point star where a refiner's mark would be. No lettering: a
+ * real refiner's mark is not ours to draw.
+ */
+export function mintedBar({ karat = '24', w = 1.5, l = 2.5, h = 0.13 } = {}) {
+  const g = new THREE.Group();
+  // Satin, not mirror: a mirror-flat face reflects one patch of the studio
+  // and reads as dark olive; satin spreads the softboxes across it.
+  const metal = gold(karat, { roughness: 0.22 });
+  const body = new THREE.Mesh(new RoundedBoxGeometry(w, h, l, 4, 0.05), metal);
+  body.position.y = h / 2;
+  g.add(body);
+  const frame = new THREE.Mesh(new RoundedBoxGeometry(w * 0.86, 0.02, l * 0.9, 2, 0.008), gold(karat, { roughness: 0.14 }));
+  frame.position.y = h + 0.005;
+  g.add(frame);
+  const panel = new THREE.Mesh(new RoundedBoxGeometry(w * 0.8, 0.02, l * 0.84, 2, 0.008), gold(karat, { roughness: 0.3 }));
+  panel.position.y = h + 0.008;
+  g.add(panel);
+  const emb = new THREE.ExtrudeGeometry(star(8, w * 0.2, w * 0.12), { depth: 0.012, bevelEnabled: true, bevelThickness: 0.01, bevelSize: 0.01, bevelSegments: 2 });
+  emb.rotateX(-Math.PI / 2);
+  const e = new THREE.Mesh(emb, gold(karat, { roughness: 0.16 }));
+  e.position.set(0, h + 0.02, -l * 0.18);
+  g.add(e);
+  // Two fine lines below the star, where weight and purity are stamped.
+  for (const dz of [0.18, 0.3]) {
+    const line = new THREE.Mesh(new RoundedBoxGeometry(w * 0.46, 0.012, 0.035, 1, 0.005), gold(karat, { roughness: 0.25 }));
+    line.position.set(0, h + 0.022, l * dz);
+    g.add(line);
+  }
+  return g;
+}
+
+/** Cast bar (the traditional "TT bar"): tapered sides, soft poured surface. */
+export function castBar({ karat = '24', w = 1.35, l = 4.2, h = 0.62 } = {}) {
+  const top = 0.86;
+  const shape = new THREE.Shape();
+  shape.moveTo(-w / 2, 0);
+  shape.lineTo(w / 2, 0);
+  shape.lineTo((w / 2) * top, h);
+  shape.lineTo((-w / 2) * top, h);
+  shape.closePath();
+  const geo = new THREE.ExtrudeGeometry(shape, {
+    depth: l, bevelEnabled: true, bevelThickness: 0.08, bevelSize: 0.07, bevelSegments: 5, curveSegments: 4,
+  });
+  geo.translate(0, 0.07, -l / 2);
+  const g = new THREE.Group();
+  g.add(new THREE.Mesh(geo, gold(karat, { roughness: 0.24 })));
+  const mark = new THREE.ExtrudeGeometry(star(8, 0.22, 0.13), { depth: 0.01, bevelEnabled: true, bevelThickness: 0.012, bevelSize: 0.012, bevelSegments: 2 });
+  mark.rotateX(-Math.PI / 2);
+  const m = new THREE.Mesh(mark, gold(karat, { roughness: 0.12 }));
+  m.position.set(0, h + 0.15, -l * 0.25);
+  g.add(m);
+  return g;
+}
+
+/** Bullion coin: milled-edge feel from a fine reeded rim, emblem in the field. */
+export function bullionCoin({ karat = '24', radius = 1.1, thickness = 0.12, points = 8 } = {}) {
+  const g = new THREE.Group();
+  const metal = gold(karat, { roughness: 0.2 });
+  const pts = [
+    [0.0001, thickness * 0.55], [radius * 0.86, thickness * 0.55], [radius * 0.9, thickness],
+    [radius * 0.98, thickness], [radius, thickness * 0.85], [radius, thickness * 0.15], [radius * 0.98, 0], [0.0001, 0],
+  ].map(([x, y]) => new THREE.Vector2(x, y)).reverse();
+  g.add(new THREE.Mesh(new THREE.LatheGeometry(pts, 180), metal));
+  // Reeded edge.
+  const reeds = 120;
+  const reedGeo = new THREE.BoxGeometry(0.012, thickness * 0.66, 0.02);
+  const reed = new THREE.InstancedMesh(reedGeo, metal, reeds);
+  const m = new THREE.Matrix4();
+  for (let i = 0; i < reeds; i++) {
+    const a = (i / reeds) * Math.PI * 2;
+    m.makeRotationY(-a).setPosition(Math.cos(a) * radius, thickness / 2, Math.sin(a) * radius);
+    reed.setMatrixAt(i, m);
+  }
+  g.add(reed);
+  const emb = new THREE.ExtrudeGeometry(star(points, radius * 0.5, radius * 0.3), {
+    depth: 0.015, bevelEnabled: true, bevelThickness: 0.015, bevelSize: 0.015, bevelSegments: 3,
+  });
+  emb.rotateX(-Math.PI / 2);
+  const e = new THREE.Mesh(emb, gold(karat, { roughness: 0.18 }));
+  e.position.y = thickness * 0.55;
+  g.add(e);
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(radius * 0.72, 0.014, 8, 120), gold(karat, { roughness: 0.2 }));
+  ring.rotation.x = Math.PI / 2;
+  ring.position.y = thickness * 0.58;
+  g.add(ring);
+  return g;
+}
+
+// ---------------------------------------------------------------------------
+// Small pieces
+// ---------------------------------------------------------------------------
+/** Stud: four claws round a brilliant, or a polished gold ball. */
+export function stud({ karat = '18', stone = 0.22, ball = false } = {}) {
+  const g = new THREE.Group();
+  const metal = gold(karat, { roughness: 0.1 });
+  if (ball) {
+    // A polished ball on a short collar; claws are only for stones.
+    const collar = new THREE.Mesh(new THREE.CylinderGeometry(stone * 0.34, stone * 0.4, stone * 0.3, 32), metal);
+    collar.position.y = stone * 0.15;
+    const b = new THREE.Mesh(new THREE.SphereGeometry(stone * 0.9, 48, 32), gold(karat, { roughness: 0.06 }));
+    b.position.y = stone * 1.05;
+    g.add(collar, b);
+    return g;
+  }
+  const cup = new THREE.Mesh(new THREE.CylinderGeometry(stone * 0.8, stone * 0.5, stone * 0.6, 32), metal);
+  cup.position.y = stone * 0.3;
+  g.add(cup);
+  for (let k = 0; k < 4; k++) {
+    const a = Math.PI / 4 + (k * Math.PI) / 2;
+    const claw = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.026, stone * 1.1, 8), metal);
+    claw.position.set(Math.cos(a) * stone * 0.92, stone * 0.62, Math.sin(a) * stone * 0.92);
+    g.add(claw);
+    const tip = new THREE.Mesh(new THREE.SphereGeometry(0.03, 12, 8), metal);
+    tip.position.set(Math.cos(a) * stone * 0.88, stone * 1.16, Math.sin(a) * stone * 0.88);
+    g.add(tip);
+  }
+  const d = new THREE.Mesh(brilliant(stone), diamond());
+  d.position.y = stone * 0.42;
+  g.add(d);
+  return g;
+}
+
+/** A closed loop on the floor, e.g. a bracelet or anklet lying flat. */
+export function loopPath(rx, rz, wobble = 0.08, seed = 1) {
+  const pts = [];
+  for (let i = 0; i < 48; i++) {
+    const a = (i / 48) * Math.PI * 2;
+    const w = 1 + Math.sin(a * 3 + seed) * wobble + Math.cos(a * 2 - seed) * wobble * 0.6;
+    pts.push([Math.cos(a) * rx * w, Math.sin(a) * rz * w]);
+  }
+  return floorPath(pts, true);
+}
+
+/**
+ * Small coins hung edge to edge along a curve: the coin necklace worn at
+ * Gulf and Kerala weddings. Each coin lies just outside the strand.
+ */
+export function coinFringe(curve, { karat = '22', count = 21, from = 0.3, to = 0.7, radius = 0.34 } = {}) {
+  const g = new THREE.Group();
+  const pts = [[0.0001, 0.045], [radius * 0.8, 0.045], [radius * 0.86, 0.07], [radius, 0.05], [radius, 0.01], [0.0001, 0]]
+    .map(([x, y]) => new THREE.Vector2(x, y)).reverse();
+  const geo = new THREE.LatheGeometry(pts, 64);
+  const metal = gold(karat, { roughness: 0.14 });
+  const boss = new THREE.SphereGeometry(radius * 0.32, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2);
+  for (let i = 0; i < count; i++) {
+    const u = from + ((to - from) * i) / (count - 1);
+    const p = curve.getPointAt(u);
+    const t = curve.getTangentAt(u).setY(0).normalize();
+    // The curve runs clockwise round the neck, so its right-hand normal
+    // points in; coins sit on the other side, out from the neck.
+    const out = new THREE.Vector3(-t.z, 0, t.x);
+    const c = new THREE.Group();
+    c.add(new THREE.Mesh(geo, metal));
+    const b = new THREE.Mesh(boss, metal);
+    b.scale.y = 0.4;
+    b.position.y = 0.045;
+    c.add(b);
+    c.position.set(p.x + out.x * radius * 1.05, 0.01 + (i % 2) * 0.035, p.z + out.z * radius * 1.05);
+    g.add(c);
+  }
   return g;
 }

@@ -1,6 +1,7 @@
 "use client";
-// The catalogue's state lives in the URL, so a filtered view can be shared
-// or bookmarked and the back button behaves.
+// The search lives in the URL, so a filtered view can be shared or
+// bookmarked and the back button behaves. Every search control on the site
+// writes here; off the search page, a change takes you to it.
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo } from "react";
 import { EMPTY_QUERY, parseQuery, toSearchParams, type Query } from "./catalogue-query";
@@ -9,26 +10,25 @@ export function useQueryState() {
   const params = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const query = useMemo(() => parseQuery(new URLSearchParams(params.toString())), [params]);
+  const onSearch = pathname === "/search";
+  const query = useMemo(
+    () => (onSearch ? parseQuery(new URLSearchParams(params.toString())) : EMPTY_QUERY),
+    [params, onSearch],
+  );
 
   const set = useCallback(
-    (patch: Partial<Query>, { jump = false }: { jump?: boolean } = {}) => {
-      const next = toSearchParams({ ...query, ...patch }).toString();
-      if (pathname === "/") {
-        router.replace(next ? `/?${next}` : "/", { scroll: false });
-        if (jump) document.getElementById("pieces")?.scrollIntoView({ behavior: "smooth", block: "start" });
-      } else {
-        // Searching from a product or shop page takes you back to the catalogue.
-        router.push(`/${next ? `?${next}` : ""}#pieces`);
-      }
+    (patch: Partial<Query>) => {
+      // Any change other than turning the page starts again at page 1.
+      const next: Query = { ...query, page: 1, ...patch };
+      const qs = toSearchParams(next).toString();
+      const href = `/search${qs ? `?${qs}` : ""}`;
+      if (onSearch) router.replace(href, { scroll: "page" in patch });
+      else router.push(href);
     },
-    [query, pathname, router],
+    [query, onSearch, router],
   );
 
-  const reset = useCallback(
-    () => set({ ...EMPTY_QUERY, sort: query.sort }),
-    [set, query.sort],
-  );
+  const reset = useCallback(() => set({ ...EMPTY_QUERY, tab: query.tab, sort: query.sort }), [set, query.tab, query.sort]);
 
   return { query, set, reset };
 }

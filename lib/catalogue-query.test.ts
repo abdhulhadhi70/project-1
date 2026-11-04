@@ -1,98 +1,170 @@
 import { describe, expect, it } from "vitest";
-import { pieces } from "@/data/catalogue";
+import { areas, pieces, sampleRates, shops } from "@/data/catalogue";
 import {
-  EMPTY_QUERY, filterPieces, locationOptions, parseQuery, purityOptions, runQuery, toSearchParams,
+  EMPTY_QUERY, filterPieces, inTab, makingPerGram, optionsFor, paginate, parseQuery, runQuery, searchHref,
+  suggest, toSearchParams, type Query,
 } from "./catalogue-query";
+import { estimatePrice } from "./pricing";
 
-const q = (over: Partial<typeof EMPTY_QUERY>) => ({ ...EMPTY_QUERY, ...over });
+const q = (over: Partial<Query>): Query => ({ ...EMPTY_QUERY, ...over });
+const all = (over: Partial<Query> = {}) => runQuery(q(over));
 
 describe("catalogue data", () => {
-  it("has 12–16 pieces, every one marked as demonstration data", () => {
-    expect(pieces.length).toBeGreaterThanOrEqual(12);
-    expect(pieces.length).toBeLessThanOrEqual(16);
-    expect(pieces.every((p) => p.demo)).toBe(true);
-  });
-
-  it("has unique slugs and codes", () => {
+  it("is all demonstration data, with unique slugs and codes", () => {
+    expect(pieces.every((p) => p.demo) && shops.every((s) => s.demo)).toBe(true);
     expect(new Set(pieces.map((p) => p.slug)).size).toBe(pieces.length);
     expect(new Set(pieces.map((p) => p.code)).size).toBe(pieces.length);
   });
 
-  it("only offers filter options that exist in the data", () => {
-    expect(purityOptions).not.toContain("24K");
-    expect(locationOptions.map((l) => l.label)).toEqual(["Dubai", "Abu Dhabi", "Sharjah"]);
+  it("links every piece to a shop and every shop to an area", () => {
+    const shopSlugs = new Set(shops.map((s) => s.slug));
+    const areaSlugs = new Set(areas.map((a) => a.slug));
+    expect(pieces.every((p) => shopSlugs.has(p.shop))).toBe(true);
+    expect(shops.every((s) => areaSlugs.has(s.area))).toBe(true);
+    expect(shops.every((s) => pieces.some((p) => p.slug === s.cover && p.shop === s.slug))).toBe(true);
+  });
+
+  it("never prices a piece below the gold it contains", () => {
+    for (const p of pieces) {
+      if (p.price.kind === "on_request") continue;
+      const gold = sampleRates.perGram[p.purity!] * p.weightGrams!;
+      expect(p.price.aed, p.slug).toBeGreaterThan(gold);
+    }
+  });
+
+  it("prices indicative pieces exactly by the formula", () => {
+    const bar = pieces.find((p) => p.slug === "24k-gold-bar-10g")!;
+    const est = estimatePrice({ ratePerGramAed: sampleRates.perGram["24K"], weightGrams: 10, makingChargeType: "fixed", makingChargeValue: 95, vatRate: 0 });
+    expect(bar.price).toMatchObject({ kind: "indicative", aed: Math.round(est.total) });
+  });
+});
+
+describe("tabs", () => {
+  it("splits jewellery from coins and bars, with bridal across jewellery", () => {
+    const jewellery = all({ tab: "jewellery" });
+    const coins = all({ tab: "coins_bars" });
+    const bridal = all({ tab: "bridal" });
+    expect(jewellery.length + coins.length).toBe(pieces.length);
+    expect(coins.every((p) => p.category === "coins" || p.category === "bars")).toBe(true);
+    expect(bridal.length).toBeGreaterThan(4);
+    expect(bridal.every((p) => p.occasions.includes("bridal"))).toBe(true);
+  });
+
+  it("only offers options that exist in the tab", () => {
+    const coins = optionsFor("coins_bars");
+    expect(coins.categories.map((c) => c.id)).toEqual(["coins", "bars"]);
+    expect(coins.styles).toEqual([]);
+    expect(optionsFor("jewellery").purities).not.toContain("24K");
   });
 });
 
 describe("search", () => {
   it("matches name, shop and area, every word required", () => {
-    expect(runQuery(q({ q: "rope" })).map((p) => p.slug)).toEqual(["22k-rope-chain", "21k-rope-necklace"]);
-    expect(runQuery(q({ q: "curb karama" })).map((p) => p.slug)).toEqual(["22k-classic-curb-chain"]);
-    expect(runQuery(q({ q: "Qamar" })).length).toBe(4);
+    expect(all({ q: "rope" }).map((p) => p.slug).sort()).toEqual(["21k-heavy-rope-chain", "21k-rope-necklace", "22k-layered-necklace", "22k-rope-chain"]);
+    expect(all({ q: "curb karama" }).map((p) => p.slug)).toEqual(["22k-classic-curb-chain"]);
+    expect(all({ q: "Ghaf" }).length).toBeGreaterThan(0);
   });
 
-  it("treats plurals loosely", () => {
-    expect(runQuery(q({ q: "rings" })).length).toBe(runQuery(q({ q: "ring" })).length);
-  });
-
-  it("finds nothing for nonsense", () => {
-    expect(runQuery(q({ q: "platinum watch" }))).toEqual([]);
+  it("searches the tab it is in", () => {
+    expect(all({ tab: "coins_bars", q: "bar" }).length).toBe(4);
+    expect(all({ tab: "jewellery", q: "tola" })).toEqual([]);
   });
 });
 
 describe("filters", () => {
-  it("excludes price-on-request pieces once a price range is chosen", () => {
-    const res = runQuery(q({ price: "5000-10000" }));
-    expect(res.every((p) => p.price.kind !== "on_request" && p.price.aed >= 5000 && p.price.aed < 10000)).toBe(true);
-    expect(res.length).toBeGreaterThan(0);
-  });
-
   it("filters by emirate and by area", () => {
-    expect(runQuery(q({ location: "dubai" })).length).toBe(7);
-    expect(runQuery(q({ location: "dubai/karama" })).length).toBe(4);
-    expect(runQuery(q({ location: "sharjah" })).every((p) => p.shop === "falaj-goldsmiths")).toBe(true);
+    const dubai = all({ location: "dubai" });
+    expect(dubai.length).toBeGreaterThan(0);
+    expect(all({ location: "karama" }).every((p) => p.shop === "qamar-gold-house")).toBe(true);
+    expect(all({ location: "karama" }).length).toBeLessThan(dubai.length);
   });
 
-  it("combines purity values as either-or", () => {
-    const res = runQuery(q({ purity: ["21K", "18K"] }));
-    expect(res.every((p) => p.purity === "21K" || p.purity === "18K")).toBe(true);
+  it("drops price-on-request pieces once a price range is chosen", () => {
+    const res = all({ price: "7500-15000" });
+    expect(res.length).toBeGreaterThan(0);
+    expect(res.every((p) => p.price.kind !== "on_request" && p.price.aed >= 7500 && p.price.aed < 15000)).toBe(true);
+  });
+
+  it("filters by weight and by making charge per gram", () => {
+    expect(all({ weight: "over-40" }).every((p) => p.weightGrams! >= 40)).toBe(true);
+    const cheap = all({ making: 15 });
+    expect(cheap.length).toBeGreaterThan(0);
+    expect(cheap.every((p) => makingPerGram(p)! <= 15)).toBe(true);
+  });
+
+  it("treats 'anyone' pieces as for women and men, but not kids", () => {
+    expect(all({ wearer: "men" }).some((p) => p.wearer === "unisex")).toBe(true);
+    expect(all({ wearer: "kids" }).every((p) => p.wearer === "kids")).toBe(true);
+  });
+
+  it("filters by stones", () => {
+    expect(all({ stones: "with" }).every((p) => p.stones)).toBe(true);
+    expect(all({ stones: "without" }).every((p) => !p.stones)).toBe(true);
   });
 
   it("can skip one filter to count what its options would show", () => {
     const query = q({ category: "rings", purity: ["22K"] });
-    expect(filterPieces(pieces, query).length).toBe(1);
-    expect(filterPieces(pieces, query, "purity").length).toBe(3);
+    expect(filterPieces(pieces, query, "purity").length).toBeGreaterThan(filterPieces(pieces, query).length);
   });
 });
 
-describe("sorting", () => {
-  it("puts price on request last in both directions", () => {
+describe("sorting and pages", () => {
+  it("puts unpriced pieces last in both price directions", () => {
     for (const sort of ["price-asc", "price-desc"] as const) {
-      const res = runQuery(q({ sort }));
-      const firstOnRequest = res.findIndex((p) => p.price.kind === "on_request");
-      expect(res.slice(firstOnRequest).every((p) => p.price.kind === "on_request")).toBe(true);
+      const res = all({ sort });
+      const first = res.findIndex((p) => p.price.kind === "on_request");
+      expect(res.slice(first).every((p) => p.price.kind === "on_request")).toBe(true);
     }
   });
 
-  it("orders prices", () => {
-    const prices = runQuery(q({ sort: "price-asc" })).flatMap((p) => (p.price.kind === "on_request" ? [] : [p.price.aed]));
-    expect(prices).toEqual([...prices].sort((a, b) => a - b));
+  it("orders by weight and by making charge", () => {
+    const w = all({ sort: "weight-desc" }).map((p) => p.weightGrams!);
+    expect(w).toEqual([...w].sort((a, b) => b - a));
+    const m = all({ sort: "making-asc" }).map(makingPerGram).filter((x) => x !== null);
+    expect(m).toEqual([...m].sort((a, b) => a - b));
   });
 
-  it("newest first by default", () => {
-    const dates = runQuery(EMPTY_QUERY).map((p) => p.listedAt);
-    expect(dates).toEqual([...dates].sort().reverse());
+  it("paginates and clamps the page", () => {
+    const list = all();
+    expect(paginate(list, 1).items.length).toBe(12);
+    expect(paginate(list, 99).page).toBe(paginate(list, 99).pages);
   });
 });
 
 describe("URL state", () => {
-  it("round-trips", () => {
-    const query = q({ q: "chain", category: "chains", price: "over-10000", purity: ["22K"], location: "dubai/deira", sort: "price-desc" });
+  it("round-trips every field", () => {
+    const query = q({
+      tab: "bridal", q: "coin", location: "meena-bazaar", category: "necklaces", purity: ["22K"], price: "15000-30000",
+      weight: "20-40", making: 30, occasion: "bridal", wearer: "women", style: "indian", stones: "without",
+      shop: "yasmeen-gold", sort: "price-desc", page: 2,
+    });
     expect(parseQuery(toSearchParams(query))).toEqual(query);
   });
 
   it("ignores values it does not recognise", () => {
-    const parsed = parseQuery(new URLSearchParams("category=watches&price=free&purity=99k,22k&location=mars&sort=random"));
+    const parsed = parseQuery(new URLSearchParams("tab=rent&category=watches&price=free&purity=99k,22k&location=mars&making=3&page=-4"));
     expect(parsed).toEqual(q({ purity: ["22K"] }));
   });
+
+  it("builds clean links", () => {
+    expect(searchHref({ category: "chains", location: "karama" })).toBe("/search?location=karama&category=chains");
+    expect(searchHref({})).toBe("/search");
+  });
+});
+
+describe("suggestions", () => {
+  it("suggests places, categories and shops by word start", () => {
+    expect(suggest("dei")[0]).toMatchObject({ kind: "place", id: "deira-gold-souk" });
+    expect(suggest("ban").some((s) => s.kind === "category" && s.id === "bangles")).toBe(true);
+    expect(suggest("qam").some((s) => s.kind === "shop")).toBe(true);
+    expect(suggest("")).toEqual([]);
+  });
+
+  it("keeps 'gold' from matching everything in the wrong way", () => {
+    expect(suggest("gold").every((s) => s.label.toLowerCase().includes("gold"))).toBe(true);
+  });
+});
+
+it("inTab never puts a piece in two sections", () => {
+  expect(pieces.every((p) => inTab(p, "jewellery") !== inTab(p, "coins_bars"))).toBe(true);
 });

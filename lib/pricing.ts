@@ -16,7 +16,17 @@ export type PriceInput = {
   weightGrams: number;
   makingChargeType: MakingChargeType;
   makingChargeValue: number;
+  /** Defaults to 5%. Investment gold is zero-rated: see vatRateFor. */
+  vatRate?: number;
 };
+
+/**
+ * UAE VAT on gold: investment gold of 99% purity or more (bars, coins) is
+ * zero-rated; jewellery, and coins below 99%, carry the standard 5%.
+ */
+export function vatRateFor(purity: string, fineness?: string): number {
+  return purity === "24K" && fineness && Number(fineness) >= 990 ? 0 : VAT_RATE;
+}
 
 export type PriceBreakdown = {
   goldValue: number;
@@ -48,7 +58,7 @@ export function estimatePrice(input: PriceInput): PriceBreakdown {
   const gold = toFils(input.ratePerGramAed * input.weightGrams);
   const making = makingChargeFils(input, gold);
   const subtotal = gold + making;
-  const vat = Math.round(subtotal * VAT_RATE);
+  const vat = Math.round(subtotal * (input.vatRate ?? VAT_RATE));
   return {
     goldValue: toAed(gold),
     makingCharge: toAed(making),
