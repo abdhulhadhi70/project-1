@@ -165,4 +165,38 @@ set role anon;
 select pg_temp.check('a suspended shop and its pieces disappear', (select count(*) from public.shops where slug = 'pending-shop') + (select count(*) from public.pieces where slug = 'hidden-ring') = 0);
 reset role;
 
+-- =========================================================================
+-- Photo storage: a shop writes only in its own folder.
+set role authenticated;
+set request.jwt.claim.sub = 'a0000000-0000-4000-8000-000000000002'; -- Sidra's owner
+insert into storage.objects (bucket_id, name) select 'pieces', id::text || '/photo-1.webp' from public.shops where slug = 'sidra-atelier';
+select pg_temp.check('owner uploads into own shop folder', (select count(*) from storage.objects) = 1);
+select pg_temp.refused('owner cannot upload into another shop''s folder',
+  $$insert into storage.objects (bucket_id, name) select 'pieces', id::text || '/x.webp' from public.shops where slug = 'yasmeen-gold'$$);
+reset role;
+
+-- =========================================================================
+-- Team functions
+set role authenticated;
+set request.jwt.claim.sub = 'a0000000-0000-4000-8000-000000000002'; -- Sidra's owner
+select pg_temp.check('owner sees the team with emails',
+  (select count(*) from public.shop_team((select id from public.shops where slug = 'sidra-atelier')) where email = 'sidra@test.local') = 1);
+select pg_temp.check('owner adds an existing account as staff at once',
+  public.add_member_by_email((select id from public.shops where slug = 'sidra-atelier'), 'staff@test.local') = 'added');
+select pg_temp.check('owner invites a new email',
+  public.add_member_by_email((select id from public.shops where slug = 'sidra-atelier'), 'New.Person@Test.local') = 'invited');
+select pg_temp.refused('owner cannot add another owner',
+  $$select public.add_member_by_email((select id from public.shops where slug = 'sidra-atelier'), 'x@test.local', 'owner')$$);
+select pg_temp.refused('owner cannot add to another shop',
+  $$select public.add_member_by_email((select id from public.shops where slug = 'yasmeen-gold'), 'x@test.local')$$);
+select pg_temp.check('another shop''s team is invisible',
+  (select count(*) from public.shop_team((select id from public.shops where slug = 'yasmeen-gold'))) = 0);
+set request.jwt.claim.sub = 'a0000000-0000-4000-8000-000000000001'; -- admin
+select pg_temp.check('admin makes someone an owner',
+  public.add_member_by_email((select id from public.shops where slug = 'yasmeen-gold'), 'real@test.local', 'owner') = 'added');
+reset role;
+set role anon;
+select pg_temp.refused('the public cannot list a team', $$select * from public.shop_team((select id from public.shops where slug = 'sidra-atelier'))$$);
+reset role;
+
 \echo 'All access checks passed.'

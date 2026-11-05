@@ -33,7 +33,10 @@ function Account() {
       {!account.isAdmin && account.shops.length === 0 && (
         <Notice>Your account isn&apos;t linked to a shop yet. Ask your shop&apos;s owner, or our team, to invite this email address.</Notice>
       )}
-      <p className="text-[13px] text-stone">The jeweller portal and the admin portal open here once they are built.</p>
+      <div className="flex flex-wrap gap-3">
+        {account.shops.length > 0 && <Link href="/dashboard" className="inline-flex h-11 items-center bg-ink px-5 text-[14px] text-chalk hover:bg-ink-soft">Open the jeweller portal</Link>}
+        {account.isAdmin && <Link href="/admin" className="inline-flex h-11 items-center bg-ink px-5 text-[14px] text-chalk hover:bg-ink-soft">Open the admin portal</Link>}
+      </div>
       <button type="button" onClick={async () => { await getSupabase().auth.signOut(); router.replace("/login"); }}
         className="h-11 border border-ink px-5 text-[14px] hover:bg-ink hover:text-chalk">Sign out</button>
     </div>

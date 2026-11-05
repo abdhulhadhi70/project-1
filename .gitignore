@@ -40,6 +40,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 !.env.example
+# Public keys only (the publishable key is designed to be in the browser).
+!.env.production
 
 # cloudflare / opennext
 .open-next

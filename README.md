@@ -133,7 +133,7 @@ prices off, its pieces show as "on request".
 ### Setting it up
 
 1. Create a project at supabase.com.
-2. In **SQL Editor**, run the two files in `supabase/migrations` in order,
+2. In **SQL Editor**, run the four files in `supabase/migrations` in order,
    then `supabase/seed.sql`.
 3. Under **Authentication → Providers → Email**, keep email sign-in on and
    **Confirm email** on.
@@ -152,6 +152,31 @@ prices off, its pieces show as "on request".
 
 `npm run test:db` runs the 45 access checks against a throwaway local
 Postgres, and never touches your Supabase project.
+
+## Portals
+
+| Address | Who | What |
+|---|---|---|
+| `/login`, `/join`, `/forgot-password` | Jewellers and our team | Sign in, create an invited account, reset a password |
+| `/dashboard` | Jewellers (owner or staff) | Overview with "Confirm stock" and 30-day results; pieces (add from a phone, photos, edit, duplicate, mark sold or reserved, hide, delete); visit requests; shop profile; team (owners add staff) |
+| `/admin` | Admins | Results by jeweller with CSV export and a printable report; jewellers (create, approve, plan, feature, suspend, demo, add owners); all pieces (edit, feature); gold rates; applications; visit requests with CSV; site settings (name, contact, notice line, homepage sections); areas; users |
+
+Edits go live straight away: public pages read the catalogue from Supabase
+in the browser, so nothing needs rebuilding.
+
+**Photos** are resized to 1600 px and 600 px, turned the right way up, stripped
+of all metadata (location included) and watermarked with the shop name in
+the browser, then stored in Supabase Storage under `pieces/<shop id>/`.
+
+**Emails.** On the free plan, Supabase sends sign-up, invite and reset emails
+only to members of your Supabase organisation. Until a custom SMTP sender
+is set (Authentication → Emails → SMTP Settings), create jewellers' accounts
+yourself: Authentication → Users → Add user, with "Auto Confirm User" ticked.
+Then add their email to the shop in the admin portal.
+
+**Keys.** `.env.production` holds the Supabase URL and publishable key, so
+Cloudflare's build picks them up. Both are public by design. The
+`service_role` key must never be added to the repository.
 
 ## Groundwork for later
 

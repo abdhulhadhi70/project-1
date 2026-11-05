@@ -11,6 +11,15 @@ insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_typ
 values ('pieces', 'pieces', true, 3145728, array['image/webp', 'image/jpeg', 'image/png'])
 on conflict (id) do nothing;
 
+-- Listing is needed by Storage to replace or remove a file.
+create policy "shop members list photos" on storage.objects for select to authenticated
+  using (
+    bucket_id = 'pieces' and (
+      public.is_admin()
+      or (storage.foldername(name))[1] in (select shop_id::text from public.shop_members where user_id = (select auth.uid()))
+    )
+  );
+
 create policy "shop members add photos" on storage.objects for insert to authenticated
   with check (
     bucket_id = 'pieces' and (
