@@ -7,6 +7,7 @@ const company = [
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
   { href: "/for-jewellers", label: "For jewellers" },
+  { href: "/login", label: "Jeweller sign in" },
   { href: "/privacy", label: "Privacy" },
   { href: "/terms", label: "Terms" },
 ];
