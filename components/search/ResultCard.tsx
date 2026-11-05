@@ -2,7 +2,9 @@
 // A search result, laid out like a Property Finder listing: photos, price,
 // a row of key facts, title, location, the jeweller, and contact buttons.
 import Link from "next/link";
-import { CATEGORIES, areaFor, shopFor, type Piece } from "@/data/catalogue";
+import { CATEGORIES, type Piece } from "@/data/catalogue";
+import { areaFor, shopFor } from "@/lib/catalogue-store";
+import { pieceHref, shopHref } from "@/lib/links";
 import { aed, dateShort, makingShort, weightText } from "@/lib/format";
 import { ContactActions } from "../ContactActions";
 import { HammerIcon, PinIcon, PurityIcon, ScaleIcon } from "../Icons";
@@ -46,7 +48,7 @@ export function Facts({ piece }: { piece: Piece }) {
 export function ResultCard({ piece, layout = "list", priority = false }: { piece: Piece; layout?: "list" | "grid"; priority?: boolean }) {
   const shop = shopFor(piece);
   const area = areaFor(shop);
-  const href = `/pieces/${piece.slug}`;
+  const href = pieceHref(piece.slug);
   const cat = CATEGORIES.find((c) => c.id === piece.category)!;
   const list = layout === "list";
 
@@ -76,7 +78,7 @@ export function ResultCard({ piece, layout = "list", priority = false }: { piece
         {list && <p className="line-clamp-2 text-[13px] leading-snug text-ink-soft max-md:hidden">{piece.description}</p>}
 
         <div className={`relative z-10 mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-line ${list ? "pt-3" : "pt-2.5"}`}>
-          <Link href={`/jewellers/${shop.slug}`} className="inline-flex min-w-0 items-center gap-2 text-[13px] text-ink hover:underline">
+          <Link href={shopHref(shop.slug)} className="inline-flex min-w-0 items-center gap-2 text-[13px] text-ink hover:underline">
             <Monogram name={shop.name} />
             <span className="min-w-0">
               <span className="block truncate">{shop.name}</span>
@@ -85,7 +87,7 @@ export function ResultCard({ piece, layout = "list", priority = false }: { piece
           </Link>
           {list && (
             <div className="w-full sm:w-auto sm:min-w-[13rem]">
-              <ContactActions shop={shop} subject={`${piece.name} (ref ${piece.code})`} path={href} layout="card" />
+              <ContactActions shop={shop} subject={`${piece.name} (ref ${piece.code})`} path={href} pieceId={piece.id} layout="card" />
             </div>
           )}
         </div>

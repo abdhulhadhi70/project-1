@@ -4,7 +4,7 @@
 // words become a keyword search.
 import { useId, useRef, useState } from "react";
 import { locationLabel, suggest, type Query, type Suggestion } from "@/lib/catalogue-query";
-import { shopBySlug } from "@/data/catalogue";
+import { getCatalogue } from "@/lib/catalogue-store";
 import { CloseIcon, PinIcon, SearchIcon } from "../Icons";
 
 type Props = {
@@ -44,7 +44,7 @@ export function LocationBox({ query, set, placeholder = "Area, souk, jeweller or
 
   const chips: { label: string; clear: Partial<Query> }[] = [];
   if (query.location) chips.push({ label: locationLabel(query.location).split(",")[0], clear: { location: null } });
-  if (query.shop) chips.push({ label: shopBySlug.get(query.shop)?.name ?? "", clear: { shop: null } });
+  if (query.shop) chips.push({ label: getCatalogue().shopBySlug.get(query.shop)?.name ?? "", clear: { shop: null } });
 
   const h = size === "lg" ? "min-h-14 text-[16px]" : "min-h-11 text-[14px]";
   return (

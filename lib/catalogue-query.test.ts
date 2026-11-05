@@ -52,11 +52,11 @@ describe("tabs", () => {
   });
 
   it("only shows tabs, areas and emirates that have pieces", () => {
-    expect(liveTabs.map((t) => t.id)).toEqual(
+    expect(liveTabs().map((t) => t.id)).toEqual(
       ["jewellery", "bridal", "coins_bars"].filter((t) => pieces.some((p) => inTab(p, t as Tab))),
     );
-    expect(liveAreas.every((a) => shops.some((s) => s.area === a.slug))).toBe(true);
-    expect(liveEmirates.every((e) => liveAreas.some((a) => a.emirate === e))).toBe(true);
+    expect(liveAreas().every((a) => shops.some((s) => s.area === a.slug))).toBe(true);
+    expect(liveEmirates().every((e) => liveAreas().some((a) => a.emirate === e))).toBe(true);
     expect(suggest("kara")).toEqual([]); // Karama has no shop in the demo
   });
 

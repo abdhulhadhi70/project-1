@@ -4,6 +4,7 @@
 // stranger it shows what would happen, including the prepared message.
 import { useId, useRef, useState } from "react";
 import type { Shop } from "@/data/catalogue";
+import { track } from "@/lib/track";
 import { ChatIcon, CloseIcon, PhoneIcon } from "./Icons";
 
 type Props = {
@@ -12,7 +13,9 @@ type Props = {
   subject?: string;
   /** Page the message links to; defaults to the current page. */
   path?: string;
-  /** Fires before the shop is contacted, for click counting. */
+  /** Counted against this piece in the shop's results. */
+  pieceId?: string;
+  /** Fires before the shop is contacted. */
   onContact?: (kind: "whatsapp" | "call") => void;
   layout?: "stack" | "column" | "bar" | "card";
 };
@@ -23,7 +26,7 @@ function message(shop: Shop, subject: string | undefined, url: string) {
     : `Hello ${shop.name}, I found your shop on Tibr: ${url}\nI would like to visit. When is a good time?`;
 }
 
-export function ContactActions({ shop, subject, path, onContact, layout = "stack" }: Props) {
+export function ContactActions({ shop, subject, path, pieceId, onContact, layout = "stack" }: Props) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [mode, setMode] = useState<"whatsapp" | "call">("whatsapp");
   const [text, setText] = useState("");
@@ -31,6 +34,7 @@ export function ContactActions({ shop, subject, path, onContact, layout = "stack
 
   const open = (m: "whatsapp" | "call") => {
     onContact?.(m);
+    if (!shop.demo) track(m === "whatsapp" ? "whatsapp_click" : "call_click", shop.id, pieceId);
     const url = path ? `${window.location.origin}${path}` : window.location.href.split("#")[0];
     const body = message(shop, subject, url);
     if (m === "whatsapp" && shop.whatsapp) {

@@ -33,7 +33,7 @@ export function HeroSearch() {
   return (
     <div>
       <div role="tablist" aria-label="What are you looking for" className="flex gap-6 border-b border-line">
-        {liveTabs.map((t) => {
+        {liveTabs().map((t) => {
           const on = draft.tab === t.id;
           return (
             <button key={t.id} role="tab" type="button" aria-selected={on}

@@ -1,3 +1,6 @@
+"use client";
+// The homepage. Client-rendered so it follows the live catalogue; the build
+// renders it with the demo, so it is never blank while that loads.
 import Link from "next/link";
 import { Suspense } from "react";
 import { HeroSearch } from "@/components/home/HeroSearch";
@@ -5,31 +8,33 @@ import { QuickEstimator } from "@/components/home/QuickEstimator";
 import { ArrowIcon } from "@/components/Icons";
 import { PieceImage } from "@/components/PieceImage";
 import { Monogram, ResultCard } from "@/components/search/ResultCard";
-import {
-  CATEGORIES, areaFor, heroImage, pieceBySlug, pieces, sampleRates, shops, type Purity,
-} from "@/data/catalogue";
+import { CATEGORIES, heroImage, type Purity } from "@/data/catalogue";
+import { areaFor, coverFor, getCatalogue, useCatalogue } from "@/lib/catalogue-store";
+import { shopHref } from "@/lib/links";
 import { EMPTY_QUERY, liveAreas, liveTabs, parseQuery, runQuery, searchHref } from "@/lib/catalogue-query";
 import { aed, dateText } from "@/lib/format";
 
 export default function Home() {
+  const { settings } = useCatalogue();
+  const on = (k: string) => settings?.sections?.[k] !== false; // the admin can switch sections off
   return (
     <>
       <Hero />
-      <Rates />
-      <Categories />
-      <Row title="Newest pieces" note="The latest pieces listed by jewellers" href={searchHref({ sort: "newest" })}
-        list={runQuery({ ...EMPTY_QUERY, tab: "jewellery" }).slice(0, 4)} />
-      <Row title="For the wedding" note="Bridal sets, coin necklaces, bangle stacks and bands" href={searchHref({ tab: "bridal" })}
-        list={runQuery({ ...EMPTY_QUERY, tab: "bridal" }).slice(0, 4)} />
-      {liveTabs.some((t) => t.id === "coins_bars") && <Bullion />}
+      {on("rates") && <Rates />}
+      {on("categories") && <Categories />}
+      {on("newest") && <Row title="Newest pieces" note="The latest pieces listed by jewellers" href={searchHref({ sort: "newest" })}
+        list={runQuery({ ...EMPTY_QUERY, tab: "jewellery" }).slice(0, 4)} />}
+      {on("bridal") && liveTabs().some((t) => t.id === "bridal") && <Row title="For the wedding" note="Bridal sets, coin necklaces, bangle stacks and bands" href={searchHref({ tab: "bridal" })}
+        list={runQuery({ ...EMPTY_QUERY, tab: "bridal" }).slice(0, 4)} />}
+      {on("bullion") && liveTabs().some((t) => t.id === "coins_bars") && <Bullion />}
       {/* With two jewellers, districts would repeat the jewellers row. */}
-      {liveAreas.length > 2 && <Districts />}
-      <Jewellers />
-      <Section title="What should it cost?" note="Gold at the day's rate, plus the making charge, plus VAT. Every price on the site is worked out this way.">
+      {on("districts") && liveAreas().length > 2 && <Districts />}
+      {on("jewellers") && <Jewellers />}
+      {on("estimator") && <Section title="What should it cost?" note="Gold at the day's rate, plus the making charge, plus VAT. Every price on the site is worked out this way.">
         <QuickEstimator />
-      </Section>
+      </Section>}
       <ListYourShop />
-      <PopularSearches />
+      {on("popular") && <PopularSearches />}
     </>
   );
 }
@@ -68,7 +73,7 @@ function Hero() {
             Find a piece that feels <em className="italic">yours.</em>
           </h1>
           <p className="mt-2 max-w-xl text-[15px] leading-relaxed text-ink-soft md:text-[16px]">
-            {liveTabs.some((t) => t.id === "coins_bars") ? "Gold jewellery, coins and bars" : "Gold jewellery"} from jewellers across the UAE. See the price and the shop, then visit to buy.
+            {liveTabs().some((t) => t.id === "coins_bars") ? "Gold jewellery, coins and bars" : "Gold jewellery"} from jewellers across the UAE. See the price and the shop, then visit to buy.
           </p>
           <div className="mt-5 md:mt-6">
             <Suspense fallback={<div className="h-28" />}>
@@ -82,19 +87,24 @@ function Hero() {
 }
 
 function Rates() {
-  const order: Purity[] = ["24K", "22K", "21K", "18K"];
+  const { rates } = useCatalogue();
+  const order: Purity[] = (["24K", "22K", "21K", "18K"] as Purity[]).filter((k) => rates.perGram[k]);
   return (
     <section aria-labelledby="rates" className="page page-x mt-10 md:mt-12">
       <div className="grid gap-4 border border-line p-4 md:grid-cols-[auto_1fr_auto] md:items-center md:gap-8 md:p-5">
         <div>
           <h2 id="rates" className="text-[15px] font-medium">Gold rate, AED per gram</h2>
-          <p className="text-[12px] text-stone">Sample rates for the demo · {dateText(sampleRates.asOf.slice(0, 10))}, 9:00 · not live</p>
+          <p className="text-[12px] text-stone">
+            {rates.source === "sample"
+              ? `Sample rates for the demo · ${dateText(rates.asOf)} · not live`
+              : `Set by our team · ${dateText(rates.asOf)}, ${new Date(rates.asOf).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Dubai" })} · shops' own rates may differ`}
+          </p>
         </div>
-        <dl className="grid grid-cols-4 gap-px bg-line">
+        <dl className={`grid gap-px bg-line ${order.length === 4 ? "grid-cols-4" : order.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}>
           {order.map((k) => (
             <div key={k} className="bg-chalk px-2 py-1.5 md:px-4">
               <dt className="text-[12px] text-stone">{k}</dt>
-              <dd className="text-[15px] font-semibold tabular-nums md:text-[17px]">{aed(sampleRates.perGram[k]).replace("AED ", "")}</dd>
+              <dd className="text-[15px] font-semibold tabular-nums md:text-[17px]">{aed(rates.perGram[k]).replace("AED ", "")}</dd>
             </div>
           ))}
         </dl>
@@ -107,6 +117,7 @@ function Rates() {
 }
 
 function Categories() {
+  const { pieces } = useCatalogue();
   const tiles = CATEGORIES.map((c) => {
     const list = pieces.filter((p) => p.category === c.id);
     return { ...c, count: list.length, image: list[0]?.images[0] };
@@ -131,7 +142,7 @@ function Categories() {
   );
 }
 
-function Row({ title, note, href, list }: { title: string; note: string; href: string; list: typeof pieces }) {
+function Row({ title, note, href, list }: { title: string; note: string; href: string; list: import("@/data/catalogue").Piece[] }) {
   return (
     <Section title={title} note={note} href={href}>
       <ul className="no-scrollbar -mx-4 flex gap-3 overflow-x-auto px-4 md:mx-0 md:grid md:grid-cols-4 md:gap-5 md:overflow-visible md:px-0">
@@ -161,8 +172,9 @@ function Bullion() {
 function Districts() {
   return (
     <Section title="Gold districts" note="Where the jewellers in this demo are, by area." href="/jewellers" link="All jewellers">
-      <ul className={`grid gap-px bg-line sm:grid-cols-2 ${liveAreas.length > 2 ? "lg:grid-cols-4" : ""}`}>
-        {liveAreas.map((a) => {
+      <ul className={`grid gap-px bg-line sm:grid-cols-2 ${liveAreas().length > 2 ? "lg:grid-cols-4" : ""}`}>
+        {liveAreas().map((a) => {
+          const { shops, pieces } = getCatalogue();
           const here = shops.filter((s) => s.area === a.slug);
           const count = pieces.filter((p) => here.some((s) => s.slug === p.shop)).length;
           return (
@@ -182,17 +194,18 @@ function Districts() {
 }
 
 function Jewellers() {
+  const { shops } = useCatalogue();
   return (
     <Section title="Jewellers" note="Every piece belongs to a shop you can visit." href="/jewellers" link="Find a jeweller">
       <ul className={`no-scrollbar -mx-4 flex gap-3 overflow-x-auto px-4 md:mx-0 md:grid md:gap-5 md:overflow-visible md:px-0 ${shops.length <= 2 ? "md:grid-cols-2" : "md:grid-cols-4"}`}>
         {shops.slice(0, 8).map((s) => {
-          const cover = pieceBySlug.get(s.cover)!;
+          const cover = coverFor(s);
           const area = areaFor(s);
           return (
             <li key={s.slug} className="w-60 shrink-0 md:w-auto">
-              <Link href={`/jewellers/${s.slug}`} className="group block border border-line">
+              <Link href={shopHref(s.slug)} className="group block border border-line">
                 <div className="aspect-[16/10] overflow-hidden bg-limestone">
-                  <PieceImage name={cover.images[0]} alt="" sizes="(min-width: 768px) 24vw, 240px"
+                  <PieceImage name={cover?.images[0] ?? "hero"} alt="" sizes="(min-width: 768px) 24vw, 240px"
                     className="size-full object-cover transition-transform duration-700 ease-quiet group-hover:scale-[1.04]" />
                 </div>
                 <div className="flex items-center gap-3 p-3">

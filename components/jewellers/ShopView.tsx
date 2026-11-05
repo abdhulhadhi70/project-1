@@ -1,26 +1,38 @@
-import type { Metadata } from "next";
+"use client";
+// A jeweller's page, read from the live catalogue in the browser.
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { useEffect } from "react";
 import { ContactActions } from "@/components/ContactActions";
 import { ArrowIcon } from "@/components/Icons";
 import { ShopMap } from "@/components/piece/ShopMap";
 import { Monogram, ResultCard } from "@/components/search/ResultCard";
-import { CATEGORIES, areaFor, pieces, shopBySlug, shops } from "@/data/catalogue";
+import { CATEGORIES } from "@/data/catalogue";
+import { areaFor, catalogueSettled, useCatalogue } from "@/lib/catalogue-store";
 import { searchHref, sortPieces } from "@/lib/catalogue-query";
+import { track } from "@/lib/track";
 
-export const dynamicParams = false;
-export function generateStaticParams() {
-  return shops.map((s) => ({ slug: s.slug }));
-}
-
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const shop = shopBySlug.get((await params).slug);
-  return shop ? { title: shop.name, description: `${shop.name}, ${areaFor(shop).name}. ${shop.about}` } : {};
-}
-
-export default async function ShopPage({ params }: { params: Promise<{ slug: string }> }) {
-  const shop = shopBySlug.get((await params).slug);
-  if (!shop) notFound();
+export function ShopView({ slug }: { slug: string }) {
+  const catalogue = useCatalogue();
+  const pieces = catalogue.pieces;
+  const shop = catalogue.shopBySlug.get(slug);
+  useEffect(() => {
+    if (shop) {
+      document.title = `${shop.name} · ${catalogue.settings?.siteName ?? "Tibr"}`;
+      if (!shop.demo) track("shop_view", shop.id);
+    }
+  }, [shop, catalogue.settings?.siteName]);
+  if (!shop) {
+    return (
+      <section className="page page-x py-24 text-center">
+        {catalogueSettled() ? (
+          <>
+            <p className="font-serif text-[32px] leading-tight">This jeweller isn&apos;t listed.</p>
+            <Link href="/jewellers" className="mt-6 inline-flex h-11 items-center border border-ink px-5 text-[14px]">All jewellers</Link>
+          </>
+        ) : <p className="text-[14px] text-stone">Loading…</p>}
+      </section>
+    );
+  }
   const area = areaFor(shop);
   const theirs = sortPieces(pieces.filter((p) => p.shop === shop.slug), "newest");
   const cats = CATEGORIES.filter((c) => theirs.some((p) => p.category === c.id));
@@ -53,7 +65,7 @@ export default async function ShopPage({ params }: { params: Promise<{ slug: str
             <ShopMap shop={shop} className="h-64 lg:h-full lg:min-h-80" />
             <div className="mt-2 flex flex-wrap items-baseline justify-between gap-2 text-[13px]">
               <span className="text-ink-soft">{shop.address}</span>
-              <a href={directions} target="_blank" rel="noopener" className="inline-flex items-center gap-1 text-ink underline decoration-line-strong underline-offset-4">Get directions <ArrowIcon className="size-3.5" /></a>
+              <a href={directions} target="_blank" rel="noopener" onClick={() => !shop.demo && track("directions_click", shop.id)} className="inline-flex items-center gap-1 text-ink underline decoration-line-strong underline-offset-4">Get directions <ArrowIcon className="size-3.5" /></a>
             </div>
           </div>
         </div>

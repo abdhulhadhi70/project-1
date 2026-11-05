@@ -1,5 +1,7 @@
+"use client";
 import Link from "next/link";
-import { CATEGORIES, pieces } from "@/data/catalogue";
+import { CATEGORIES } from "@/data/catalogue";
+import { useCatalogue } from "@/lib/catalogue-store";
 import { site } from "@/data/site";
 import { liveAreas, liveTabs, searchHref } from "@/lib/catalogue-query";
 
@@ -13,8 +15,10 @@ const company = [
 ];
 
 export function Footer() {
+  const { pieces, settings } = useCatalogue();
+  const name = settings?.siteName ?? site.name;
   const browse = [
-    ...liveTabs.map((t) => ({ href: searchHref({ tab: t.id }), label: t.label })),
+    ...liveTabs().map((t) => ({ href: searchHref({ tab: t.id }), label: t.label })),
     { href: "/jewellers", label: "Jewellers" },
     { href: "/gold-price", label: "Gold price estimator" },
     { href: "/saved", label: "Saved" },
@@ -22,14 +26,14 @@ export function Footer() {
   const cols = [
     { title: "Browse", links: browse },
     { title: "Categories", links: CATEGORIES.filter((c) => c.section === "jewellery" && pieces.some((p) => p.category === c.id)).map((c) => ({ href: searchHref({ category: c.id }), label: c.label })) },
-    { title: "Gold districts", links: liveAreas.map((a) => ({ href: searchHref({ location: a.slug }), label: a.name })) },
-    { title: site.name, links: company },
+    { title: "Gold districts", links: liveAreas().map((a) => ({ href: searchHref({ location: a.slug }), label: a.name })) },
+    { title: name, links: company },
   ];
   return (
     <footer className="mt-20 border-t border-line">
       <div className="page page-x grid gap-8 py-10 sm:grid-cols-2 lg:grid-cols-[1.3fr_repeat(4,1fr)]">
         <div className="max-w-xs">
-          <p className="font-serif text-[26px] leading-none">{site.name}</p>
+          <p className="font-serif text-[26px] leading-none">{name}</p>
           <p className="mt-3 text-[14px] text-stone">
             A listing service: we show the piece, the price and the shop, and the sale happens in the shop. We take no payments.
           </p>
@@ -44,7 +48,7 @@ export function Footer() {
         ))}
       </div>
       <div className="page page-x border-t border-line py-4 text-[12px] text-stone">
-        © 2026 {site.name} · Prototype. Jewellers, prices, rates, contact details and images are demonstration data.
+        © 2026 {name} · Prototype. Jewellers, prices, rates, contact details and images are demonstration data.
       </div>
     </footer>
   );

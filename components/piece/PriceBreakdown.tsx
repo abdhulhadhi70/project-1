@@ -1,4 +1,6 @@
-import { sampleRates, type Piece } from "@/data/catalogue";
+"use client";
+import type { Piece } from "@/data/catalogue";
+import { useCatalogue } from "@/lib/catalogue-store";
 import { aed, dateText } from "@/lib/format";
 import { estimatePrice, vatRateFor } from "@/lib/pricing";
 
@@ -7,10 +9,12 @@ import { estimatePrice, vatRateFor } from "@/lib/pricing";
  * Uses the SAMPLE rate in the demo, and says so.
  */
 export function PriceBreakdown({ piece }: { piece: Piece }) {
+  const { rates } = useCatalogue();
   const { purity, weightGrams, makingCharge } = piece;
   if (!purity || !weightGrams || !makingCharge) return null;
   const vatRate = vatRateFor(purity, piece.fineness);
-  const rate = sampleRates.perGram[purity];
+  const rate = rates.perGram[purity];
+  if (!rate) return null;
   const e = estimatePrice({
     ratePerGramAed: rate, weightGrams, vatRate,
     makingChargeType: makingCharge.type,
@@ -27,7 +31,7 @@ export function PriceBreakdown({ piece }: { piece: Piece }) {
     <section aria-labelledby="breakdown" className="border border-line">
       <div className="flex items-baseline justify-between gap-4 border-b border-line bg-limestone/60 px-4 py-3">
         <h2 id="breakdown" className="text-[15px] font-medium">How the price adds up</h2>
-        <span className="text-[12px] text-stone">Sample rate, {dateText(sampleRates.asOf.slice(0, 10))}</span>
+        <span className="text-[12px] text-stone">{rates.source === "sample" ? "Sample rate" : "Rate"}, {dateText(rates.asOf)}</span>
       </div>
       <dl className="divide-y divide-line px-4 text-[14px]">
         {rows.map(([k, v]) => (
@@ -41,7 +45,9 @@ export function PriceBreakdown({ piece }: { piece: Piece }) {
       <p className="border-t border-line px-4 py-3 text-[12px] leading-snug text-stone">
         {piece.price.kind === "on_request"
           ? "Gold and making only, as a guide: the jeweller prices this piece in person."
-          : "The rate here is demonstration data, not a live price. The jeweller confirms the final price in the shop."}
+          : rates.source === "sample"
+            ? "The rate here is demonstration data, not a live price. The jeweller confirms the final price in the shop."
+            : "Worked out from the rate our team set that day. The jeweller confirms the final price in the shop."}
       </p>
     </section>
   );

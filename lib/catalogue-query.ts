@@ -2,10 +2,12 @@
 // over the data, so they can be tested and later swapped for a database
 // query with the same shape.
 import {
-  CATEGORIES, EMIRATES, OCCASIONS, STYLES, TABS, WEARERS, areaBySlug, areaFor, areas,
-  pieces as allPieces, sectionOf, shopFor, shops,
+  CATEGORIES, EMIRATES, OCCASIONS, STYLES, TABS, WEARERS, sectionOf,
   type Category, type Occasion, type Piece, type Purity, type Style, type Tab, type Wearer,
 } from "@/data/catalogue";
+import { areaFor, getCatalogue, shopFor } from "./catalogue-store";
+
+const allPieces = () => getCatalogue().pieces;
 import { effectiveMakingPerGram } from "./pricing";
 
 export const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -80,24 +82,24 @@ export const EMPTY_QUERY: Query = {
 // What the site offers is whatever has pieces behind it: a tab, area or
 // emirate with nothing listed is not shown, and reappears when it has stock.
 // ---------------------------------------------------------------------------
-export const liveTabs = TABS.filter((t) => allPieces.some((p) => inTab(p, t.id)));
-export const liveAreas = areas.filter((a) => shops.some((s) => s.area === a.slug));
-export const liveEmirates = EMIRATES.filter((e) => liveAreas.some((a) => a.emirate === e));
+export const liveTabs = () => TABS.filter((t) => allPieces().some((p) => inTab(p, t.id)));
+export const liveAreas = () => getCatalogue().areas.filter((a) => getCatalogue().shops.some((s) => s.area === a.slug));
+export const liveEmirates = () => EMIRATES.filter((e) => liveAreas().some((a) => a.emirate === e));
 
 // ---------------------------------------------------------------------------
 // Locations: emirates and areas, for the location box and its filter.
 // ---------------------------------------------------------------------------
 export type Place = { id: string; label: string; detail: string; kind: "emirate" | "area" };
 
-export const places: Place[] = [
-  ...liveEmirates.map((e): Place => ({ id: slug(e), label: e, detail: "Emirate", kind: "emirate" })),
-  ...liveAreas.map((a): Place => ({ id: a.slug, label: a.name, detail: a.emirate, kind: "area" })),
+export const places = (): Place[] => [
+  ...liveEmirates().map((e): Place => ({ id: slug(e), label: e, detail: "Emirate", kind: "emirate" })),
+  ...liveAreas().map((a): Place => ({ id: a.slug, label: a.name, detail: a.emirate, kind: "area" })),
 ];
-const placeById = new Map(places.map((p) => [p.id, p]));
+const placeById = (id: string) => places().find((p) => p.id === id);
 
 export function locationLabel(id: string | null): string {
   if (!id) return "All UAE";
-  const p = placeById.get(id);
+  const p = placeById(id);
   return p ? (p.kind === "area" ? `${p.label}, ${p.detail}` : p.label) : "All UAE";
 }
 
@@ -123,7 +125,7 @@ export function parseQuery(params: URLSearchParams): Query {
   return {
     tab: oneOf(TABS, params.get("tab")) ?? "jewellery",
     q: (params.get("q") ?? "").slice(0, 80),
-    location: loc && placeById.has(loc) ? loc : null,
+    location: loc && placeById(loc) ? loc : null,
     category: oneOf(CATEGORIES, params.get("category")),
     purity: (params.get("purity") ?? "").split(",").map((s) => s.toUpperCase())
       .filter((s): s is Purity => (PURITY_ORDER as string[]).includes(s)),
@@ -134,7 +136,7 @@ export function parseQuery(params: URLSearchParams): Query {
     wearer: oneOf(WEARERS, params.get("for")),
     style: oneOf(STYLES, params.get("style")),
     stones: stones === "with" || stones === "without" ? stones : null,
-    shop: shop && shops.some((s) => s.slug === shop) ? shop : null,
+    shop: shop && getCatalogue().shops.some((s) => s.slug === shop) ? shop : null,
     sort: oneOf(SORTS, params.get("sort")) ?? "newest",
     page,
   };
@@ -259,7 +261,7 @@ export function sortPieces(list: Piece[], sort: Sort): Piece[] {
   return [...list].sort(cmp);
 }
 
-export function runQuery(query: Query, list: Piece[] = allPieces): Piece[] {
+export function runQuery(query: Query, list: Piece[] = allPieces()): Piece[] {
   return sortPieces(filterPieces(list, query), query.sort);
 }
 
@@ -282,7 +284,7 @@ export function activeFilterCount(q: Query): number {
 // Options that exist in the data. A filter with nothing behind it is hidden.
 // ---------------------------------------------------------------------------
 export function optionsFor(tab: Tab) {
-  const inThisTab = allPieces.filter((p) => inTab(p, tab));
+  const inThisTab = allPieces().filter((p) => inTab(p, tab));
   const has = <T,>(get: (p: Piece) => T | T[] | undefined, v: T) =>
     inThisTab.some((p) => { const x = get(p); return Array.isArray(x) ? x.includes(v) : x === v; });
   return {
@@ -308,8 +310,8 @@ export function suggest(text: string, limit = 7): Suggestion[] {
   if (!t) return [];
   const starts = (s: string) => s.toLowerCase().split(/[\s&,-]+/).some((w) => w.startsWith(t)) || s.toLowerCase().startsWith(t);
   const out: Suggestion[] = [];
-  for (const p of places) if (starts(p.label)) out.push({ kind: "place", id: p.id, label: p.label, detail: p.detail });
+  for (const p of places()) if (starts(p.label)) out.push({ kind: "place", id: p.id, label: p.label, detail: p.detail });
   for (const c of CATEGORIES) if (starts(c.label) || starts(c.singular)) out.push({ kind: "category", id: c.id, label: c.label, detail: "Category" });
-  for (const s of shops) if (starts(s.name)) out.push({ kind: "shop", id: s.slug, label: s.name, detail: areaBySlug.get(s.area)?.name ?? "" });
+  for (const s of getCatalogue().shops) if (starts(s.name)) out.push({ kind: "shop", id: s.slug, label: s.name, detail: getCatalogue().areaBySlug.get(s.area)?.name ?? "" });
   return out.slice(0, limit);
 }

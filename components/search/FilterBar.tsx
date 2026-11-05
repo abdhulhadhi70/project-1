@@ -16,7 +16,7 @@ export function tabPatch(tab: Tab, q: Query): Partial<Query> {
 export function TabSwitch({ query, set, className = "" }: { query: Query; set: SetFn; className?: string }) {
   return (
     <div role="tablist" aria-label="What are you looking for" className={`flex ${className}`}>
-      {liveTabs.map((t) => {
+      {liveTabs().map((t) => {
         const on = query.tab === t.id;
         return (
           <button key={t.id} role="tab" type="button" aria-selected={on} onClick={() => !on && set(tabPatch(t.id, query))}

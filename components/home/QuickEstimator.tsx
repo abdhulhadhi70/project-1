@@ -3,7 +3,8 @@
 // a listing site's mortgage calculator. Same formula as every price here.
 import Link from "next/link";
 import { useState } from "react";
-import { sampleRates, type Purity } from "@/data/catalogue";
+import type { Purity } from "@/data/catalogue";
+import { useCatalogue } from "@/lib/catalogue-store";
 import { aed } from "@/lib/format";
 import { estimatePrice } from "@/lib/pricing";
 
@@ -11,12 +12,13 @@ const PURITIES: Purity[] = ["24K", "22K", "21K", "18K"];
 const field = "mt-1.5 h-11 w-full border border-line-strong bg-chalk px-3 text-[15px] text-ink outline-none focus:border-ink";
 
 export function QuickEstimator() {
+  const { rates } = useCatalogue();
   const [purity, setPurity] = useState<Purity>("22K");
   const [weight, setWeight] = useState("10");
   const [making, setMaking] = useState("20");
   const w = Number(weight), m = Number(making);
   const ok = w > 0 && w < 5000 && m >= 0 && m < 1000;
-  const e = ok ? estimatePrice({ ratePerGramAed: sampleRates.perGram[purity], weightGrams: w, makingChargeType: "per_gram", makingChargeValue: m }) : null;
+  const e = ok ? estimatePrice({ ratePerGramAed: rates.perGram[purity], weightGrams: w, makingChargeType: "per_gram", makingChargeValue: m }) : null;
   return (
     <div className="grid gap-6 border border-line p-5 md:grid-cols-[1.2fr_1fr] md:p-7">
       <form className="grid grid-cols-3 gap-3" onSubmit={(ev) => ev.preventDefault()}>
@@ -31,7 +33,7 @@ export function QuickEstimator() {
         <label className="block text-[13px] text-stone">Making (AED/g)
           <input value={making} onChange={(ev) => setMaking(ev.target.value.replace(/[^0-9.]/g, ""))} inputMode="decimal" className={field} />
         </label>
-        <p className="col-span-3 text-[12px] text-stone">Uses the sample {purity} rate of {aed(sampleRates.perGram[purity])}/g and 5% VAT. Not a live price.</p>
+        <p className="col-span-3 text-[12px] text-stone">Uses the {rates.source === "sample" ? "sample " : ""}{purity} rate of {aed(rates.perGram[purity])}/g and 5% VAT. {rates.source === "sample" ? "Not a live price." : "Shops' own rates may differ."}</p>
       </form>
       <div className="flex flex-col justify-between border-t border-line pt-4 md:border-l md:border-t-0 md:pl-6 md:pt-0">
         <div>

@@ -5,7 +5,8 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { areaFor, pieceBySlug, pieces, shops } from "@/data/catalogue";
+import { areaFor, coverFor, useCatalogue } from "@/lib/catalogue-store";
+import { shopHref } from "@/lib/links";
 import { liveAreas, liveEmirates, slug } from "@/lib/catalogue-query";
 import { ListIcon, MapIcon, SearchIcon } from "../Icons";
 import { PieceImage } from "../PieceImage";
@@ -13,10 +14,11 @@ import { Monogram } from "../search/ResultCard";
 
 const ResultsMap = dynamic(() => import("../search/ResultsMap"), { ssr: false, loading: () => <div className="size-full animate-pulse bg-limestone" /> });
 
-const LANGUAGES = [...new Set(shops.flatMap((s) => s.languages))].sort();
 const field = "h-11 border border-line-strong bg-chalk px-3 text-[14px] text-ink outline-none focus:border-ink";
 
 export function Directory() {
+  const { shops, pieces } = useCatalogue();
+  const LANGUAGES = [...new Set(shops.flatMap((s) => s.languages))].sort();
   const [text, setText] = useState("");
   const [place, setPlace] = useState("");
   const [lang, setLang] = useState("");
@@ -32,7 +34,7 @@ export function Directory() {
       if (lang && !s.languages.includes(lang)) return false;
       return true;
     });
-  }, [text, place, lang]);
+  }, [text, place, lang, shops]);
   const count = (slugName: string) => pieces.filter((p) => p.shop === slugName).length;
 
   return (
@@ -47,10 +49,10 @@ export function Directory() {
           <span className="sr-only">Area</span>
           <select value={place} onChange={(e) => setPlace(e.target.value)} className={`${field} w-full`}>
             <option value="">All areas</option>
-            {liveEmirates.map((e) => (
+            {liveEmirates().map((e) => (
               <optgroup key={e} label={e}>
                 <option value={slug(e)}>All of {e}</option>
-                {liveAreas.filter((a) => a.emirate === e).map((a) => <option key={a.slug} value={a.slug}>{a.name}</option>)}
+                {liveAreas().filter((a) => a.emirate === e).map((a) => <option key={a.slug} value={a.slug}>{a.name}</option>)}
               </optgroup>
             ))}
           </select>
@@ -76,7 +78,7 @@ export function Directory() {
       {view === "map" && list.length > 0 && (
         <div className="mt-3 h-[60vh]">
           <ResultsMap shops={list.map((s) => ({ shop: s, count: count(s.slug), label: s.name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2) }))}
-            className="size-full border border-line" onPick={(s) => router.push(`/jewellers/${s}`)} />
+            className="size-full border border-line" onPick={(s) => router.push(shopHref(s))} />
         </div>
       )}
 
@@ -89,12 +91,12 @@ export function Directory() {
         <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {list.map((s) => {
             const a = areaFor(s);
-            const cover = pieceBySlug.get(s.cover)!;
+            const cover = coverFor(s);
             return (
               <li key={s.slug}>
-                <Link href={`/jewellers/${s.slug}`} className="group flex h-full flex-col border border-line hover:shadow-[0_12px_28px_-22px_rgb(37_36_31/0.5)]">
+                <Link href={shopHref(s.slug)} className="group flex h-full flex-col border border-line hover:shadow-[0_12px_28px_-22px_rgb(37_36_31/0.5)]">
                   <div className="aspect-[16/9] overflow-hidden bg-limestone">
-                    <PieceImage name={cover.images[0]} alt="" sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
+                    <PieceImage name={cover?.images[0] ?? "hero"} alt="" sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
                       className="size-full object-cover transition-transform duration-700 ease-quiet group-hover:scale-[1.04]" />
                   </div>
                   <div className="flex flex-1 flex-col p-4">

@@ -5,7 +5,7 @@
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useEffect, useRef } from "react";
-import { areaFor } from "@/data/catalogue";
+import { areaFor } from "@/lib/catalogue-store";
 import type { MapShop } from "./map-shops";
 
 const escape = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);

@@ -2,7 +2,7 @@
 // Filter option lists, shared by the desktop popovers and the phone sheet.
 // Each option shows how many pieces it would leave, and options with
 // nothing behind them are disabled rather than leading to an empty page.
-import { pieces as allPieces } from "@/data/catalogue";
+import { getCatalogue } from "@/lib/catalogue-store";
 import {
   MAKING_LIMITS, PRICE_BANDS, WEIGHT_BANDS, filterPieces, makingPerGram, optionsFor, type FilterKey, type Query,
 } from "@/lib/catalogue-query";
@@ -58,7 +58,7 @@ export function ChoiceRow<T extends string | number>({ options, value, onChange,
   );
 }
 
-const pool = (query: Query, skip: FilterKey) => filterPieces(allPieces, query, skip);
+const pool = (query: Query, skip: FilterKey) => filterPieces(getCatalogue().pieces, query, skip);
 
 export function CategoryOptions({ query, set }: { query: Query; set: SetFn }) {
   const p = pool(query, "category");
@@ -124,7 +124,7 @@ function Section({ title, hint, children }: { title: string; hint?: string; chil
 /** Everything behind "More filters": weight, making charge, occasion, who for, style, stones. */
 export function MoreOptions({ query, set }: { query: Query; set: SetFn }) {
   const o = optionsFor(query.tab);
-  const count = (skip: FilterKey, test: (p: (typeof allPieces)[number]) => boolean) => pool(query, skip).filter(test).length;
+  const count = (skip: FilterKey, test: (p: import("@/data/catalogue").Piece) => boolean) => pool(query, skip).filter(test).length;
   return (
     <div>
       <Section title="Weight">
@@ -144,7 +144,7 @@ export function MoreOptions({ query, set }: { query: Query; set: SetFn }) {
       {o.wearers.length > 1 && (
         <Section title="For">
           <ChoiceRow options={o.wearers} value={query.wearer} onChange={(wearer) => set({ wearer })}
-            counts={(id) => filterPieces(allPieces, { ...query, wearer: id }).length} />
+            counts={(id) => filterPieces(getCatalogue().pieces, { ...query, wearer: id }).length} />
         </Section>
       )}
       {o.styles.length > 1 && (

@@ -5,12 +5,13 @@ import { Suspense, useRef } from "react";
 import { site } from "@/data/site";
 import { liveTabs, searchHref } from "@/lib/catalogue-query";
 import { useSaved } from "@/lib/saved";
+import { useCatalogue } from "@/lib/catalogue-store";
 import { HeartIcon, MenuIcon } from "./Icons";
 import { Sheet, type SheetHandle } from "./Sheet";
 import { Wordmark } from "./Wordmark";
 
-const NAV: { href: string; label: string; tab?: string }[] = [
-  ...liveTabs.map((t) => ({ href: searchHref({ tab: t.id }), label: t.label, tab: t.id })),
+const nav = (): { href: string; label: string; tab?: string }[] => [
+  ...liveTabs().map((t) => ({ href: searchHref({ tab: t.id }), label: t.label, tab: t.id })),
   { href: "/jewellers", label: "Jewellers" },
   { href: "/gold-price", label: "Gold price" },
 ];
@@ -19,9 +20,10 @@ function NavLinks({ onClick, className, item }: { onClick?: () => void; classNam
   const pathname = usePathname();
   const params = useSearchParams();
   const tab = params.get("tab") ?? "jewellery";
+  useCatalogue();
   return (
     <ul className={className}>
-      {NAV.map((n) => {
+      {nav().map((n) => {
         const active = n.tab ? pathname === "/search" && tab === n.tab : pathname.startsWith(n.href);
         return (
           <li key={n.label}>
@@ -42,12 +44,18 @@ function SavedCount() {
 
 export function Header() {
   const menu = useRef<SheetHandle>(null);
+  const { settings, shops } = useCatalogue();
+  // The notice line: the admin's text once set, otherwise the demo notice
+  // for as long as any demo shop is on the site.
+  const notice = settings ? (settings.showNotice ? settings.noticeText : null) : null;
+  const showDemo = !notice && shops.some((s) => s.demo) && (settings?.showNotice ?? true);
   return (
     <>
-      <p className="bg-limestone page-x py-1.5 text-center text-[12px] leading-snug text-stone">
-        <span className="hidden sm:inline">{site.demoNotice}</span>
-        <span className="sm:hidden">{site.demoNoticeShort}</span>
-      </p>
+      {(notice || showDemo) && (
+        <p className="bg-limestone page-x py-1.5 text-center text-[12px] leading-snug text-stone">
+          {notice ?? (<><span className="hidden sm:inline">{site.demoNotice}</span><span className="sm:hidden">{site.demoNoticeShort}</span></>)}
+        </p>
+      )}
       <header className="sticky top-0 z-30 h-[var(--header-h)] border-b border-line bg-chalk">
         <div className="page page-x flex h-full items-center gap-8">
           <Wordmark withDescriptor />

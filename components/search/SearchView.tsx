@@ -3,14 +3,15 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
-import { CATEGORIES, TABS, areaBySlug } from "@/data/catalogue";
+import { CATEGORIES, TABS } from "@/data/catalogue";
+import { getCatalogue, useCatalogue } from "@/lib/catalogue-store";
 import {
   PRICE_BANDS, SORTS, WEIGHT_BANDS, liveAreas, locationLabel, paginate, parseQuery, runQuery, searchHref, toSearchParams, type Query,
 } from "@/lib/catalogue-query";
 import { describeQuery } from "@/lib/describe";
 import { useSavedSearches } from "@/lib/saved-searches";
 import { useQueryState } from "@/lib/use-query-state";
-import { shopBySlug, OCCASIONS, STYLES, WEARERS } from "@/data/catalogue";
+import { OCCASIONS, STYLES, WEARERS } from "@/data/catalogue";
 import { BookmarkIcon, ChevronIcon, CloseIcon, GridIcon, ListIcon, MapIcon } from "../Icons";
 import { FilterBar, TabSwitch } from "./FilterBar";
 import { Pagination } from "./Pagination";
@@ -27,6 +28,7 @@ const ResultsMap = dynamic(() => import("./ResultsMap"), {
 type View = "list" | "grid" | "map";
 
 export function SearchView() {
+  const catalogue = useCatalogue(); // re-render when the live catalogue arrives
   const { query, set, reset } = useQueryState();
   const params = useSearchParams();
   const router = useRouter();
@@ -38,7 +40,7 @@ export function SearchView() {
     router.replace(`${pathname}${p.size ? `?${p}` : ""}`, { scroll: false });
   };
 
-  const results = useMemo(() => runQuery(query), [query]);
+  const results = useMemo(() => runQuery(query, catalogue.pieces), [query, catalogue]);
   const paged = paginate(results, query.page);
   const title = describeQuery(query);
   const savedHref = `/search?${toSearchParams({ ...query, page: 1 }).toString()}`.replace(/\?$/, "");
@@ -131,7 +133,7 @@ function ActiveChips({ query, set }: { query: Query; set: (p: Partial<Query>) =>
   const lab = <T extends string>(list: readonly { id: T; label: string }[], id: T | null) => list.find((x) => x.id === id)?.label;
   if (query.q.trim()) chips.push({ label: `“${query.q.trim()}”`, clear: { q: "" } });
   if (query.location) chips.push({ label: locationLabel(query.location), clear: { location: null } });
-  if (query.shop) chips.push({ label: shopBySlug.get(query.shop)!.name, clear: { shop: null } });
+  if (query.shop) chips.push({ label: getCatalogue().shopBySlug.get(query.shop)?.name ?? query.shop, clear: { shop: null } });
   if (query.category) chips.push({ label: lab(CATEGORIES, query.category)!, clear: { category: null } });
   for (const p of query.purity) chips.push({ label: p, clear: { purity: query.purity.filter((x) => x !== p) } });
   if (query.price) chips.push({ label: lab(PRICE_BANDS, query.price)!, clear: { price: null } });
@@ -173,9 +175,9 @@ function Empty({ query, onReset }: { query: Query; onReset: () => void }) {
 /** The links Property Finder lists under results: the same search nearby, or nearby searches here. */
 function RelatedSearches({ query }: { query: Query }) {
   const cat = CATEGORIES.find((c) => c.id === query.category);
-  const inArea = query.location && areaBySlug.get(query.location);
+  const inArea = query.location && getCatalogue().areaBySlug.get(query.location);
   const links = cat
-    ? liveAreas.filter((a) => a.slug !== query.location).slice(0, 8).map((a) => ({ href: searchHref({ tab: query.tab, category: cat.id, location: a.slug }), label: `${cat.label} in ${a.name}` }))
+    ? liveAreas().filter((a) => a.slug !== query.location).slice(0, 8).map((a) => ({ href: searchHref({ tab: query.tab, category: cat.id, location: a.slug }), label: `${cat.label} in ${a.name}` }))
     : CATEGORIES.filter((c) => c.section === (query.tab === "coins_bars" ? "coins_bars" : "jewellery")).map((c) => ({
         href: searchHref({ tab: query.tab, category: c.id, location: query.location }),
         label: `${c.label}${inArea ? ` in ${inArea.name}` : ""}`,

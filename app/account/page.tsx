@@ -7,6 +7,7 @@ import { Suspense, useEffect } from "react";
 import { AuthShell, NotConnected, Notice } from "@/components/auth/AuthShell";
 import { getSupabase } from "@/lib/supabase";
 import { useAccount } from "@/lib/use-account";
+import { shopHref } from "@/lib/links";
 
 function Account() {
   const account = useAccount();
@@ -25,7 +26,7 @@ function Account() {
         {account.shops.map((s) => (
           <div key={s.shopId} className="grid grid-cols-[7rem_1fr] gap-3 py-2.5">
             <dt className="text-stone">Shop</dt>
-            <dd><Link href={`/jewellers/${s.shopSlug}`} className="underline decoration-line-strong underline-offset-4">{s.shopName}</Link> · {s.role === "owner" ? "Owner" : "Staff"}</dd>
+            <dd><Link href={shopHref(s.shopSlug)} className="underline decoration-line-strong underline-offset-4">{s.shopName}</Link> · {s.role === "owner" ? "Owner" : "Staff"}</dd>
           </div>
         ))}
       </dl>

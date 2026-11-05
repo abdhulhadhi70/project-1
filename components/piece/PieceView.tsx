@@ -1,6 +1,8 @@
-import type { Metadata } from "next";
+"use client";
+// A piece's page. It reads the piece from the catalogue in the browser, so a
+// piece a jeweller has just added has a page at once.
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { useEffect } from "react";
 import { ContactActions } from "@/components/ContactActions";
 import { ArrowIcon, HammerIcon, PinIcon, PurityIcon, ScaleIcon } from "@/components/Icons";
 import { PieceGallery } from "@/components/piece/PieceGallery";
@@ -9,23 +11,12 @@ import { ShopMap } from "@/components/piece/ShopMap";
 import { VisitRequest } from "@/components/piece/VisitRequest";
 import { SaveButton } from "@/components/SaveButton";
 import { Monogram, PriceLine, ResultCard } from "@/components/search/ResultCard";
-import {
-  CATEGORIES, OCCASIONS, STYLES, TABS, WEARERS, areaFor, pieceBySlug, pieces, sectionOf, shopFor, type Piece,
-} from "@/data/catalogue";
+import { CATEGORIES, OCCASIONS, STYLES, TABS, WEARERS, sectionOf, type Piece } from "@/data/catalogue";
+import { areaFor, catalogueSettled, shopFor, useCatalogue } from "@/lib/catalogue-store";
 import { searchHref } from "@/lib/catalogue-query";
 import { aed, dateText, makingChargeText, weightText } from "@/lib/format";
-
-export const dynamicParams = false;
-export function generateStaticParams() {
-  return pieces.map((p) => ({ slug: p.slug }));
-}
-
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const piece = pieceBySlug.get((await params).slug);
-  if (!piece) return {};
-  const shop = shopFor(piece);
-  return { title: piece.name, description: `${piece.name} from ${shop.name}, ${areaFor(shop).name}. ${piece.description}` };
-}
+import { shopHref } from "@/lib/links";
+import { track } from "@/lib/track";
 
 function priceNote(piece: Piece): string {
   const p = piece.price;
@@ -42,7 +33,7 @@ function SellerCard({ piece, shopCount, withActions = false }: { piece: Piece; s
   return (
     <div className="border border-line p-5">
       <p className="text-[12px] text-stone">Sold by</p>
-      <Link href={`/jewellers/${shop.slug}`} className="mt-2 flex items-center gap-3 hover:underline">
+      <Link href={shopHref(shop.slug)} className="mt-2 flex items-center gap-3 hover:underline">
         <Monogram name={shop.name} className="size-11 text-[13px]" />
         <span>
           <span className="block text-[16px] text-ink">{shop.name}</span>
@@ -55,10 +46,10 @@ function SellerCard({ piece, shopCount, withActions = false }: { piece: Piece; s
         <div className="flex gap-2"><dt className="w-20 shrink-0 text-stone">Reference</dt><dd>{piece.code}</dd></div>
       </dl>
       <div className="mt-5 space-y-2.5">
-        {withActions && <ContactActions shop={shop} subject={`${piece.name} (ref ${piece.code})`} layout="column" />}
-        <VisitRequest shop={shop} pieceName={piece.name} pieceCode={piece.code} />
+        {withActions && <ContactActions shop={shop} subject={`${piece.name} (ref ${piece.code})`} pieceId={piece.id} layout="column" />}
+        <VisitRequest shop={shop} pieceName={piece.name} pieceCode={piece.code} pieceId={piece.id} />
       </div>
-      <Link href={`/jewellers/${shop.slug}`} className="mt-4 inline-flex items-center gap-1.5 text-[13px] text-ink-soft underline decoration-line-strong underline-offset-4 hover:text-ink">
+      <Link href={shopHref(shop.slug)} className="mt-4 inline-flex items-center gap-1.5 text-[13px] text-ink-soft underline decoration-line-strong underline-offset-4 hover:text-ink">
         All {shopCount} pieces from {shop.name} <ArrowIcon className="size-3.5" />
       </Link>
       <p className="mt-4 border-t border-line pt-3 text-[12px] leading-snug text-stone">
@@ -68,9 +59,17 @@ function SellerCard({ piece, shopCount, withActions = false }: { piece: Piece; s
   );
 }
 
-export default async function PiecePage({ params }: { params: Promise<{ slug: string }> }) {
-  const piece = pieceBySlug.get((await params).slug);
-  if (!piece) notFound();
+export function PieceView({ slug }: { slug: string }) {
+  const catalogue = useCatalogue();
+  const piece = catalogue.pieceBySlug.get(slug);
+  const pieces = catalogue.pieces;
+  useEffect(() => {
+    if (piece) {
+      document.title = `${piece.name} · ${catalogue.settings?.siteName ?? "Tibr"}`;
+      if (!piece.demo) track("piece_view", shopFor(piece).id, piece.id);
+    }
+  }, [piece, catalogue.settings?.siteName]);
+  if (!piece) return <Missing loading={!catalogueSettled()} />;
   const shop = shopFor(piece);
   const area = areaFor(shop);
   const cat = CATEGORIES.find((c) => c.id === piece.category)!;
@@ -152,7 +151,7 @@ export default async function PiecePage({ params }: { params: Promise<{ slug: st
           <section aria-labelledby="where" className="mt-10">
             <div className="flex flex-wrap items-baseline justify-between gap-3">
               <h2 id="where" className="text-[15px] font-medium">Where to see it</h2>
-              <a href={directions} target="_blank" rel="noopener" className="inline-flex items-center gap-1.5 text-[13px] text-ink underline decoration-line-strong underline-offset-4">
+              <a href={directions} target="_blank" rel="noopener" onClick={() => !piece.demo && track("directions_click", shop.id, piece.id)} className="inline-flex items-center gap-1.5 text-[13px] text-ink underline decoration-line-strong underline-offset-4">
                 Get directions <ArrowIcon className="size-3.5" />
               </a>
             </div>
@@ -171,7 +170,7 @@ export default async function PiecePage({ params }: { params: Promise<{ slug: st
         </aside>
       </div>
 
-      {[{ title: `More from ${shop.name}`, list: fromShop, href: `/jewellers/${shop.slug}` }, { title: `Similar ${cat.label.toLowerCase()} from other jewellers`, list: similar, href: searchHref({ tab, category: cat.id }) }]
+      {[{ title: `More from ${shop.name}`, list: fromShop, href: shopHref(shop.slug) }, { title: `Similar ${cat.label.toLowerCase()} from other jewellers`, list: similar, href: searchHref({ tab, category: cat.id }) }]
         .filter((s) => s.list.length)
         .map((s) => (
           <section key={s.title} className="page page-x mt-16">
@@ -191,8 +190,24 @@ export default async function PiecePage({ params }: { params: Promise<{ slug: st
           <span className="truncate text-ink">{piece.price.kind === "on_request" ? "Price on request" : aed(piece.price.aed)}</span>
           <span className="shrink-0 text-stone">{shop.name}</span>
         </div>
-        <ContactActions shop={shop} subject={subject} layout="bar" />
+        <ContactActions shop={shop} subject={subject} pieceId={piece.id} layout="bar" />
       </div>
     </div>
+  );
+}
+
+function Missing({ loading }: { loading: boolean }) {
+  return (
+    <section className="page page-x py-24 text-center">
+      {loading ? (
+        <p className="text-[14px] text-stone">Loading…</p>
+      ) : (
+        <>
+          <p className="font-serif text-[32px] leading-tight">This piece isn&apos;t listed any more.</p>
+          <p className="mt-3 text-[14px] text-stone">It may have been sold, or the shop has taken it down.</p>
+          <Link href="/search" className="mt-6 inline-flex h-11 items-center border border-ink px-5 text-[14px]">Browse what&apos;s listed</Link>
+        </>
+      )}
+    </section>
   );
 }

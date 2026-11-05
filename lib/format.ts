@@ -17,12 +17,14 @@ export function makingChargeText(m: MakingCharge): string {
 }
 
 const day = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Dubai" });
-export const dateText = (iso: string) => day.format(new Date(`${iso}T12:00:00+04:00`));
+// Accepts a date ("2026-11-03") or a full timestamp from the database.
+const asDate = (iso: string) => new Date(iso.length > 10 ? iso : `${iso}T12:00:00+04:00`);
+export const dateText = (iso: string) => day.format(asDate(iso));
 
 export const weightText = (g: number) => `${g.toLocaleString("en-US", { maximumFractionDigits: 2 })} g`;
 
 const short = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", timeZone: "Asia/Dubai" });
-export const dateShort = (iso: string) => short.format(new Date(`${iso.slice(0, 10)}T12:00:00+04:00`));
+export const dateShort = (iso: string) => short.format(asDate(iso));
 
 export function makingShort(m: MakingCharge): string {
   switch (m.type) {

@@ -3,12 +3,13 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ResultCard } from "@/components/search/ResultCard";
 import { CloseIcon } from "@/components/Icons";
-import { pieceBySlug } from "@/data/catalogue";
+import { useCatalogue } from "@/lib/catalogue-store";
 import { useSaved } from "@/lib/saved";
 import { useSavedSearches } from "@/lib/saved-searches";
 
 export default function SavedPage() {
   const { saved } = useSaved();
+  const { pieceBySlug } = useCatalogue();
   const { searches, remove } = useSavedSearches();
   const [tab, setTab] = useState<"pieces" | "searches">("pieces");
   // Saved items live in this browser, which the server cannot see; wait for

@@ -52,6 +52,8 @@ export type Area = {
 };
 
 export type Shop = {
+  /** Database id; absent for the built-in demo. */
+  id?: string;
   slug: string;
   name: string;
   area: string; // Area slug
@@ -73,6 +75,8 @@ export type Shop = {
 };
 
 export type Piece = {
+  /** Database id; absent for the built-in demo. */
+  id?: string;
   slug: string;
   /** The reference a customer can quote to the shop. */
   code: string;
@@ -341,23 +345,7 @@ export const heroImage = {
   caption: "22K rope chain, Sidra Atelier · 18K solitaire, Layan Fine Jewellery",
 };
 
-// ---------------------------------------------------------------------------
-// Lookups
-// ---------------------------------------------------------------------------
-export const shopBySlug = new Map(shops.map((s) => [s.slug, s]));
-export const pieceBySlug = new Map(pieces.map((p) => [p.slug, p]));
-export const areaBySlug = new Map(areas.map((a) => [a.slug, a]));
-
-export function shopFor(piece: Piece): Shop {
-  const shop = shopBySlug.get(piece.shop);
-  if (!shop) throw new Error(`Piece ${piece.slug} names unknown shop ${piece.shop}`);
-  return shop;
-}
-
-export function areaFor(shop: Shop): Area {
-  const area = areaBySlug.get(shop.area);
-  if (!area) throw new Error(`Shop ${shop.slug} names unknown area ${shop.area}`);
-  return area;
-}
+// Lookups (shopFor, areaFor, …) live in lib/catalogue-store.ts, because the
+// catalogue they look in can be the demo here or the live one.
 
 export const sectionOf = (p: Piece): Section => CATEGORIES.find((c) => c.id === p.category)!.section;

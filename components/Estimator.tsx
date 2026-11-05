@@ -2,7 +2,8 @@
 // The full price estimator. Same formula as every price on the site:
 // gold at the day's rate, plus the making charge, plus VAT.
 import { useState } from "react";
-import { sampleRates, type Purity } from "@/data/catalogue";
+import type { Purity } from "@/data/catalogue";
+import { useCatalogue } from "@/lib/catalogue-store";
 import { aed, dateText } from "@/lib/format";
 import { estimatePrice, VAT_RATE, type MakingChargeType } from "@/lib/pricing";
 
@@ -13,6 +14,7 @@ const field = "mt-1.5 h-12 w-full border border-line-strong bg-chalk px-3 text-[
 const num = (v: string) => v.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
 
 export function Estimator() {
+  const { rates } = useCatalogue();
   const [purity, setPurity] = useState<Purity>("22K");
   const [amount, setAmount] = useState("10");
   const [unit, setUnit] = useState<Unit>("g");
@@ -24,7 +26,7 @@ export function Estimator() {
   const value = Number(mValue);
   const zeroVat = investment && purity === "24K";
   const ok = grams > 0 && grams < 50000 && value >= 0 && (mType !== "percent" || value <= 100);
-  const e = ok ? estimatePrice({ ratePerGramAed: sampleRates.perGram[purity], weightGrams: grams, makingChargeType: mType, makingChargeValue: value, vatRate: zeroVat ? 0 : VAT_RATE }) : null;
+  const e = ok ? estimatePrice({ ratePerGramAed: rates.perGram[purity], weightGrams: grams, makingChargeType: mType, makingChargeValue: value, vatRate: zeroVat ? 0 : VAT_RATE }) : null;
 
   return (
     <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr]">
@@ -75,13 +77,13 @@ export function Estimator() {
         </div>
         {e && (
           <dl className="divide-y divide-line px-5 text-[14px]">
-            <div className="flex justify-between py-3"><dt className="text-ink-soft">Gold: {grams.toFixed(2)} g × {aed(sampleRates.perGram[purity])}</dt><dd className="tabular-nums">{aed(e.goldValue)}</dd></div>
+            <div className="flex justify-between py-3"><dt className="text-ink-soft">Gold: {grams.toFixed(2)} g × {aed(rates.perGram[purity])}</dt><dd className="tabular-nums">{aed(e.goldValue)}</dd></div>
             <div className="flex justify-between py-3"><dt className="text-ink-soft">Making charge</dt><dd className="tabular-nums">{aed(e.makingCharge)}</dd></div>
             <div className="flex justify-between py-3"><dt className="text-ink-soft">VAT ({zeroVat ? "0%" : "5%"})</dt><dd className="tabular-nums">{aed(e.vat)}</dd></div>
           </dl>
         )}
         <p className="border-t border-line px-5 py-3 text-[12px] leading-snug text-stone">
-          Uses SAMPLE rates from {dateText(sampleRates.asOf.slice(0, 10))}, not live prices. A shop&apos;s own rate on the day decides the real price.
+          {rates.source === "sample" ? `Uses SAMPLE rates from ${dateText(rates.asOf)}, not live prices.` : `Uses the rate our team set on ${dateText(rates.asOf)}.`} A shop&apos;s own rate on the day decides the real price.
         </p>
       </section>
     </div>
