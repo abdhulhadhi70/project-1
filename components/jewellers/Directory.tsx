@@ -5,8 +5,8 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { EMIRATES, areaFor, areas, pieceBySlug, pieces, shops } from "@/data/catalogue";
-import { slug } from "@/lib/catalogue-query";
+import { areaFor, pieceBySlug, pieces, shops } from "@/data/catalogue";
+import { liveAreas, liveEmirates, slug } from "@/lib/catalogue-query";
 import { ListIcon, MapIcon, SearchIcon } from "../Icons";
 import { PieceImage } from "../PieceImage";
 import { Monogram } from "../search/ResultCard";
@@ -47,10 +47,10 @@ export function Directory() {
           <span className="sr-only">Area</span>
           <select value={place} onChange={(e) => setPlace(e.target.value)} className={`${field} w-full`}>
             <option value="">All areas</option>
-            {EMIRATES.map((e) => (
+            {liveEmirates.map((e) => (
               <optgroup key={e} label={e}>
                 <option value={slug(e)}>All of {e}</option>
-                {areas.filter((a) => a.emirate === e).map((a) => <option key={a.slug} value={a.slug}>{a.name}</option>)}
+                {liveAreas.filter((a) => a.emirate === e).map((a) => <option key={a.slug} value={a.slug}>{a.name}</option>)}
               </optgroup>
             ))}
           </select>

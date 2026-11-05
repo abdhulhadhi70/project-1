@@ -77,13 +77,21 @@ export const EMPTY_QUERY: Query = {
 };
 
 // ---------------------------------------------------------------------------
+// What the site offers is whatever has pieces behind it: a tab, area or
+// emirate with nothing listed is not shown, and reappears when it has stock.
+// ---------------------------------------------------------------------------
+export const liveTabs = TABS.filter((t) => allPieces.some((p) => inTab(p, t.id)));
+export const liveAreas = areas.filter((a) => shops.some((s) => s.area === a.slug));
+export const liveEmirates = EMIRATES.filter((e) => liveAreas.some((a) => a.emirate === e));
+
+// ---------------------------------------------------------------------------
 // Locations: emirates and areas, for the location box and its filter.
 // ---------------------------------------------------------------------------
 export type Place = { id: string; label: string; detail: string; kind: "emirate" | "area" };
 
 export const places: Place[] = [
-  ...EMIRATES.map((e): Place => ({ id: slug(e), label: e, detail: "Emirate", kind: "emirate" })),
-  ...areas.map((a): Place => ({ id: a.slug, label: a.name, detail: a.emirate, kind: "area" })),
+  ...liveEmirates.map((e): Place => ({ id: slug(e), label: e, detail: "Emirate", kind: "emirate" })),
+  ...liveAreas.map((a): Place => ({ id: a.slug, label: a.name, detail: a.emirate, kind: "area" })),
 ];
 const placeById = new Map(places.map((p) => [p.id, p]));
 

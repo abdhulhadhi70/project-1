@@ -1,7 +1,7 @@
 "use client";
 import { useRef } from "react";
-import { CATEGORIES, TABS, type Tab } from "@/data/catalogue";
-import { EMPTY_QUERY, PRICE_BANDS, SORTS, activeFilterCount, moreFilterCount, type Query } from "@/lib/catalogue-query";
+import { CATEGORIES, type Tab } from "@/data/catalogue";
+import { EMPTY_QUERY, PRICE_BANDS, SORTS, activeFilterCount, liveTabs, moreFilterCount, optionsFor, type Query } from "@/lib/catalogue-query";
 import { ChevronIcon, SlidersIcon } from "../Icons";
 import { Sheet, type SheetHandle } from "../Sheet";
 import { LocationBox } from "./LocationBox";
@@ -16,7 +16,7 @@ export function tabPatch(tab: Tab, q: Query): Partial<Query> {
 export function TabSwitch({ query, set, className = "" }: { query: Query; set: SetFn; className?: string }) {
   return (
     <div role="tablist" aria-label="What are you looking for" className={`flex ${className}`}>
-      {TABS.map((t) => {
+      {liveTabs.map((t) => {
         const on = query.tab === t.id;
         return (
           <button key={t.id} role="tab" type="button" aria-selected={on} onClick={() => !on && set(tabPatch(t.id, query))}
@@ -36,6 +36,10 @@ export function FilterBar({ query, set, reset, resultCount }: { query: Query; se
   const cat = CATEGORIES.find((c) => c.id === query.category);
   const band = PRICE_BANDS.find((b) => b.id === query.price);
   const chip = "inline-flex h-9 shrink-0 items-center gap-1.5 border px-3 text-[13px]";
+  // A filter with only one choice filters nothing, so it is not shown.
+  const opts = optionsFor(query.tab);
+  const showPurity = opts.purities.length > 1 || query.purity.length > 0;
+  const showCategory = opts.categories.length > 1 || !!query.category;
 
   return (
     <div className="sticky top-[var(--header-h)] z-20 border-b border-line bg-chalk">
@@ -43,8 +47,8 @@ export function FilterBar({ query, set, reset, resultCount }: { query: Query; se
       <div className="page page-x hidden items-center gap-2 py-3 lg:flex">
         <TabSwitch query={query} set={set} />
         <div className="min-w-0 flex-1"><LocationBox query={query} set={set} /></div>
-        <Popover label={cat?.label ?? "Category"} active={!!cat}><CategoryOptions query={query} set={set} /></Popover>
-        <Popover label={query.purity.length ? query.purity.join(", ") : "Purity"} active={query.purity.length > 0} width="w-60"><PurityOptions query={query} set={set} /></Popover>
+        {showCategory && <Popover label={cat?.label ?? "Category"} active={!!cat}><CategoryOptions query={query} set={set} /></Popover>}
+        {showPurity && <Popover label={query.purity.length ? query.purity.join(", ") : "Purity"} active={query.purity.length > 0} width="w-60"><PurityOptions query={query} set={set} /></Popover>}
         <Popover label={band?.label ?? "Price"} active={!!band}><PriceOptions query={query} set={set} /></Popover>
         <button type="button" onClick={() => sheet.current?.open()}
           className={`inline-flex h-11 items-center gap-2 border px-3 text-[14px] ${more ? "border-ink text-ink" : "border-line-strong text-ink-soft hover:border-ink hover:text-ink"}`}>
@@ -66,10 +70,10 @@ export function FilterBar({ query, set, reset, resultCount }: { query: Query; se
             <SlidersIcon className="size-4" /> Filters{all > 0 && ` · ${all}`}
           </button>
           {[
-            { label: cat?.label ?? "Category", on: !!cat },
-            { label: query.purity.length ? query.purity.join(", ") : "Purity", on: query.purity.length > 0 },
+            showCategory && { label: cat?.label ?? "Category", on: !!cat },
+            showPurity && { label: query.purity.length ? query.purity.join(", ") : "Purity", on: query.purity.length > 0 },
             { label: band?.label ?? "Price", on: !!band },
-          ].map((c) => (
+          ].filter((c): c is { label: string; on: boolean } => !!c).map((c) => (
             <button key={c.label} type="button" onClick={() => sheet.current?.open()} className={`${chip} ${c.on ? "border-ink text-ink" : "border-line-strong text-ink-soft"}`}>
               {c.label} <ChevronIcon className="size-3 text-stone" />
             </button>
@@ -99,8 +103,8 @@ export function FilterBar({ query, set, reset, resultCount }: { query: Query; se
       >
         <div className="lg:hidden">
           <TabSwitch query={query} set={set} className="mb-5" />
-          <Block title="Category"><CategoryOptions query={query} set={set} /></Block>
-          <Block title="Purity"><PurityOptions query={query} set={set} /></Block>
+          {showCategory && <Block title="Category"><CategoryOptions query={query} set={set} /></Block>}
+          {showPurity && <Block title="Purity"><PurityOptions query={query} set={set} /></Block>}
           <Block title="Price"><PriceOptions query={query} set={set} /></Block>
         </div>
         <MoreOptions query={query} set={set} />

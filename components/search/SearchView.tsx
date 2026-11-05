@@ -3,9 +3,9 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
-import { CATEGORIES, TABS, areaBySlug, areas } from "@/data/catalogue";
+import { CATEGORIES, TABS, areaBySlug } from "@/data/catalogue";
 import {
-  PRICE_BANDS, SORTS, WEIGHT_BANDS, locationLabel, paginate, runQuery, searchHref, toSearchParams, type Query,
+  PRICE_BANDS, SORTS, WEIGHT_BANDS, liveAreas, locationLabel, paginate, parseQuery, runQuery, searchHref, toSearchParams, type Query,
 } from "@/lib/catalogue-query";
 import { describeQuery } from "@/lib/describe";
 import { useSavedSearches } from "@/lib/saved-searches";
@@ -175,16 +175,18 @@ function RelatedSearches({ query }: { query: Query }) {
   const cat = CATEGORIES.find((c) => c.id === query.category);
   const inArea = query.location && areaBySlug.get(query.location);
   const links = cat
-    ? areas.filter((a) => a.slug !== query.location).slice(0, 8).map((a) => ({ href: searchHref({ tab: query.tab, category: cat.id, location: a.slug }), label: `${cat.label} in ${a.name}` }))
+    ? liveAreas.filter((a) => a.slug !== query.location).slice(0, 8).map((a) => ({ href: searchHref({ tab: query.tab, category: cat.id, location: a.slug }), label: `${cat.label} in ${a.name}` }))
     : CATEGORIES.filter((c) => c.section === (query.tab === "coins_bars" ? "coins_bars" : "jewellery")).map((c) => ({
         href: searchHref({ tab: query.tab, category: c.id, location: query.location }),
         label: `${c.label}${inArea ? ` in ${inArea.name}` : ""}`,
       }));
+  const live = links.filter((l) => runQuery(parseQuery(new URLSearchParams(l.href.split("?")[1] ?? ""))).length > 0);
+  if (!live.length) return null;
   return (
     <section className="mt-16 border-t border-line pt-6" aria-labelledby="related">
       <h2 id="related" className="text-[14px] font-medium">Related searches</h2>
       <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-[13px]">
-        {links.map((l) => <li key={l.href}><Link href={l.href} className="text-ink-soft underline decoration-line-strong underline-offset-4 hover:text-ink">{l.label}</Link></li>)}
+        {live.map((l) => <li key={l.href}><Link href={l.href} className="text-ink-soft underline decoration-line-strong underline-offset-4 hover:text-ink">{l.label}</Link></li>)}
       </ul>
     </section>
   );

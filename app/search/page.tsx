@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { SearchView } from "@/components/search/SearchView";
 
-export const metadata: Metadata = { title: "Search gold jewellery, coins and bars" };
+export const metadata: Metadata = { title: "Search gold jewellery" };
 
 export default function SearchPage() {
   return (

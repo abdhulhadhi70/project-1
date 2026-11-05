@@ -3,16 +3,14 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense, useRef } from "react";
 import { site } from "@/data/site";
-import { searchHref } from "@/lib/catalogue-query";
+import { liveTabs, searchHref } from "@/lib/catalogue-query";
 import { useSaved } from "@/lib/saved";
 import { HeartIcon, MenuIcon } from "./Icons";
 import { Sheet, type SheetHandle } from "./Sheet";
 import { Wordmark } from "./Wordmark";
 
-const NAV = [
-  { href: searchHref({ tab: "jewellery" }), label: "Jewellery", tab: "jewellery" },
-  { href: searchHref({ tab: "bridal" }), label: "Bridal", tab: "bridal" },
-  { href: searchHref({ tab: "coins_bars" }), label: "Coins & bars", tab: "coins_bars" },
+const NAV: { href: string; label: string; tab?: string }[] = [
+  ...liveTabs.map((t) => ({ href: searchHref({ tab: t.id }), label: t.label, tab: t.id })),
   { href: "/jewellers", label: "Jewellers" },
   { href: "/gold-price", label: "Gold price" },
 ];

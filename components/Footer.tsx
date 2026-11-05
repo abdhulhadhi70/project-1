@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { CATEGORIES, areas } from "@/data/catalogue";
+import { CATEGORIES, pieces } from "@/data/catalogue";
 import { site } from "@/data/site";
-import { searchHref } from "@/lib/catalogue-query";
+import { liveAreas, liveTabs, searchHref } from "@/lib/catalogue-query";
 
 const company = [
   { href: "/about", label: "About" },
@@ -13,17 +13,15 @@ const company = [
 
 export function Footer() {
   const browse = [
-    { href: searchHref({ tab: "jewellery" }), label: "Jewellery" },
-    { href: searchHref({ tab: "bridal" }), label: "Bridal" },
-    { href: searchHref({ tab: "coins_bars" }), label: "Coins & bars" },
+    ...liveTabs.map((t) => ({ href: searchHref({ tab: t.id }), label: t.label })),
     { href: "/jewellers", label: "Jewellers" },
     { href: "/gold-price", label: "Gold price estimator" },
     { href: "/saved", label: "Saved" },
   ];
   const cols = [
     { title: "Browse", links: browse },
-    { title: "Categories", links: CATEGORIES.filter((c) => c.section === "jewellery").map((c) => ({ href: searchHref({ category: c.id }), label: c.label })) },
-    { title: "Gold districts", links: areas.map((a) => ({ href: searchHref({ location: a.slug }), label: a.name })) },
+    { title: "Categories", links: CATEGORIES.filter((c) => c.section === "jewellery" && pieces.some((p) => p.category === c.id)).map((c) => ({ href: searchHref({ category: c.id }), label: c.label })) },
+    { title: "Gold districts", links: liveAreas.map((a) => ({ href: searchHref({ location: a.slug }), label: a.name })) },
     { title: site.name, links: company },
   ];
   return (
