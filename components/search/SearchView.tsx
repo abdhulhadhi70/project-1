@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
-import { CATEGORIES, TABS } from "@/data/catalogue";
+import { CATEGORIES } from "@/data/catalogue";
 import { getCatalogue, useCatalogue } from "@/lib/catalogue-store";
 import {
   PRICE_BANDS, SORTS, WEIGHT_BANDS, liveAreas, locationLabel, paginate, parseQuery, runQuery, searchHref, toSearchParams, type Query,
@@ -13,7 +13,7 @@ import { useSavedSearches } from "@/lib/saved-searches";
 import { useQueryState } from "@/lib/use-query-state";
 import { OCCASIONS, STYLES, WEARERS } from "@/data/catalogue";
 import { BookmarkIcon, ChevronIcon, CloseIcon, GridIcon, ListIcon, MapIcon } from "../Icons";
-import { FilterBar, TabSwitch } from "./FilterBar";
+import { FilterBar } from "./FilterBar";
 import { Pagination } from "./Pagination";
 import { ResultCard } from "./ResultCard";
 import { groupByShop } from "./map-shops";
@@ -43,26 +43,16 @@ export function SearchView() {
   const results = useMemo(() => runQuery(query, catalogue.pieces), [query, catalogue]);
   const paged = paginate(results, query.page);
   const title = describeQuery(query);
-  const savedHref = `/search?${toSearchParams({ ...query, page: 1 }).toString()}`.replace(/\?$/, "");
+  const savedHref = `/?${toSearchParams({ ...query, page: 1 }).toString()}`.replace(/\?$/, "");
   const { isSaved, toggle } = useSavedSearches();
   const saved = isSaved(savedHref);
-  const tabLabel = TABS.find((t) => t.id === query.tab)!.label;
 
   return (
     <>
       <FilterBar query={query} set={set} reset={reset} resultCount={results.length} />
 
       <div className="page page-x pb-16">
-        <nav aria-label="Breadcrumb" className="pt-4 text-[13px] text-stone">
-          <ol className="flex flex-wrap gap-1.5">
-            <li><Link href="/" className="hover:text-ink">Home</Link></li>
-            <li aria-hidden>›</li>
-            <li><Link href={searchHref({ tab: query.tab })} className="hover:text-ink">{tabLabel}</Link></li>
-            {query.location && (<><li aria-hidden>›</li><li className="text-ink-soft">{locationLabel(query.location).split(",")[0]}</li></>)}
-          </ol>
-        </nav>
-
-        <div className="mt-3 flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+        <div className="mt-4 flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
           <div>
             <h1 className="font-serif text-[28px] leading-[1.05] tracking-[-0.01em] md:text-[36px]">{title}</h1>
             <p className="mt-1.5 text-[13px] text-stone" aria-live="polite">
@@ -93,7 +83,6 @@ export function SearchView() {
           </div>
         </div>
 
-        <TabSwitch query={query} set={set} className="mt-4 lg:hidden" />
         <ActiveChips query={query} set={set} />
 
         {results.length === 0 ? (

@@ -14,7 +14,7 @@ import { Monogram } from "../search/ResultCard";
 
 const ResultsMap = dynamic(() => import("../search/ResultsMap"), { ssr: false, loading: () => <div className="size-full animate-pulse bg-limestone" /> });
 
-const field = "h-11 border border-line-strong bg-chalk px-3 text-[14px] text-ink outline-none focus:border-ink";
+const field = "h-12 rounded-xl border border-line-strong bg-card px-3.5 text-[16px] text-ink outline-none focus:border-ink md:h-11 md:text-[14px]";
 
 export function Directory() {
   const { shops, pieces } = useCatalogue();

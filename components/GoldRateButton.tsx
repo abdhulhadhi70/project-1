@@ -1,13 +1,11 @@
 "use client";
 // The floating "Gold price" button: one tap shows the day's rate per gram
 // for each purity, from anywhere on the public site.
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { Purity } from "@/data/catalogue";
 import { useCatalogue } from "@/lib/catalogue-store";
 import { dateText } from "@/lib/format";
-import { ArrowIcon } from "./Icons";
 import { Sheet, type SheetHandle } from "./Sheet";
 
 // Portals and sign-in pages have their own work to do; the button stays off them.
@@ -68,10 +66,10 @@ export function GoldRateButton() {
         <p className="mt-4 text-[13px] leading-relaxed text-stone">
           The rate for the gold alone. A piece also has a making charge and, for jewellery, 5% VAT. Each shop&apos;s own rate may differ slightly.
         </p>
-        <Link href="/gold-price" onClick={() => sheet.current?.close()}
-          className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-terracotta text-[15px] text-white transition-colors hover:bg-terracotta-deep">
-          Work out a piece&apos;s price <ArrowIcon />
-        </Link>
+        <button type="button" onClick={() => sheet.current?.close()}
+          className="mt-4 inline-flex h-12 w-full items-center justify-center rounded-full border border-ink text-[15px] text-ink hover:bg-limestone">
+          Close
+        </button>
       </Sheet>
     </>
   );

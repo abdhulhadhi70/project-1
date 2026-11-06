@@ -1,30 +1,27 @@
 "use client";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Suspense, useRef } from "react";
 import { site } from "@/data/site";
-import { liveTabs, searchHref } from "@/lib/catalogue-query";
 import { useSaved } from "@/lib/saved";
 import { useCatalogue } from "@/lib/catalogue-store";
 import { HeartIcon, MenuIcon } from "./Icons";
 import { Sheet, type SheetHandle } from "./Sheet";
 import { Wordmark } from "./Wordmark";
 
-const nav = (): { href: string; label: string; tab?: string }[] => [
-  ...liveTabs().map((t) => ({ href: searchHref({ tab: t.id }), label: t.label, tab: t.id })),
-  { href: "/jewellers", label: "Jewellers" },
-  { href: "/gold-price", label: "Gold price" },
+// Kept short on purpose: testers found more choices confusing. The
+// listings are the front page; everything else is reached from a listing.
+const nav = (): { href: string; label: string }[] => [
+  { href: "/", label: "Browse" },
+  { href: "/login", label: "Jeweller sign in" },
 ];
 
 function NavLinks({ onClick, className, item }: { onClick?: () => void; className: string; item: (active: boolean) => string }) {
   const pathname = usePathname();
-  const params = useSearchParams();
-  const tab = params.get("tab") ?? "jewellery";
-  useCatalogue();
   return (
     <ul className={className}>
       {nav().map((n) => {
-        const active = n.tab ? pathname === "/search" && tab === n.tab : pathname.startsWith(n.href);
+        const active = n.href === "/" ? pathname === "/" || pathname === "/search" : pathname.startsWith(n.href);
         return (
           <li key={n.label}>
             <Link href={n.href} onClick={onClick} aria-current={active ? "page" : undefined} className={item(active)}>{n.label}</Link>

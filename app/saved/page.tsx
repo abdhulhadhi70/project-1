@@ -66,7 +66,7 @@ function EmptyState({ title, text }: { title: string; text: string }) {
     <div className="py-16 text-center md:py-24">
       <p className="font-serif text-[28px] leading-tight">{title}</p>
       <p className="mx-auto mt-3 max-w-sm text-[14px] text-stone">{text}</p>
-      <Link href="/search" className="mt-6 inline-flex h-11 items-center rounded-full border border-ink px-5 text-[14px] hover:bg-cocoa hover:text-cream">Start searching</Link>
+      <Link href="/" className="mt-6 inline-flex h-11 items-center rounded-full border border-ink px-5 text-[14px] hover:bg-cocoa hover:text-cream">Start searching</Link>
     </div>
   );
 }

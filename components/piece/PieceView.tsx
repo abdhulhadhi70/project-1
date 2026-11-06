@@ -205,7 +205,7 @@ function Missing({ loading }: { loading: boolean }) {
         <>
           <p className="font-serif text-[32px] leading-tight">This piece isn&apos;t listed any more.</p>
           <p className="mt-3 text-[14px] text-stone">It may have been sold, or the shop has taken it down.</p>
-          <Link href="/search" className="mt-6 inline-flex h-11 items-center rounded-full border border-ink px-5 text-[14px]">Browse what&apos;s listed</Link>
+          <Link href="/" className="mt-6 inline-flex h-11 items-center rounded-full border border-ink px-5 text-[14px]">Browse what&apos;s listed</Link>
         </>
       )}
     </section>
