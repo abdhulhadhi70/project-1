@@ -14,7 +14,7 @@ export function SaveButton({ slug, name, variant = "overlay" }: { slug: string; 
         aria-pressed={saved}
         className="inline-flex h-11 items-center gap-2 text-[14px] text-ink hover:text-ink-soft"
       >
-        <HeartIcon filled={saved} className={`size-5 ${saved ? "text-brass-deep" : ""}`} />
+        <HeartIcon filled={saved} className={`size-5 ${saved ? "text-terracotta" : ""}`} />
         {saved ? "Saved" : "Save"}
         <span className="sr-only">{name}</span>
       </button>
@@ -29,8 +29,8 @@ export function SaveButton({ slug, name, variant = "overlay" }: { slug: string; 
       title={label}
       className="grid size-10 place-items-center text-ink/80 transition-colors hover:text-ink"
     >
-      <span className="grid size-8 place-items-center rounded-full bg-chalk/85">
-        <HeartIcon filled={saved} className={`size-[17px] ${saved ? "text-brass-deep" : ""}`} />
+      <span className="grid size-8 place-items-center rounded-full bg-card/90 shadow-sm">
+        <HeartIcon filled={saved} className={`size-[17px] ${saved ? "text-terracotta" : ""}`} />
       </span>
     </button>
   );

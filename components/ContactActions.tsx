@@ -50,17 +50,17 @@ export function ContactActions({ shop, subject, path, pieceId, onContact, layout
     dialog.current?.showModal();
   };
 
-  const primary = "inline-flex h-12 items-center justify-center gap-2 bg-ink px-5 text-[14px] font-medium text-chalk transition-colors hover:bg-ink-soft";
-  const secondary = "inline-flex h-12 items-center justify-center gap-2 border border-ink px-5 text-[14px] text-ink transition-colors hover:bg-limestone";
+  const primary = "inline-flex h-12 items-center justify-center gap-2 rounded-full bg-terracotta px-5 text-[14px] font-medium text-white transition-colors hover:bg-terracotta-deep";
+  const secondary = "inline-flex h-12 items-center justify-center gap-2 rounded-full border border-ink px-5 text-[14px] text-ink transition-colors hover:bg-limestone";
 
   return (
     <>
       {layout === "card" ? (
         <div className="flex gap-2">
-          <button type="button" onClick={() => open("call")} className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 border border-line-strong px-3 text-[13px] text-ink hover:border-ink">
+          <button type="button" onClick={() => open("call")} className="inline-flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full border border-line-strong px-3 text-[13px] text-ink hover:border-ink">
             <PhoneIcon className="size-4" /> Call
           </button>
-          <button type="button" onClick={() => open("whatsapp")} className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 border border-line-strong px-3 text-[13px] text-ink hover:border-ink">
+          <button type="button" onClick={() => open("whatsapp")} className="inline-flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full bg-terracotta px-3 text-[13px] text-white hover:bg-terracotta-deep">
             <ChatIcon className="size-4" /> WhatsApp
           </button>
         </div>
@@ -79,7 +79,7 @@ export function ContactActions({ shop, subject, path, pieceId, onContact, layout
         ref={dialog}
         aria-labelledby={titleId}
         onClick={(e) => e.target === e.currentTarget && dialog.current?.close()}
-        className="m-0 mt-auto w-full max-w-none bg-chalk p-0 text-ink md:m-auto md:max-w-md"
+        className="m-0 mt-auto w-full max-w-none rounded-t-3xl bg-chalk p-0 text-ink md:m-auto md:max-w-md md:rounded-3xl"
       >
         <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">
           <div>
@@ -104,7 +104,7 @@ export function ContactActions({ shop, subject, path, pieceId, onContact, layout
               {text}
             </blockquote>
           )}
-          <button type="button" onClick={() => dialog.current?.close()} className="h-11 w-full border border-ink text-ink">
+          <button type="button" onClick={() => dialog.current?.close()} className="h-11 w-full rounded-full border border-ink text-ink">
             Close
           </button>
         </div>

@@ -1,19 +1,30 @@
 @import "tailwindcss";
 
-/* A warm mineral palette. Brass is an accent for a rule, a selected state or
-   a focus ring; it never carries body text (3.0:1 on chalk), so text that
-   needs to read as "brass" uses brass-deep. */
+/* Two grounds: warm cream for browsing, deep cocoa for the header, hero,
+   feature bands and footer. Gold is for details on cocoa only; on cream,
+   text that needs to read as gold uses brass-deep. Terracotta is the one
+   colour for a primary action. */
 @theme {
-  --color-chalk: #f8f6f1;
-  --color-limestone: #eeeae2;
-  --color-limestone-deep: #e4dfd5;
-  --color-ink: #25241f;
-  --color-ink-soft: #4a4842;
-  --color-stone: #6a665f;      /* secondary text: 5.3:1 on chalk, 4.8:1 on limestone */
-  --color-brass: #a68a58;
-  --color-brass-deep: #7a6235; /* 5.4:1 on chalk */
-  --color-line: #e0dbd1;
-  --color-line-strong: #cfc8bb;
+  --color-chalk: #f7f1e8;        /* page */
+  --color-card: #fffdf9;         /* cards and inputs on the page */
+  --color-limestone: #efe5d6;
+  --color-limestone-deep: #e4d6c1;
+  --color-ink: #2a1d16;
+  --color-ink-soft: #55463b;
+  --color-stone: #6e5f54;        /* secondary text: 5.4:1 on chalk */
+  --color-brass: #b8925a;
+  --color-brass-deep: #84602c;   /* 5.3:1 on chalk */
+  --color-line: #e7dccb;
+  --color-line-strong: #d2c2aa;
+
+  --color-cocoa: #1e1410;        /* dark ground */
+  --color-cocoa-2: #2a1c16;      /* raised surface on cocoa */
+  --color-cocoa-line: #3d2b22;
+  --color-cream: #f4ead9;        /* text on cocoa: 14:1 */
+  --color-cream-soft: #c9b8a3;   /* secondary text on cocoa: 8.6:1 */
+  --color-gold: #d4ad6e;         /* accent on cocoa: 8.5:1 */
+  --color-terracotta: #a9502f;   /* primary action, white text 5.6:1 */
+  --color-terracotta-deep: #8e4126;
 
   --font-serif: var(--font-instrument-serif), "Times New Roman", serif;
   --font-sans: var(--font-instrument-sans), ui-sans-serif, system-ui, sans-serif;
@@ -47,7 +58,7 @@
     outline-offset: 3px;
   }
   ::selection { background: var(--color-limestone-deep); }
-  dialog::backdrop { background: rgb(37 36 31 / 0.38); }
+  dialog::backdrop { background: rgb(30 20 16 / 0.5); }
 }
 
 @utility page-x {
@@ -78,11 +89,19 @@
 .tibr-pin {
   display: grid; place-items: center; width: 34px; height: 34px; border-radius: 9999px;
   background: var(--color-ink); color: var(--color-chalk); font: 600 13px/1 var(--font-sans);
-  box-shadow: 0 0 0 3px var(--color-chalk), 0 4px 10px rgb(37 36 31 / 0.35);
+  box-shadow: 0 0 0 3px var(--color-chalk), 0 4px 10px rgb(30 20 16 / 0.35);
 }
 .leaflet-marker-icon:focus-visible .tibr-pin, .leaflet-marker-icon:hover .tibr-pin { background: var(--color-brass-deep); }
 .tibr-pop { display: grid; gap: 2px; font: 14px/1.35 var(--font-sans); color: var(--color-ink); min-width: 11rem; }
 .tibr-pop span { color: var(--color-stone); font-size: 12px; }
 .tibr-pop button { margin-top: 8px; height: 34px; background: var(--color-ink); color: var(--color-chalk); font-size: 13px; cursor: pointer; }
-.leaflet-popup-content-wrapper { border-radius: 2px; box-shadow: 0 12px 28px -18px rgb(37 36 31 / 0.6); }
+.leaflet-popup-content-wrapper { border-radius: 2px; box-shadow: 0 12px 28px -18px rgb(30 20 16 / 0.6); }
 .leaflet-container { font-family: var(--font-sans); background: var(--color-limestone); }
+
+/* The silk light behind the hero: two soft warm pools on cocoa. */
+@utility cocoa-glow {
+  background-color: var(--color-cocoa);
+  background-image:
+    radial-gradient(60rem 30rem at 85% -10%, rgb(169 80 47 / 0.28), transparent 70%),
+    radial-gradient(40rem 26rem at 5% 110%, rgb(212 173 110 / 0.14), transparent 70%);
+}

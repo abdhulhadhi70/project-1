@@ -38,7 +38,7 @@ function NavLinks({ onClick, className, item }: { onClick?: () => void; classNam
 function SavedCount() {
   const { saved } = useSaved();
   return saved.length > 0 ? (
-    <span className="absolute -right-1.5 -top-1 min-w-4 rounded-full bg-ink px-1 text-center text-[10px] leading-4 text-chalk">{saved.length}</span>
+    <span className="absolute -right-1.5 -top-1 min-w-4 rounded-full bg-terracotta px-1 text-center text-[10px] leading-4 text-white">{saved.length}</span>
   ) : null;
 }
 
@@ -52,27 +52,27 @@ export function Header() {
   return (
     <>
       {(notice || showDemo) && (
-        <p className="bg-limestone page-x py-1.5 text-center text-[12px] leading-snug text-stone">
+        <p className="border-b border-cocoa-line bg-cocoa page-x py-1.5 text-center text-[12px] leading-snug text-cream-soft">
           {notice ?? (<><span className="hidden sm:inline">{site.demoNotice}</span><span className="sm:hidden">{site.demoNoticeShort}</span></>)}
         </p>
       )}
-      <header className="sticky top-0 z-30 h-[var(--header-h)] border-b border-line bg-chalk">
+      <header className="sticky top-0 z-30 h-[var(--header-h)] border-b border-cocoa-line bg-cocoa/95 text-cream backdrop-blur-sm">
         <div className="page page-x flex h-full items-center gap-8">
-          <Wordmark withDescriptor />
+          <Wordmark withDescriptor tone="dark" />
           <nav aria-label="Main" className="hidden flex-1 lg:block">
             <Suspense fallback={null}>
-              <NavLinks className="flex gap-7 text-[14px]" item={(a) => `relative py-5 ${a ? "text-ink after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-ink" : "text-ink-soft hover:text-ink"}`} />
+              <NavLinks className="flex gap-7 text-[14px]" item={(a) => `relative py-5 ${a ? "text-cream after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-gold" : "text-cream-soft hover:text-cream"}`} />
             </Suspense>
           </nav>
           <div className="ml-auto flex items-center gap-2 lg:gap-5">
-            <Link href="/saved" className="relative inline-flex h-10 items-center gap-2 px-2 text-[14px] text-ink hover:text-ink-soft" aria-label="Saved pieces and searches">
+            <Link href="/saved" className="relative inline-flex h-10 items-center gap-2 px-2 text-[14px] text-cream hover:text-gold" aria-label="Saved pieces and searches">
               <span className="relative"><HeartIcon className="size-5" /><SavedCount /></span>
               <span className="hidden lg:inline">Saved</span>
             </Link>
-            <Link href="/for-jewellers" className="hidden h-10 items-center border border-ink px-4 text-[14px] hover:bg-ink hover:text-chalk lg:inline-flex">
+            <Link href="/for-jewellers" className="hidden h-10 items-center rounded-full bg-terracotta px-5 text-[14px] text-white transition-colors hover:bg-terracotta-deep lg:inline-flex">
               List your shop
             </Link>
-            <button type="button" onClick={() => menu.current?.open()} className="-mr-2 grid size-10 place-items-center lg:hidden" aria-label="Menu">
+            <button type="button" onClick={() => menu.current?.open()} className="-mr-2 grid size-11 place-items-center text-cream lg:hidden" aria-label="Menu">
               <MenuIcon />
             </button>
           </div>
@@ -84,8 +84,8 @@ export function Header() {
             item={(a) => `flex h-12 items-center text-[16px] ${a ? "text-ink" : "text-ink-soft"}`} />
         </Suspense>
         <div className="mt-5 grid gap-2">
-          <Link href="/saved" onClick={() => menu.current?.close()} className="inline-flex h-11 items-center justify-center border border-line-strong text-[14px]">Saved</Link>
-          <Link href="/for-jewellers" onClick={() => menu.current?.close()} className="inline-flex h-11 items-center justify-center bg-ink text-[14px] text-chalk">List your shop</Link>
+          <Link href="/saved" onClick={() => menu.current?.close()} className="inline-flex h-11 items-center justify-center rounded-full border border-line-strong text-[14px]">Saved</Link>
+          <Link href="/for-jewellers" onClick={() => menu.current?.close()} className="inline-flex h-11 items-center justify-center rounded-full bg-terracotta text-[14px] text-white">List your shop</Link>
         </div>
       </Sheet>
     </>

@@ -56,10 +56,10 @@ export function LocationBox({ query, set, placeholder = "Area, souk, jeweller or
         submit();
       }}
     >
-      <div className={`flex flex-wrap items-center gap-1.5 border border-line-strong bg-chalk pl-3 pr-1 focus-within:border-ink ${h}`}>
+      <div className={`flex flex-wrap items-center gap-1.5 rounded-xl border border-line-strong bg-card pl-3 pr-1 focus-within:border-ink ${h}`}>
         {chips.length ? <PinIcon className="size-[17px] shrink-0 text-stone" /> : <SearchIcon className="size-[17px] shrink-0 text-stone" />}
         {chips.map((c) => (
-          <span key={c.label} className="inline-flex h-7 items-center gap-1 bg-limestone pl-2.5 pr-1 text-[13px] text-ink">
+          <span key={c.label} className="inline-flex h-7 items-center gap-1 rounded-full bg-limestone pl-2.5 pr-1 text-[13px] text-ink">
             {c.label}
             <button type="button" onClick={() => set(c.clear)} className="grid size-6 place-items-center text-stone hover:text-ink" aria-label={`Remove ${c.label}`}>
               <CloseIcon className="size-3.5" />
@@ -100,7 +100,7 @@ export function LocationBox({ query, set, placeholder = "Area, souk, jeweller or
         )}
       </div>
       {open && items.length > 0 && (
-        <ul id={listId} role="listbox" className="absolute inset-x-0 top-full z-40 mt-1 border border-line bg-chalk py-1 shadow-[0_16px_32px_-20px_rgb(37_36_31/0.35)]">
+        <ul id={listId} role="listbox" className="absolute inset-x-0 top-full z-40 mt-1 overflow-hidden rounded-xl border border-line bg-card py-1 shadow-[0_16px_32px_-20px_rgb(30_20_16/0.35)]">
           {items.map((s, i) => (
             <li
               key={`${s.kind}-${s.id}`}

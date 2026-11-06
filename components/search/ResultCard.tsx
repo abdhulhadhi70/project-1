@@ -22,7 +22,7 @@ export function PriceLine({ piece, className = "" }: { piece: Piece; className?:
   return (
     <p className={`flex flex-wrap items-baseline gap-x-2 gap-y-1 ${className}`}>
       <span className="whitespace-nowrap text-[19px] font-semibold tracking-[-0.01em] text-ink md:text-[20px]">{aed(p.aed)}</span>
-      {p.kind === "indicative" && <span className="border border-line-strong px-1.5 text-[11px] leading-[18px] text-stone">Indicative</span>}
+      {p.kind === "indicative" && <span className="rounded-full border border-line-strong px-2 text-[11px] leading-[18px] text-stone">Indicative</span>}
     </p>
   );
 }
@@ -53,22 +53,22 @@ export function ResultCard({ piece, layout = "list", priority = false }: { piece
   const list = layout === "list";
 
   return (
-    <article className={`relative border border-line bg-chalk transition-shadow hover:shadow-[0_12px_28px_-22px_rgb(37_36_31/0.5)] ${list ? "md:grid md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]" : ""}`}>
+    <article className={`relative rounded-2xl border border-line bg-card p-2 transition-shadow hover:shadow-[0_18px_36px_-24px_rgb(30_20_16/0.45)] ${list ? "md:grid md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]" : ""}`}>
       {/* Above the title link's full-card overlay, so the arrows and heart work. */}
-      <div className="relative z-10">
+      <div className="relative z-10 overflow-hidden rounded-xl">
         <Link href={href} tabIndex={-1} aria-hidden className="block">
           <CardGallery images={piece.images} alt={piece.name} priority={priority}
             aspect={list ? "aspect-[4/3] md:aspect-auto md:h-full md:min-h-[17rem]" : "aspect-[4/5]"}
             sizes={list ? "(min-width: 768px) 32vw, 100vw" : "(min-width: 1280px) 22vw, (min-width: 768px) 30vw, 46vw"} />
         </Link>
-        <span className="absolute left-2 top-2 bg-chalk/95 px-2 py-0.5 text-[11px] text-ink-soft">{cat.singular}</span>
+        <span className="absolute left-2 top-2 rounded-full bg-card/95 px-2.5 py-0.5 text-[11px] text-ink-soft">{cat.singular}</span>
         <div className="absolute right-1 top-1"><SaveButton slug={piece.slug} name={piece.name} /></div>
       </div>
 
-      <div className={`flex flex-col ${list ? "gap-2 p-4 md:p-5" : "gap-1.5 p-3"}`}>
+      <div className={`flex flex-col ${list ? "gap-2 p-3 md:p-4" : "gap-1.5 px-2 pb-1.5 pt-3"}`}>
         <PriceLine piece={piece} className={list ? "" : "[&>span:first-child]:text-[16px]"} />
         <Facts piece={piece} />
-        <h3 className={`${list ? "text-[16px] md:text-[17px]" : "text-[14px]"} leading-snug text-ink`}>
+        <h3 className={`${list ? "font-serif text-[20px] md:text-[22px]" : "font-serif text-[18px]"} leading-tight text-ink`}>
           <Link href={href} className="after:absolute after:inset-0 after:content-[''] hover:underline">{piece.name}</Link>
         </h3>
         <p className="inline-flex items-center gap-1.5 text-[13px] text-stone">

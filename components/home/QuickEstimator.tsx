@@ -9,7 +9,7 @@ import { aed } from "@/lib/format";
 import { estimatePrice } from "@/lib/pricing";
 
 const PURITIES: Purity[] = ["24K", "22K", "21K", "18K"];
-const field = "mt-1.5 h-11 w-full border border-line-strong bg-chalk px-3 text-[15px] text-ink outline-none focus:border-ink";
+const field = "mt-1.5 h-11 w-full rounded-xl border border-line-strong bg-card px-3 text-[15px] text-ink outline-none focus:border-ink";
 
 export function QuickEstimator() {
   const { rates } = useCatalogue();
@@ -20,7 +20,7 @@ export function QuickEstimator() {
   const ok = w > 0 && w < 5000 && m >= 0 && m < 1000;
   const e = ok ? estimatePrice({ ratePerGramAed: rates.perGram[purity], weightGrams: w, makingChargeType: "per_gram", makingChargeValue: m }) : null;
   return (
-    <div className="grid gap-6 border border-line p-5 md:grid-cols-[1.2fr_1fr] md:p-7">
+    <div className="grid gap-6 rounded-3xl border border-line bg-card p-5 md:grid-cols-[1.2fr_1fr] md:p-7">
       <form className="grid grid-cols-3 gap-3" onSubmit={(ev) => ev.preventDefault()}>
         <label className="block text-[13px] text-stone">Purity
           <select value={purity} onChange={(ev) => setPurity(ev.target.value as Purity)} className={field}>
