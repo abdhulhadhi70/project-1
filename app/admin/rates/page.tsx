@@ -61,7 +61,7 @@ export default function Rates() {
         </form>
       </Card>
       <Card title="History">
-        <ul className="divide-y divide-line border-y border-line text-[14px]">
+        <ul className="divide-y divide-line rounded-2xl border border-line bg-card px-4 text-[14px]">
           {history.map((r) => (
             <li key={r.id} className="flex justify-between py-2"><span>{r.purity} · {when(r.effective_at)}</span><span className="tabular-nums">{aed(r.rate_per_gram_aed)}</span></li>
           ))}

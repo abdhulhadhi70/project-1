@@ -9,7 +9,7 @@ import { aed } from "@/lib/format";
 import { estimatePrice } from "@/lib/pricing";
 
 const PURITIES: Purity[] = ["24K", "22K", "21K", "18K"];
-const field = "mt-1.5 h-11 w-full rounded-xl border border-line-strong bg-card px-3 text-[15px] text-ink outline-none focus:border-ink";
+const field = "mt-1.5 h-11 w-full rounded-xl border border-line-strong bg-card px-3.5 text-[16px] text-ink outline-none focus:border-ink";
 
 export function QuickEstimator() {
   const { rates } = useCatalogue();

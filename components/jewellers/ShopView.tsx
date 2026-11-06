@@ -27,7 +27,7 @@ export function ShopView({ slug }: { slug: string }) {
         {catalogueSettled() ? (
           <>
             <p className="font-serif text-[32px] leading-tight">This jeweller isn&apos;t listed.</p>
-            <Link href="/jewellers" className="mt-6 inline-flex h-11 items-center border border-ink px-5 text-[14px]">All jewellers</Link>
+            <Link href="/jewellers" className="mt-6 inline-flex h-11 items-center rounded-full border border-ink px-5 text-[14px]">All jewellers</Link>
           </>
         ) : <p className="text-[14px] text-stone">Loading…</p>}
       </section>
@@ -43,8 +43,8 @@ export function ShopView({ slug }: { slug: string }) {
         <nav aria-label="Breadcrumb" className="text-[13px] text-stone">
           <Link href="/" className="hover:text-ink">Home</Link> <span aria-hidden>›</span> <Link href="/jewellers" className="hover:text-ink">Jewellers</Link> <span aria-hidden>›</span> {shop.name}
         </nav>
-        <div className="mt-6 grid gap-8 border-b border-line pb-10 lg:grid-cols-12 lg:gap-10">
-          <div className="lg:col-span-7">
+        <div className="mt-6 grid gap-8 lg:grid-cols-12 lg:gap-10">
+          <div className="rounded-3xl border border-line bg-card p-5 md:p-7 lg:col-span-7">
             <div className="flex items-center gap-4">
               <Monogram name={shop.name} className="size-14 text-[16px] md:size-16" />
               <div>
@@ -53,13 +53,13 @@ export function ShopView({ slug }: { slug: string }) {
               </div>
             </div>
             <p className="mt-6 max-w-[52ch] text-[16px] leading-relaxed text-ink-soft">{shop.about}</p>
-            <dl className="mt-6 grid gap-px border border-line bg-line text-[14px] sm:grid-cols-3">
-              <div className="bg-chalk p-3"><dt className="text-[12px] text-stone">Listed</dt><dd className="mt-0.5">{theirs.length} pieces</dd></div>
-              <div className="bg-chalk p-3"><dt className="text-[12px] text-stone">Speaks</dt><dd className="mt-0.5">{shop.languages.join(", ")}</dd></div>
-              <div className="bg-chalk p-3"><dt className="text-[12px] text-stone">Hours</dt><dd className="mt-0.5">{shop.hours}</dd></div>
+            <dl className="mt-6 grid gap-2 text-[14px] sm:grid-cols-3">
+              <div className="rounded-2xl bg-limestone/70 p-3"><dt className="text-[12px] text-stone">Listed</dt><dd className="mt-0.5">{theirs.length} pieces</dd></div>
+              <div className="rounded-2xl bg-limestone/70 p-3"><dt className="text-[12px] text-stone">Speaks</dt><dd className="mt-0.5">{shop.languages.join(", ")}</dd></div>
+              <div className="rounded-2xl bg-limestone/70 p-3"><dt className="text-[12px] text-stone">Hours</dt><dd className="mt-0.5">{shop.hours}</dd></div>
             </dl>
             <div className="mt-6 max-w-md"><ContactActions shop={shop} /></div>
-            {shop.demo && <p className="mt-4 border-l-2 border-brass pl-3 text-[12px] text-stone">Demonstration jeweller. This shop, its hours and its pieces are invented for the prototype.</p>}
+            {shop.demo && <p className="mt-4 rounded-xl bg-limestone px-3 py-2 text-[12px] text-stone">Demonstration jeweller. This shop, its hours and its pieces are invented for the prototype.</p>}
           </div>
           <div className="lg:col-span-5">
             <ShopMap shop={shop} className="h-64 lg:h-full lg:min-h-80" />

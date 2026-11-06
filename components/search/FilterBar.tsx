@@ -15,12 +15,12 @@ export function tabPatch(tab: Tab, q: Query): Partial<Query> {
 
 export function TabSwitch({ query, set, className = "" }: { query: Query; set: SetFn; className?: string }) {
   return (
-    <div role="tablist" aria-label="What are you looking for" className={`flex ${className}`}>
+    <div role="tablist" aria-label="What are you looking for" className={`flex rounded-full border border-line-strong bg-card p-1 ${className}`}>
       {liveTabs().map((t) => {
         const on = query.tab === t.id;
         return (
           <button key={t.id} role="tab" type="button" aria-selected={on} onClick={() => !on && set(tabPatch(t.id, query))}
-            className={`h-11 flex-1 border px-4 text-[14px] transition-colors md:flex-none ${on ? "border-ink bg-ink text-chalk" : "border-line-strong text-ink-soft hover:text-ink"} [&:not(:first-child)]:-ml-px`}>
+            className={`h-11 flex-1 rounded-full px-4 text-[14px] transition-colors md:flex-none ${on ? "bg-cocoa text-cream" : "text-ink-soft hover:text-ink"}`}>
             {t.label}
           </button>
         );
@@ -35,14 +35,14 @@ export function FilterBar({ query, set, reset, resultCount }: { query: Query; se
   const all = activeFilterCount(query);
   const cat = CATEGORIES.find((c) => c.id === query.category);
   const band = PRICE_BANDS.find((b) => b.id === query.price);
-  const chip = "inline-flex h-9 shrink-0 items-center gap-1.5 border px-3 text-[13px]";
+  const chip = "inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border bg-card px-3.5 text-[13px]";
   // A filter with only one choice filters nothing, so it is not shown.
   const opts = optionsFor(query.tab);
   const showPurity = opts.purities.length > 1 || query.purity.length > 0;
   const showCategory = opts.categories.length > 1 || !!query.category;
 
   return (
-    <div className="sticky top-[var(--header-h)] z-20 border-b border-line bg-chalk">
+    <div className="sticky top-[var(--header-h)] z-20 border-b border-line bg-chalk/95 backdrop-blur-sm">
       {/* Desktop */}
       <div className="page page-x hidden items-center gap-2 py-3 lg:flex">
         <TabSwitch query={query} set={set} />
@@ -51,9 +51,9 @@ export function FilterBar({ query, set, reset, resultCount }: { query: Query; se
         {showPurity && <Popover label={query.purity.length ? query.purity.join(", ") : "Purity"} active={query.purity.length > 0} width="w-60"><PurityOptions query={query} set={set} /></Popover>}
         <Popover label={band?.label ?? "Price"} active={!!band}><PriceOptions query={query} set={set} /></Popover>
         <button type="button" onClick={() => sheet.current?.open()}
-          className={`inline-flex h-11 items-center gap-2 border px-3 text-[14px] ${more ? "border-ink text-ink" : "border-line-strong text-ink-soft hover:border-ink hover:text-ink"}`}>
+          className={`inline-flex h-11 items-center gap-2 rounded-full border bg-card px-4 text-[14px] ${more ? "border-ink text-ink" : "border-line-strong text-ink-soft hover:border-ink hover:text-ink"}`}>
           <SlidersIcon className="size-4" /> More filters
-          {more > 0 && <span className="min-w-5 rounded-full bg-ink px-1.5 text-center text-[11px] leading-5 text-chalk">{more}</span>}
+          {more > 0 && <span className="min-w-5 rounded-full bg-terracotta px-1.5 text-center text-[11px] leading-5 text-white">{more}</span>}
         </button>
         {all > 0 && (
           <button type="button" onClick={reset} className="h-11 px-2 text-[13px] text-ink-soft underline decoration-line-strong underline-offset-4 hover:text-ink">
@@ -66,7 +66,7 @@ export function FilterBar({ query, set, reset, resultCount }: { query: Query; se
       <div className="page-x space-y-2 py-2.5 lg:hidden">
         <LocationBox query={query} set={set} />
         <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4">
-          <button type="button" onClick={() => sheet.current?.open()} className={`${chip} ${all ? "border-ink bg-ink text-chalk" : "border-line-strong text-ink"}`}>
+          <button type="button" onClick={() => sheet.current?.open()} className={`${chip} ${all ? "border-cocoa bg-cocoa text-cream" : "border-line-strong text-ink"}`}>
             <SlidersIcon className="size-4" /> Filters{all > 0 && ` · ${all}`}
           </button>
           {[
@@ -95,7 +95,7 @@ export function FilterBar({ query, set, reset, resultCount }: { query: Query; se
         footer={
           <div className="flex items-center gap-4">
             <button type="button" onClick={reset} className="h-11 px-1 text-[14px] text-ink-soft underline decoration-line-strong underline-offset-4">Reset all</button>
-            <button type="button" onClick={() => sheet.current?.close()} className="h-11 flex-1 bg-ink text-[14px] font-medium text-chalk">
+            <button type="button" onClick={() => sheet.current?.close()} className="h-12 flex-1 rounded-full bg-terracotta text-white transition-colors hover:bg-terracotta-deep text-[15px] font-medium">
               {resultCount === 0 ? "No pieces match" : `Show ${resultCount} ${resultCount === 1 ? "piece" : "pieces"}`}
             </button>
           </div>

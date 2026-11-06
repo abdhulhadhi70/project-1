@@ -11,7 +11,7 @@ export function ShopMap({ shop, className = "h-64" }: { shop: Shop; className?: 
   const initials = shop.name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2);
   return (
     <div className={className}>
-      <ResultsMap shops={[{ shop, count: 1, label: initials }]} className="size-full border border-line" />
+      <ResultsMap shops={[{ shop, count: 1, label: initials }]} className="size-full overflow-hidden rounded-2xl border border-line" />
     </div>
   );
 }

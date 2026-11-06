@@ -26,8 +26,8 @@ export const Sheet = forwardRef<SheetHandle, Props>(function Sheet({ title, kick
       aria-label={title}
       onClose={onClose}
       onClick={(e) => e.target === e.currentTarget && d.current?.close()}
-      className={`m-0 mt-auto w-full max-w-none overflow-hidden bg-chalk p-0 text-ink open:flex open:flex-col md:m-auto md:max-h-[85dvh] md:border md:border-line ${
-        full ? "h-dvh max-h-none md:h-auto" : "max-h-[88dvh]"
+      className={`m-0 mt-auto w-full max-w-none overflow-hidden bg-chalk p-0 text-ink open:flex open:flex-col md:m-auto md:max-h-[85dvh] md:rounded-3xl md:border md:border-line ${
+        full ? "h-dvh max-h-none md:h-auto" : "max-h-[88dvh] rounded-t-3xl"
       } ${wide ? "md:max-w-2xl" : "md:max-w-md"}`}
     >
       <div className="flex shrink-0 items-start justify-between gap-4 border-b border-line px-4 py-3 md:px-5">
@@ -35,7 +35,7 @@ export const Sheet = forwardRef<SheetHandle, Props>(function Sheet({ title, kick
           {kicker && <p className="text-[12px] text-stone">{kicker}</p>}
           <h2 className="text-[16px] font-medium">{title}</h2>
         </div>
-        <button type="button" onClick={() => d.current?.close()} className="-mr-2 grid size-10 place-items-center" aria-label="Close">
+        <button type="button" onClick={() => d.current?.close()} className="-mr-2 grid size-11 place-items-center rounded-full hover:bg-limestone" aria-label="Close">
           <CloseIcon />
         </button>
       </div>

@@ -35,10 +35,10 @@ function Report() {
         <Button variant="secondary" onClick={() => window.print()} className="print:hidden">Print or save as PDF</Button>
       </div>
       <ResultsPanel shopId={id} pieces={pieces} title={`What customers did in the last ${days} days`} />
-      <dl className="grid grid-cols-3 gap-px border border-line bg-line text-[14px]">
-        <div className="bg-chalk p-3"><dt className="text-[12px] text-stone">Pieces listed</dt><dd className="text-[22px] font-semibold">{listed}</dd></div>
-        <div className="bg-chalk p-3"><dt className="text-[12px] text-stone">Visit requests</dt><dd className="text-[22px] font-semibold">{recent.length}</dd></div>
-        <div className="bg-chalk p-3"><dt className="text-[12px] text-stone">Of which visited</dt><dd className="text-[22px] font-semibold">{recent.filter((r) => r.status === "visited").length}</dd></div>
+      <dl className="grid grid-cols-3 gap-px overflow-hidden rounded-2xl border border-line bg-line text-[14px]">
+        <div className="bg-card p-3"><dt className="text-[12px] text-stone">Pieces listed</dt><dd className="text-[22px] font-semibold">{listed}</dd></div>
+        <div className="bg-card p-3"><dt className="text-[12px] text-stone">Visit requests</dt><dd className="text-[22px] font-semibold">{recent.length}</dd></div>
+        <div className="bg-card p-3"><dt className="text-[12px] text-stone">Of which visited</dt><dd className="text-[22px] font-semibold">{recent.filter((r) => r.status === "visited").length}</dd></div>
       </dl>
     </div>
   );

@@ -21,7 +21,7 @@ export default function Users() {
     <div className="space-y-4">
       {error && <Notice tone="error">{error}</Notice>}
       <Card title={`${users.length} accounts`}>
-        <ul className="divide-y divide-line border-y border-line text-[14px]">
+        <ul className="divide-y divide-line rounded-2xl border border-line bg-card px-4 text-[14px]">
           {users.map((u) => {
             const theirs = members.filter((m) => m.user_id === u.id);
             return (
@@ -35,7 +35,7 @@ export default function Users() {
                   </span>
                 </span>
                 <select aria-label={`Role for ${u.email}`} value={u.role} disabled={u.email === me?.email}
-                  className="h-10 border border-line-strong bg-chalk px-2 text-[13px] disabled:opacity-50"
+                  className="h-11 rounded-xl border border-line-strong bg-card px-2.5 text-[16px] md:h-10 md:text-[13px] disabled:opacity-50"
                   onChange={async (e) => {
                     const role = e.target.value as UserRow["role"];
                     if (role === "admin" && !confirm(`Make ${u.email} an admin? They will be able to change everything on the site.`)) return;

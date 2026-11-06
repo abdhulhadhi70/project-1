@@ -20,7 +20,7 @@ export function OptionRow({ type, name, checked, disabled, onChange, label, coun
         checked={checked}
         disabled={disabled}
         onChange={onChange}
-        className={`size-4 shrink-0 appearance-none border border-line-strong bg-chalk checked:border-ink checked:bg-ink disabled:opacity-40 ${
+        className={`size-4 shrink-0 appearance-none rounded-[5px] border border-line-strong bg-card checked:border-cocoa checked:bg-cocoa disabled:opacity-40 ${
           type === "radio" ? "rounded-full checked:shadow-[inset_0_0_0_3px_var(--color-chalk)]" : "rounded-[2px] checked:shadow-[inset_0_0_0_2.5px_var(--color-chalk)]"
         }`}
       />
@@ -47,7 +47,7 @@ export function ChoiceRow<T extends string | number>({ options, value, onChange,
             disabled={off}
             aria-pressed={on}
             onClick={() => onChange(on ? null : o.id)}
-            className={`h-9 border px-3 text-[13px] transition-colors disabled:opacity-40 ${on ? "border-ink bg-ink text-chalk" : "border-line-strong text-ink hover:border-ink"}`}
+            className={`h-10 rounded-full border px-4 text-[13px] transition-colors disabled:opacity-40 ${on ? "border-cocoa bg-cocoa text-cream" : "border-line-strong bg-card text-ink hover:border-ink"}`}
           >
             {o.label}
             {n !== undefined && <span className={`ml-1.5 tabular-nums ${on ? "text-chalk/70" : "text-stone"}`}>{n}</span>}

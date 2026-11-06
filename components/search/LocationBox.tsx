@@ -46,7 +46,7 @@ export function LocationBox({ query, set, placeholder = "Area, souk, jeweller or
   if (query.location) chips.push({ label: locationLabel(query.location).split(",")[0], clear: { location: null } });
   if (query.shop) chips.push({ label: getCatalogue().shopBySlug.get(query.shop)?.name ?? "", clear: { shop: null } });
 
-  const h = size === "lg" ? "min-h-14 text-[16px]" : "min-h-11 text-[14px]";
+  const h = size === "lg" ? "min-h-14 text-[16px]" : "min-h-12 text-[16px] lg:min-h-11 lg:text-[14px]";
   return (
     <form
       role="search"

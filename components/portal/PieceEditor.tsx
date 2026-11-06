@@ -108,22 +108,22 @@ export function PieceEditor({ shopId, shopName, existing, onSaved, admin = false
           <p className="mt-0.5 text-[12px] text-stone">Up to {MAX_PHOTOS}. The first is the cover. We resize them, remove location data and add your shop name in the corner.</p>
           <ul className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-6">
             {d.images.map((img, i) => (
-              <li key={img} className="relative aspect-[4/5] bg-limestone">
+              <li key={img} className="relative aspect-[4/5] overflow-hidden rounded-xl bg-limestone">
                 <PieceImage name={img} alt={`Photo ${i + 1}`} sizes="120px" className="size-full object-cover" />
-                {i === 0 && <span className="absolute left-1 top-1 bg-ink px-1.5 text-[11px] text-chalk">Cover</span>}
-                <div className="absolute inset-x-0 bottom-0 flex justify-between bg-ink/60">
-                  <button type="button" onClick={() => move(i, -1)} disabled={i === 0} aria-label="Move earlier" className="grid size-8 place-items-center text-chalk disabled:opacity-30"><ChevronLeftIcon /></button>
-                  <button type="button" onClick={() => drop(i)} aria-label="Remove photo" className="grid size-8 place-items-center text-chalk"><CloseIcon className="size-4" /></button>
-                  <button type="button" onClick={() => move(i, 1)} disabled={i === d.images.length - 1} aria-label="Move later" className="grid size-8 place-items-center text-chalk disabled:opacity-30"><ChevronRightIcon /></button>
+                {i === 0 && <span className="absolute left-1 top-1 rounded-full bg-cocoa px-2 text-[11px] text-cream">Cover</span>}
+                <div className="absolute inset-x-0 bottom-0 flex bg-cocoa/70">
+                  <button type="button" onClick={() => move(i, -1)} disabled={i === 0} aria-label="Move earlier" className="grid h-11 flex-1 place-items-center text-cream disabled:opacity-30"><ChevronLeftIcon /></button>
+                  <button type="button" onClick={() => drop(i)} aria-label="Remove photo" className="grid h-11 flex-1 place-items-center text-cream"><CloseIcon className="size-4" /></button>
+                  <button type="button" onClick={() => move(i, 1)} disabled={i === d.images.length - 1} aria-label="Move later" className="grid h-11 flex-1 place-items-center text-cream disabled:opacity-30"><ChevronRightIcon /></button>
                 </div>
               </li>
             ))}
             {Array.from({ length: uploading }).map((_, i) => (
-              <li key={`u${i}`} className="grid aspect-[4/5] animate-pulse place-items-center bg-limestone text-[12px] text-stone">Uploading…</li>
+              <li key={`u${i}`} className="grid aspect-[4/5] animate-pulse rounded-xl place-items-center bg-limestone text-[12px] text-stone">Uploading…</li>
             ))}
             {d.images.length + uploading < MAX_PHOTOS && (
               <li>
-                <label className="grid aspect-[4/5] cursor-pointer place-items-center border border-dashed border-line-strong text-center text-[13px] text-ink-soft hover:border-ink">
+                <label className="grid aspect-[4/5] cursor-pointer place-items-center rounded-xl border border-dashed border-line-strong bg-card text-center text-[13px] text-ink-soft hover:border-ink">
                   <span>+ Add<br />photos</span>
                   <input ref={file} type="file" accept="image/*" multiple className="sr-only" onChange={(e) => void addPhotos(e.target.files)} />
                 </label>
@@ -200,7 +200,7 @@ export function PieceEditor({ shopId, shopName, existing, onSaved, admin = false
       </div>
 
       <aside className="space-y-5 lg:sticky lg:top-[calc(var(--header-h)+1rem)] lg:self-start">
-        <fieldset className="border border-line p-4">
+        <fieldset className="rounded-2xl border border-line bg-card p-4">
           <legend className="px-1 text-[15px] font-medium">Price</legend>
           {([
             ["indicative", "From today's rate", "Moves with the gold rate our team sets each day."],

@@ -26,27 +26,31 @@ function Frame({ title, sections, aside, children }: { title: string; sections: 
   const pathname = usePathname();
   const router = useRouter();
   return (
-    <div className="page page-x pb-16 pt-5 md:pt-8">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-3">
+    <div className="pb-16">
+      <div className="cocoa-glow text-cream">
+      <div className="page page-x pt-5 md:pt-8">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-[12px] text-stone">{title}</p>
-          {aside}
+          <p className="text-[13px] text-gold">{title}</p>
+          <div className="mt-1">{aside}</div>
         </div>
         <button type="button" onClick={async () => { await getSupabase().auth.signOut(); router.replace("/login"); }}
-          className="h-10 text-[13px] text-ink-soft underline decoration-line-strong underline-offset-4 hover:text-ink">Sign out</button>
+          className="h-10 rounded-full border border-cocoa-line px-4 text-[13px] text-cream-soft hover:border-gold hover:text-cream">Sign out</button>
       </div>
-      <nav aria-label={title} className="no-scrollbar -mx-4 mt-1 flex gap-6 overflow-x-auto border-b border-line px-4 md:mx-0 md:px-0">
+      <nav aria-label={title} className="no-scrollbar -mx-4 mt-4 flex gap-1.5 overflow-x-auto px-4 pb-4 md:mx-0 md:px-0">
         {sections.map((s) => {
           const on = s.href === pathname || (s.href !== sections[0].href && pathname.startsWith(s.href));
           return (
             <Link key={s.href} href={s.href} aria-current={on ? "page" : undefined}
-              className={`-mb-px shrink-0 border-b-2 py-3 text-[14px] ${on ? "border-ink text-ink" : "border-transparent text-stone hover:text-ink"}`}>
+              className={`inline-flex h-10 shrink-0 items-center rounded-full px-4 text-[14px] transition-colors ${on ? "bg-cream text-ink" : "text-cream-soft hover:bg-cocoa-2 hover:text-cream"}`}>
               {s.label}
             </Link>
           );
         })}
       </nav>
-      <div className="mt-6">{children}</div>
+      </div>
+      </div>
+      <div className="page page-x mt-6">{children}</div>
     </div>
   );
 }
@@ -89,7 +93,7 @@ export function JewellerPortal({ children }: { children: React.ReactNode }) {
         const switcher = a.shops.length > 1 ? (
           <select value={shop.shopId} aria-label="Shop"
             onChange={(e) => { setChosen(e.target.value); try { localStorage.setItem("tibr:shop", e.target.value); } catch { /* ignore */ } }}
-            className="mt-0.5 h-9 border border-line-strong bg-chalk px-2 text-[16px]">
+            className="mt-0.5 h-11 rounded-xl border border-cocoa-line bg-cocoa-2 px-3 font-serif text-[20px] text-cream">
             {a.shops.map((s) => <option key={s.shopId} value={s.shopId}>{s.shopName}</option>)}
           </select>
         ) : <p className="font-serif text-[26px] leading-none md:text-[30px]">{shop.shopName}</p>;

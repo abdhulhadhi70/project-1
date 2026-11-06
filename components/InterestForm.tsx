@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { getSupabase, supabaseConfigured } from "@/lib/supabase";
 
-const field = "mt-1.5 h-11 w-full border border-line-strong bg-chalk px-3 text-[15px] text-ink outline-none focus:border-ink";
+const field = "mt-1.5 h-11 w-full rounded-xl border border-line-strong bg-card px-3.5 text-[16px] text-ink outline-none focus:border-ink";
 const EMIRATES = ["Abu Dhabi", "Dubai", "Sharjah", "Ajman", "Umm Al Quwain", "Ras Al Khaimah", "Fujairah"];
 
 export function InterestForm() {
@@ -52,7 +52,7 @@ export function InterestForm() {
       <label className="block text-[13px] text-stone">Anything we should know (optional)
         <textarea name="message" rows={4} maxLength={1000} className={`${field} h-auto py-2`} />
       </label>
-      <button type="submit" disabled={busy} className="h-12 bg-ink px-6 text-[14px] font-medium text-chalk hover:bg-ink-soft disabled:opacity-60">{busy ? "Sending…" : "Send"}</button>
+      <button type="submit" disabled={busy} className="h-12 rounded-full bg-terracotta text-white transition-colors hover:bg-terracotta-deep px-6 text-[15px] font-medium disabled:opacity-60">{busy ? "Sending…" : "Send"}</button>
       <p className="text-[12px] text-stone">We use these details only to contact you about listing your shop.</p>
     </form>
   );

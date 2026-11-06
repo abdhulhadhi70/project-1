@@ -22,7 +22,7 @@ export default function Areas() {
   return (
     <div className="grid gap-5 lg:grid-cols-[1.2fr_1fr]">
       <Card title="Areas" action={<Button variant="secondary" className="h-9" onClick={() => { setEdit({ ...empty }); setIsNew(true); }}>+ New area</Button>}>
-        <ul className="divide-y divide-line border-y border-line text-[14px]">
+        <ul className="divide-y divide-line rounded-2xl border border-line bg-card px-4 text-[14px]">
           {areas.map((a) => (
             <li key={a.slug} className="flex items-center justify-between gap-3 py-2">
               <span>{a.name} <span className="text-[12px] text-stone">· {a.emirate}</span></span>

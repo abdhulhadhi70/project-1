@@ -88,15 +88,19 @@
 /* Map pins and popups (Leaflet renders these outside React). */
 .tibr-pin {
   display: grid; place-items: center; width: 34px; height: 34px; border-radius: 9999px;
-  background: var(--color-ink); color: var(--color-chalk); font: 600 13px/1 var(--font-sans);
+  background: var(--color-cocoa); color: var(--color-cream); font: 600 13px/1 var(--font-sans);
   box-shadow: 0 0 0 3px var(--color-chalk), 0 4px 10px rgb(30 20 16 / 0.35);
 }
-.leaflet-marker-icon:focus-visible .tibr-pin, .leaflet-marker-icon:hover .tibr-pin { background: var(--color-brass-deep); }
+.leaflet-marker-icon:focus-visible .tibr-pin, .leaflet-marker-icon:hover .tibr-pin { background: var(--color-terracotta); }
 .tibr-pop { display: grid; gap: 2px; font: 14px/1.35 var(--font-sans); color: var(--color-ink); min-width: 11rem; }
 .tibr-pop span { color: var(--color-stone); font-size: 12px; }
-.tibr-pop button { margin-top: 8px; height: 34px; background: var(--color-ink); color: var(--color-chalk); font-size: 13px; cursor: pointer; }
-.leaflet-popup-content-wrapper { border-radius: 2px; box-shadow: 0 12px 28px -18px rgb(30 20 16 / 0.6); }
+.tibr-pop button { margin-top: 8px; height: 40px; border-radius: 9999px; background: var(--color-terracotta); color: #fff; font-size: 13px; cursor: pointer; }
+.leaflet-popup-content-wrapper { box-shadow: 0 12px 28px -18px rgb(30 20 16 / 0.6); }
 .leaflet-container { font-family: var(--font-sans); background: var(--color-limestone); }
+/* Quiet the standard OSM colours so pins and the page lead. */
+.tibr-tiles { filter: grayscale(0.85) sepia(0.18) brightness(1.04) contrast(0.92); }
+.leaflet-popup-content-wrapper, .leaflet-popup-tip { border-radius: 14px; }
+.leaflet-bar { border-radius: 12px !important; overflow: hidden; }
 
 /* The silk light behind the hero: two soft warm pools on cocoa. */
 @utility cocoa-glow {

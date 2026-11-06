@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { PageHeader } from "@/components/PageHeader";
 import { useEffect, useState } from "react";
 import { ResultCard } from "@/components/search/ResultCard";
 import { CloseIcon } from "@/components/Icons";
@@ -19,13 +20,13 @@ export default function SavedPage() {
   const list = saved.flatMap((s) => pieceBySlug.get(s) ?? []);
 
   return (
-    <section className="page page-x pt-8 md:pt-12">
-      <h1 className="font-serif text-[36px] leading-none tracking-[-0.015em] md:text-[48px]">Saved</h1>
-      <p className="mt-3 text-[13px] text-stone">Kept in this browser only. Nothing is sent anywhere, and there is no account.</p>
-      <div role="tablist" className="mt-6 flex gap-6 border-b border-line">
+    <>
+    <PageHeader title="Saved" intro="Kept in this browser only. Nothing is sent anywhere, and there is no account." />
+    <section className="page page-x pt-6 md:pt-8">
+      <div role="tablist" className="inline-flex rounded-full border border-line-strong bg-card p-1">
         {([["pieces", `Pieces${ready ? ` (${list.length})` : ""}`], ["searches", `Searches${ready ? ` (${searches.length})` : ""}`]] as const).map(([id, label]) => (
           <button key={id} role="tab" type="button" aria-selected={tab === id} onClick={() => setTab(id)}
-            className={`-mb-px h-11 border-b-2 text-[15px] ${tab === id ? "border-ink text-ink" : "border-transparent text-stone hover:text-ink"}`}>{label}</button>
+            className={`h-10 rounded-full px-4 text-[14px] ${tab === id ? "bg-cocoa text-cream" : "text-ink-soft hover:text-ink"}`}>{label}</button>
         ))}
       </div>
       <div className="mt-6">
@@ -38,7 +39,7 @@ export default function SavedPage() {
             <EmptyState title="No saved pieces yet." text="Tap the heart on any piece to keep it here while you compare." />
           )
         ) : searches.length ? (
-          <ul className="divide-y divide-line border-y border-line">
+          <ul className="divide-y divide-line rounded-2xl border border-line bg-card px-4">
             {searches.map((s) => (
               <li key={s.href} className="flex items-center justify-between gap-4 py-3">
                 <Link href={s.href} className="min-w-0">
@@ -56,6 +57,7 @@ export default function SavedPage() {
         )}
       </div>
     </section>
+    </>
   );
 }
 
@@ -64,7 +66,7 @@ function EmptyState({ title, text }: { title: string; text: string }) {
     <div className="py-16 text-center md:py-24">
       <p className="font-serif text-[28px] leading-tight">{title}</p>
       <p className="mx-auto mt-3 max-w-sm text-[14px] text-stone">{text}</p>
-      <Link href="/search" className="mt-6 inline-flex h-11 items-center border border-ink px-5 text-[14px] hover:bg-ink hover:text-chalk">Start searching</Link>
+      <Link href="/search" className="mt-6 inline-flex h-11 items-center rounded-full border border-ink px-5 text-[14px] hover:bg-cocoa hover:text-cream">Start searching</Link>
     </div>
   );
 }

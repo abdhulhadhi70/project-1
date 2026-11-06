@@ -35,7 +35,7 @@ export default function Applications() {
   }
 
   return (
-    <ul className="divide-y divide-line border-y border-line">
+    <ul className="divide-y divide-line rounded-2xl border border-line bg-card px-4">
       {apps.map((a) => (
         <li key={a.id} className="grid gap-2 py-4 sm:grid-cols-[1fr_auto] sm:items-start">
           <div>

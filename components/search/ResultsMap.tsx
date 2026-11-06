@@ -1,7 +1,9 @@
 "use client";
-// Map of the jewellers behind the current results. Leaflet with CARTO's
-// light basemap (free with attribution), whose quiet greys sit with the
-// palette. Pins carry the number of matching pieces at that shop.
+// Map of the jewellers behind the current results. Leaflet with the
+// OpenStreetMap standard tiles (free with attribution, for light use), toned
+// down in CSS to sit with the palette. CARTO's basemaps now need an API key.
+// For real traffic, move to a tile plan with a key. Pins carry the number of
+// matching pieces at that shop.
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useEffect, useRef } from "react";
@@ -24,10 +26,10 @@ export default function ResultsMap({ shops, onPick, className = "" }: {
   useEffect(() => {
     if (!el.current || map.current) return;
     const m = L.map(el.current, { scrollWheelZoom: false, zoomControl: true, attributionControl: true }).setView([25.05, 55.1], 9);
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19,
-      subdomains: "abcd",
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      className: "tibr-tiles",
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(m);
     layer.current = L.layerGroup().addTo(m);
     map.current = m;

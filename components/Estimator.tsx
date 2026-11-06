@@ -10,7 +10,7 @@ import { estimatePrice, VAT_RATE, type MakingChargeType } from "@/lib/pricing";
 const PURITIES: Purity[] = ["24K", "22K", "21K", "18K"];
 const UNITS = { g: { label: "grams", grams: 1 }, tola: { label: "tola", grams: 11.6638 }, oz: { label: "troy ounces", grams: 31.1035 } } as const;
 type Unit = keyof typeof UNITS;
-const field = "mt-1.5 h-12 w-full border border-line-strong bg-chalk px-3 text-[15px] text-ink outline-none focus:border-ink";
+const field = "mt-1.5 h-12 w-full rounded-xl border border-line-strong bg-card px-3.5 text-[16px] text-ink outline-none focus:border-ink";
 const num = (v: string) => v.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
 
 export function Estimator() {
@@ -33,10 +33,10 @@ export function Estimator() {
       <form className="grid gap-5" onSubmit={(ev) => ev.preventDefault()}>
         <fieldset>
           <legend className="text-[13px] text-stone">Purity</legend>
-          <div className="mt-1.5 grid grid-cols-4">
+          <div className="mt-1.5 grid grid-cols-4 rounded-full border border-line-strong bg-card p-1">
             {PURITIES.map((p) => (
               <button key={p} type="button" aria-pressed={purity === p} onClick={() => setPurity(p)}
-                className={`-ml-px h-12 border text-[15px] first:ml-0 ${purity === p ? "relative border-ink bg-ink text-chalk" : "border-line-strong text-ink"}`}>{p}</button>
+                className={`h-11 rounded-full text-[15px] transition-colors ${purity === p ? "bg-cocoa text-cream" : "text-ink hover:bg-limestone"}`}>{p}</button>
             ))}
           </div>
         </fieldset>
@@ -69,7 +69,7 @@ export function Estimator() {
         </label>
       </form>
 
-      <section aria-label="Estimate" className="border border-line">
+      <section aria-label="Estimate" className="overflow-hidden rounded-3xl border border-line bg-card">
         <div className="border-b border-line bg-limestone/60 px-5 py-4">
           <p className="text-[13px] text-stone">Estimated total</p>
           <p className="mt-1 text-[34px] font-semibold tracking-[-0.01em]" aria-live="polite">{e ? aed(Math.round(e.total)) : "—"}</p>

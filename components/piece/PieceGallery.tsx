@@ -28,7 +28,7 @@ export function PieceGallery({ images, name }: { images: string[]; name: string 
     <div>
       {/* Phone: swipe between views; tap opens the viewer. */}
       <div className="relative md:hidden">
-        <div className="no-scrollbar -mx-4 flex snap-x snap-mandatory overflow-x-auto"
+        <div className="no-scrollbar flex snap-x snap-mandatory overflow-x-auto rounded-3xl"
           onScroll={(e) => setIndex(Math.round(e.currentTarget.scrollLeft / e.currentTarget.clientWidth))}>
           {images.map((img, i) => (
             <button key={img} type="button" onClick={() => setViewer(true)} className="aspect-square w-full shrink-0 snap-center bg-limestone" aria-label="Open photo viewer">
@@ -36,16 +36,16 @@ export function PieceGallery({ images, name }: { images: string[]; name: string 
             </button>
           ))}
         </div>
-        <span className="pointer-events-none absolute bottom-3 left-0 inline-flex items-center gap-1 bg-ink/70 px-2 py-0.5 text-[12px] text-chalk">
+        <span className="pointer-events-none absolute bottom-3 left-3 inline-flex items-center gap-1 rounded-full bg-cocoa/70 px-2.5 py-0.5 text-[12px] text-cream">
           <CameraIcon /> {index + 1}/{images.length}
         </span>
       </div>
 
       {/* Desktop */}
       <div className="hidden md:block">
-        <button type="button" onClick={() => setViewer(true)} className="group relative block aspect-[4/5] w-full overflow-hidden bg-limestone" aria-label="Open photo viewer">
+        <button type="button" onClick={() => setViewer(true)} className="group relative block aspect-[4/5] w-full overflow-hidden rounded-3xl bg-limestone" aria-label="Open photo viewer">
           <PieceImage name={images[index]} alt={alt(index)} sizes="(min-width: 1280px) 48vw, 56vw" priority className="size-full object-cover" />
-          <span className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 bg-chalk/95 px-2.5 py-1.5 text-[13px] text-ink opacity-90 group-hover:opacity-100">
+          <span className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-card/95 px-3 py-1.5 text-[13px] text-ink opacity-90 group-hover:opacity-100">
             <ExpandIcon /> View {images.length > 1 ? `all ${images.length} photos` : "full size"}
           </span>
         </button>
@@ -54,7 +54,7 @@ export function PieceGallery({ images, name }: { images: string[]; name: string 
             {images.map((img, i) => (
               <li key={img}>
                 <button type="button" onClick={() => setIndex(i)} aria-label={`Show view ${i + 1}`} aria-current={i === index}
-                  className={`block w-20 border-b-2 pb-1 transition-opacity ${i === index ? "border-ink" : "border-transparent opacity-70 hover:opacity-100"}`}>
+                  className={`block w-20 overflow-hidden rounded-xl border-2 transition-opacity ${i === index ? "border-brass" : "border-transparent opacity-70 hover:opacity-100"}`}>
                   <PieceImage name={img} alt="" sizes="80px" className="aspect-[4/5] w-full bg-limestone object-cover" />
                 </button>
               </li>
@@ -65,7 +65,7 @@ export function PieceGallery({ images, name }: { images: string[]; name: string 
 
       {viewer && (
         <dialog ref={dialog} onClose={() => setViewer(false)} aria-label={`${name} photos`}
-          className="m-0 h-dvh max-h-none w-full max-w-none bg-ink p-0 text-chalk backdrop:bg-ink">
+          className="m-0 h-dvh max-h-none w-full max-w-none bg-cocoa p-0 text-cream backdrop:bg-cocoa">
           <div className="flex h-full flex-col">
             <div className="flex items-center justify-between px-4 py-3">
               <p className="text-[13px] text-chalk/80">{name} · {index + 1} / {images.length}</p>

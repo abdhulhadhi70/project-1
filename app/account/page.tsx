@@ -20,7 +20,7 @@ function Account() {
   return (
     <div className="space-y-5">
       {params.get("password") === "updated" && <Notice tone="ok">Your password has been changed.</Notice>}
-      <dl className="divide-y divide-line border-y border-line text-[14px]">
+      <dl className="divide-y divide-line rounded-2xl border border-line bg-card px-4 text-[14px]">
         <div className="grid grid-cols-[7rem_1fr] gap-3 py-2.5"><dt className="text-stone">Signed in as</dt><dd>{account.name ? `${account.name} · ` : ""}{account.email}</dd></div>
         <div className="grid grid-cols-[7rem_1fr] gap-3 py-2.5"><dt className="text-stone">Access</dt><dd>{account.isAdmin ? "Admin: the whole site" : account.shops.length ? "Jeweller" : "None yet"}</dd></div>
         {account.shops.map((s) => (
@@ -34,11 +34,11 @@ function Account() {
         <Notice>Your account isn&apos;t linked to a shop yet. Ask your shop&apos;s owner, or our team, to invite this email address.</Notice>
       )}
       <div className="flex flex-wrap gap-3">
-        {account.shops.length > 0 && <Link href="/dashboard" className="inline-flex h-11 items-center bg-ink px-5 text-[14px] text-chalk hover:bg-ink-soft">Open the jeweller portal</Link>}
-        {account.isAdmin && <Link href="/admin" className="inline-flex h-11 items-center bg-ink px-5 text-[14px] text-chalk hover:bg-ink-soft">Open the admin portal</Link>}
+        {account.shops.length > 0 && <Link href="/dashboard" className="inline-flex h-11 items-center rounded-full bg-terracotta px-5 text-[14px] text-white transition-colors hover:bg-terracotta-deep">Open the jeweller portal</Link>}
+        {account.isAdmin && <Link href="/admin" className="inline-flex h-11 items-center rounded-full bg-terracotta px-5 text-[14px] text-white transition-colors hover:bg-terracotta-deep">Open the admin portal</Link>}
       </div>
       <button type="button" onClick={async () => { await getSupabase().auth.signOut(); router.replace("/login"); }}
-        className="h-11 border border-ink px-5 text-[14px] hover:bg-ink hover:text-chalk">Sign out</button>
+        className="h-11 rounded-full border border-ink px-5 text-[14px] hover:bg-cocoa hover:text-cream">Sign out</button>
     </div>
   );
 }

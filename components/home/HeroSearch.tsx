@@ -14,7 +14,7 @@ function Select<T extends string>({ label, value, onChange, options }: {
     <label className="relative block">
       <span className="sr-only">{label}</span>
       <select value={value} onChange={(e) => onChange(e.target.value as T | "")}
-        className="h-14 w-full appearance-none rounded-xl border border-line-strong bg-card pl-3 pr-7 text-[14px] text-ink outline-none focus:border-ink md:pl-3 md:pr-8 md:text-[15px]">
+        className="h-14 w-full appearance-none rounded-xl border border-line-strong bg-card pl-3 pr-7 text-[16px] text-ink outline-none focus:border-ink md:pl-3 md:pr-8 md:text-[15px]">
         <option value="">{label}</option>
         {options.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
       </select>

@@ -22,7 +22,7 @@ export function ResultsPanel({ shopId, pieces, title = "Last 30 days" }: { shopI
     <Card title={title}>
       <dl className="grid grid-cols-2 gap-px bg-line sm:grid-cols-3 lg:grid-cols-6">
         {LABELS.map(([k, label]) => (
-          <div key={k} className="bg-chalk p-3">
+          <div key={k} className="bg-card p-3">
             <dt className="text-[12px] text-stone">{label}</dt>
             <dd className="mt-1 text-[24px] font-semibold tabular-nums">{r ? r.counts[k] : "…"}</dd>
           </div>

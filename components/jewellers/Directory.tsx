@@ -64,10 +64,10 @@ export function Directory() {
             {LANGUAGES.map((l) => <option key={l}>{l}</option>)}
           </select>
         </label>
-        <div role="group" aria-label="View" className="flex">
+        <div role="group" aria-label="View" className="flex rounded-full border border-line-strong bg-card p-1">
           {([["list", ListIcon, "List"], ["map", MapIcon, "Map"]] as const).map(([v, Icon, label]) => (
             <button key={v} type="button" onClick={() => setView(v)} aria-pressed={view === v}
-              className={`-ml-px inline-flex h-11 flex-1 items-center justify-center gap-1.5 border px-3 text-[13px] first:ml-0 ${view === v ? "relative border-ink bg-ink text-chalk" : "border-line-strong text-ink-soft"}`}>
+              className={`inline-flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full px-4 text-[13px] ${view === v ? "bg-cocoa text-cream" : "text-ink-soft"}`}>
               <Icon className="size-4" /> {label}
             </button>
           ))}
@@ -78,14 +78,14 @@ export function Directory() {
       {view === "map" && list.length > 0 && (
         <div className="mt-3 h-[60vh]">
           <ResultsMap shops={list.map((s) => ({ shop: s, count: count(s.slug), label: s.name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2) }))}
-            className="size-full border border-line" onPick={(s) => router.push(shopHref(s))} />
+            className="size-full overflow-hidden rounded-2xl border border-line" onPick={(s) => router.push(shopHref(s))} />
         </div>
       )}
 
       {list.length === 0 ? (
-        <div className="mt-6 border-t border-line py-16 text-center">
+        <div className="mt-6 rounded-3xl border border-line bg-card px-5 py-16 text-center">
           <p className="font-serif text-[26px]">No jeweller matches that.</p>
-          <button type="button" onClick={() => { setText(""); setPlace(""); setLang(""); }} className="mt-5 h-11 border border-ink px-5 text-[14px]">Show all jewellers</button>
+          <button type="button" onClick={() => { setText(""); setPlace(""); setLang(""); }} className="mt-5 h-11 rounded-full border border-ink px-5 text-[14px]">Show all jewellers</button>
         </div>
       ) : (
         <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -94,16 +94,16 @@ export function Directory() {
             const cover = coverFor(s);
             return (
               <li key={s.slug}>
-                <Link href={shopHref(s.slug)} className="group flex h-full flex-col border border-line hover:shadow-[0_12px_28px_-22px_rgb(37_36_31/0.5)]">
-                  <div className="aspect-[16/9] overflow-hidden bg-limestone">
+                <Link href={shopHref(s.slug)} className="group flex h-full flex-col rounded-2xl border border-line bg-card p-2 transition-shadow hover:shadow-[0_18px_36px_-24px_rgb(30_20_16/0.45)]">
+                  <div className="aspect-[16/9] overflow-hidden rounded-xl bg-limestone">
                     <PieceImage name={cover?.images[0] ?? "hero"} alt="" sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
                       className="size-full object-cover transition-transform duration-700 ease-quiet group-hover:scale-[1.04]" />
                   </div>
-                  <div className="flex flex-1 flex-col p-4">
+                  <div className="flex flex-1 flex-col px-2 pb-2 pt-3">
                     <div className="flex items-center gap-3">
                       <Monogram name={s.name} className="size-10 text-[12px]" />
                       <div className="min-w-0">
-                        <p className="truncate text-[16px] text-ink">{s.name}</p>
+                        <p className="truncate font-serif text-[22px] leading-tight text-ink">{s.name}</p>
                         <p className="truncate text-[13px] text-stone">{a.name}, {a.emirate}</p>
                       </div>
                     </div>
@@ -112,7 +112,7 @@ export function Directory() {
                       <div className="flex gap-2"><dt className="w-16 shrink-0 text-stone">Speaks</dt><dd>{s.languages.join(", ")}</dd></div>
                       {s.hours && <div className="flex gap-2"><dt className="w-16 shrink-0 text-stone">Hours</dt><dd>{s.hours}</dd></div>}
                     </dl>
-                    <p className="mt-auto pt-4 text-[13px] text-ink">{count(s.slug)} pieces listed →</p>
+                    <p className="mt-auto pt-4"><span className="inline-flex rounded-full bg-limestone px-3 py-1 text-[13px] text-ink">{count(s.slug)} pieces listed</span></p>
                   </div>
                 </Link>
               </li>

@@ -36,9 +36,9 @@ export default function AdminOverview() {
   return (
     <div className="space-y-5">
       {error && <Notice tone="error">{error}</Notice>}
-      <dl className="grid grid-cols-2 gap-px border border-line bg-line sm:grid-cols-3 lg:grid-cols-5">
+      <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-3 lg:grid-cols-5">
         {tiles.map(([label, n, href]) => (
-          <Link key={label} href={href ?? "#"} className="bg-chalk p-4 hover:bg-limestone/60">
+          <Link key={label} href={href ?? "#"} className="bg-card p-4 hover:bg-limestone/60">
             <dt className="text-[12px] text-stone">{label}</dt>
             <dd className="mt-1 text-[26px] font-semibold tabular-nums">{n}</dd>
           </Link>
@@ -46,7 +46,7 @@ export default function AdminOverview() {
       </dl>
       <Card title="Results by jeweller" action={
         <div className="flex items-center gap-3">
-          <select aria-label="Period" value={days} onChange={(e) => setDays(Number(e.target.value))} className="h-9 border border-line-strong bg-chalk px-2 text-[13px]">
+          <select aria-label="Period" value={days} onChange={(e) => setDays(Number(e.target.value))} className="h-11 rounded-xl border border-line-strong bg-card px-2.5 text-[16px] md:h-10 md:text-[13px]">
             <option value={7}>Last 7 days</option><option value={30}>Last 30 days</option><option value={90}>Last 90 days</option>
           </select>
           <Button variant="secondary" className="h-9" disabled={!stats} onClick={() => downloadCsv(`results-last-${days}-days.csv`,

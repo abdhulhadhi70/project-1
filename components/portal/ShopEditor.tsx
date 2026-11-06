@@ -94,12 +94,12 @@ export function ShopEditor({ initial, admin = false, onSave, saveLabel = "Save c
       </div>
 
       <aside className="space-y-4 lg:sticky lg:top-[calc(var(--header-h)+1rem)] lg:self-start">
-        <div className="border border-line p-4">
+        <div className="rounded-2xl border border-line bg-card p-4">
           <Toggle checked={d.show_prices} onChange={(show_prices) => set({ show_prices })} label="Show prices"
             hint="Off: every piece shows “Price on request”, with weight and purity." />
         </div>
         {admin && (
-          <div className="space-y-3 border border-line p-4">
+          <div className="space-y-3 rounded-2xl border border-line bg-card p-4">
             <p className="text-[13px] font-medium">Admin</p>
             <Field label="Web address (slug)" hint="Used in the shop's link.">
               <input className={input} value={d.slug} onChange={(e) => set({ slug: slugify(e.target.value) })} placeholder={slugify(d.name) || "shop-name"} />

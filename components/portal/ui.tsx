@@ -3,7 +3,7 @@
 // tap targets and plain labels: most jewellers will use these on a phone.
 import { useEffect, useState } from "react";
 
-export const input = "mt-1.5 h-12 w-full border border-line-strong bg-chalk px-3 text-[15px] text-ink outline-none focus:border-ink disabled:bg-limestone disabled:text-stone";
+export const input = "mt-1.5 h-12 w-full rounded-xl border border-line-strong bg-card px-3.5 text-[16px] text-ink outline-none focus:border-ink disabled:bg-limestone disabled:text-stone";
 
 export function Field({ label, hint, children, className = "" }: { label: string; hint?: string; children: React.ReactNode; className?: string }) {
   return (
@@ -17,26 +17,26 @@ export function Field({ label, hint, children, className = "" }: { label: string
 
 export function Button({ variant = "primary", className = "", ...rest }: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" | "secondary" | "danger" | "quiet" }) {
   const v = {
-    primary: "bg-ink text-chalk hover:bg-ink-soft",
-    secondary: "border border-ink text-ink hover:bg-limestone",
-    danger: "border border-[#9a3b2f] text-[#7d2f25] hover:bg-[#9a3b2f] hover:text-chalk",
+    primary: "rounded-full bg-terracotta text-white hover:bg-terracotta-deep",
+    secondary: "rounded-full border border-ink text-ink hover:bg-limestone",
+    danger: "rounded-full border border-[#9a3b2f] text-[#7d2f25] hover:bg-[#9a3b2f] hover:text-white",
     quiet: "text-ink-soft underline decoration-line-strong underline-offset-4 hover:text-ink",
   }[variant];
-  const size = variant === "quiet" ? "h-10 px-1" : "h-11 px-4";
-  return <button type="button" {...rest} className={`inline-flex items-center justify-center gap-2 text-[14px] disabled:opacity-50 ${size} ${v} ${className}`} />;
+  const size = variant === "quiet" ? "h-10 px-1" : "h-11 px-5";
+  return <button type="button" {...rest} className={`inline-flex items-center justify-center gap-2 text-[14px] transition-colors disabled:opacity-50 ${size} ${v} ${className}`} />;
 }
 
 export function Notice({ tone = "info", children }: { tone?: "info" | "error" | "ok" | "warn"; children: React.ReactNode }) {
   const c = { error: "border-[#9a3b2f] text-[#7d2f25]", ok: "border-ink text-ink", warn: "border-brass text-ink", info: "border-line-strong text-ink-soft" }[tone];
-  return <div role={tone === "error" ? "alert" : "status"} className={`border-l-2 bg-limestone/60 px-3 py-2.5 text-[14px] ${c}`}>{children}</div>;
+  return <div role={tone === "error" ? "alert" : "status"} className={`rounded-xl border-l-2 bg-limestone/60 px-3.5 py-2.5 text-[14px] ${c}`}>{children}</div>;
 }
 
 export function Card({ title, action, children, className = "" }: { title?: string; action?: React.ReactNode; children: React.ReactNode; className?: string }) {
   return (
-    <section className={`border border-line bg-chalk p-4 md:p-5 ${className}`}>
+    <section className={`rounded-3xl border border-line bg-card p-4 md:p-6 ${className}`}>
       {(title || action) && (
         <div className="mb-3 flex items-baseline justify-between gap-3">
-          {title && <h2 className="text-[15px] font-medium">{title}</h2>}
+          {title && <h2 className="font-serif text-[22px] leading-tight">{title}</h2>}
           {action}
         </div>
       )}
@@ -53,7 +53,7 @@ export function Toggle({ checked, onChange, label, hint, disabled }: { checked: 
         {hint && <span className="block text-[12px] text-stone">{hint}</span>}
       </span>
       <input type="checkbox" role="switch" checked={checked} disabled={disabled} onChange={(e) => onChange(e.target.checked)}
-        className="relative mt-0.5 h-6 w-11 shrink-0 cursor-pointer appearance-none rounded-full bg-line-strong transition-colors checked:bg-ink before:absolute before:left-0.5 before:top-0.5 before:size-5 before:rounded-full before:bg-chalk before:transition-transform checked:before:translate-x-5" />
+        className="relative mt-0.5 h-6 w-11 shrink-0 cursor-pointer appearance-none rounded-full bg-line-strong transition-colors checked:bg-terracotta before:absolute before:left-0.5 before:top-0.5 before:size-5 before:rounded-full before:bg-chalk before:transition-transform checked:before:translate-x-5" />
     </label>
   );
 }
@@ -65,7 +65,7 @@ export function Chips<T extends string>({ options, value, onChange }: { options:
         const on = value.includes(o.id);
         return (
           <button key={o.id} type="button" aria-pressed={on} onClick={() => onChange(on ? value.filter((x) => x !== o.id) : [...value, o.id])}
-            className={`h-10 border px-3 text-[13px] ${on ? "border-ink bg-ink text-chalk" : "border-line-strong text-ink hover:border-ink"}`}>
+            className={`h-10 rounded-full border px-4 text-[13px] ${on ? "border-cocoa bg-cocoa text-cream" : "border-line-strong bg-card text-ink hover:border-ink"}`}>
             {o.label}
           </button>
         );
@@ -85,7 +85,7 @@ export const STATUS_OPTIONS = (Object.keys(STATUS) as PieceStatus[]).map((id) =>
 
 export function StatusBadge({ status }: { status: PieceStatus }) {
   const s = STATUS[status];
-  return <span className={`inline-block px-2 py-0.5 text-[12px] ${s.c}`}>{s.label}</span>;
+  return <span className={`inline-block rounded-full px-2.5 py-0.5 text-[12px] ${s.c}`}>{s.label}</span>;
 }
 
 /** A short-lived message after saving. */
@@ -101,12 +101,12 @@ export function useFlash(): [string, (m: string) => void] {
 
 export function Flash({ message }: { message: string }) {
   if (!message) return null;
-  return <p role="status" className="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-sm bg-ink px-4 py-3 text-center text-[14px] text-chalk shadow-lg md:bottom-6">{message}</p>;
+  return <p role="status" className="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-sm rounded-full bg-cocoa px-5 py-3 text-center text-[14px] text-cream shadow-lg md:bottom-6">{message}</p>;
 }
 
 export function Empty({ title, children }: { title: string; children?: React.ReactNode }) {
   return (
-    <div className="border border-dashed border-line-strong px-4 py-12 text-center">
+    <div className="rounded-3xl border border-dashed border-line-strong bg-card px-4 py-12 text-center">
       <p className="font-serif text-[24px] leading-tight">{title}</p>
       {children && <div className="mt-3 text-[14px] text-stone">{children}</div>}
     </div>

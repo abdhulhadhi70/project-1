@@ -58,8 +58,8 @@ export default function Overview() {
             <div className="flex justify-between"><dt className="text-stone">New visit requests</dt><dd>{newRequests ? <Link href="/dashboard/requests" className="underline">{newRequests}</Link> : 0}</dd></div>
           </dl>
           <div className="mt-4 flex gap-3">
-            <Link href="/dashboard/piece" className="inline-flex h-11 items-center bg-ink px-4 text-[14px] text-chalk hover:bg-ink-soft">+ Add a piece</Link>
-            <Link href="/dashboard/pieces" className="inline-flex h-11 items-center border border-ink px-4 text-[14px]">All pieces</Link>
+            <Link href="/dashboard/piece" className="inline-flex h-11 items-center rounded-full bg-terracotta px-5 text-[14px] text-white transition-colors hover:bg-terracotta-deep">+ Add a piece</Link>
+            <Link href="/dashboard/pieces" className="inline-flex h-11 items-center rounded-full border border-ink px-5 text-[14px] hover:bg-limestone">All pieces</Link>
           </div>
         </Card>
       </div>

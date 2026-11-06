@@ -75,7 +75,7 @@ below the gold it contains, and a test checks this.
 and set `demo: false`. Until then, the buttons and the visit form say
 plainly that the listing is a demonstration, and nothing is sent.
 
-**Map:** Leaflet with CARTO's free light basemap (attribution shown). For
+**Map:** Leaflet with the OpenStreetMap standard tiles (attribution shown), toned down in CSS. CARTO's basemaps now need an API key. For
 heavy traffic, move to a paid tile plan or self-hosted tiles.
 
 ## The images

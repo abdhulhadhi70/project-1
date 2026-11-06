@@ -18,7 +18,7 @@ export function RequestList({ requests, setRequests, pieces, shopName }: {
   return (
     <div className="space-y-3">
       {error && <Notice tone="error">{error}</Notice>}
-      <ul className="divide-y divide-line border-y border-line">
+      <ul className="divide-y divide-line rounded-2xl border border-line bg-card px-4">
         {requests.map((r) => {
           const piece = pieces.find((p) => p.id === r.piece_id);
           const phone = r.customer_phone.replace(/[^\d+]/g, "");
@@ -35,7 +35,7 @@ export function RequestList({ requests, setRequests, pieces, shopName }: {
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <a href={`https://wa.me/${wa}`} target="_blank" rel="noopener" className="inline-flex h-10 items-center border border-line-strong px-3 text-[13px] hover:border-ink">WhatsApp</a>
-                <select aria-label={`Status for ${r.customer_name}`} value={r.status} className="h-10 border border-line-strong bg-chalk px-2 text-[13px]"
+                <select aria-label={`Status for ${r.customer_name}`} value={r.status} className="h-11 rounded-xl border border-line-strong bg-card px-2.5 text-[16px] md:h-10 md:text-[13px]"
                   onChange={async (e) => {
                     const status = e.target.value as VisitRequestRow["status"];
                     setError("");

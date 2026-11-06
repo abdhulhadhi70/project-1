@@ -10,7 +10,7 @@ export function SavedLink() {
       <HeartIcon className="size-[19px]" />
       <span>Saved</span>
       {saved.length > 0 && (
-        <span className="min-w-5 rounded-full bg-ink px-1.5 text-center text-[11px] leading-5 text-chalk" aria-label={`${saved.length} saved`}>
+        <span className="min-w-5 rounded-full bg-terracotta px-1.5 text-center text-[11px] leading-5 text-white" aria-label={`${saved.length} saved`}>
           {saved.length}
         </span>
       )}

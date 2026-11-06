@@ -38,16 +38,16 @@ export function PieceList({ pieces, setPieces, editHref, shopName, shopNames, ne
             {STATUS_OPTIONS.map((s) => <option key={s.id} value={s.id}>{s.label} ({pieces.filter((p) => p.status === s.id).length})</option>)}
           </select>
         </label>
-        {newHref && <Link href={newHref} className="inline-flex h-12 items-center bg-ink px-4 text-[14px] text-chalk hover:bg-ink-soft">+ Add a piece</Link>}
+        {newHref && <Link href={newHref} className="inline-flex h-12 items-center rounded-full bg-terracotta px-5 text-[14px] text-white transition-colors hover:bg-terracotta-deep">+ Add a piece</Link>}
       </div>
       {error && <Notice tone="error">{error}</Notice>}
       {!shown.length ? (
         <Empty title={pieces.length ? "Nothing matches." : "No pieces yet."}>{!pieces.length && newHref && <Link href={newHref} className="underline">Add your first piece</Link>}</Empty>
       ) : (
-        <ul className="divide-y divide-line border-y border-line">
+        <ul className="divide-y divide-line rounded-3xl border border-line bg-card px-3 md:px-4">
           {shown.map((p) => (
             <li key={p.id} className="grid grid-cols-[4.5rem_1fr] gap-3 py-3 sm:grid-cols-[4.5rem_1fr_auto] sm:items-center">
-              <Link href={editHref(p)} className="block aspect-[4/5] overflow-hidden bg-limestone">
+              <Link href={editHref(p)} className="block aspect-[4/5] overflow-hidden rounded-xl bg-limestone">
                 {p.images[0] && <PieceImage name={p.images[0]} alt="" sizes="72px" className="size-full object-cover" />}
               </Link>
               <div className="min-w-0">
@@ -61,12 +61,14 @@ export function PieceList({ pieces, setPieces, editHref, shopName, shopNames, ne
                   {p.featured_order !== null && <span className="text-brass-deep">· Featured #{p.featured_order}</span>}
                 </p>
               </div>
-              <div className="col-span-2 flex flex-wrap items-center gap-2 sm:col-span-1 sm:justify-end">
-                <select aria-label={`Status of ${p.name}`} value={p.status} className="h-10 border border-line-strong bg-chalk px-2 text-[13px]"
+              <div className="col-span-2 flex flex-wrap items-center gap-x-2 gap-y-1 sm:col-span-1 sm:justify-end">
+                <div className="flex w-full gap-2 sm:w-auto">
+                <select aria-label={`Status of ${p.name}`} value={p.status} className="h-11 min-w-0 flex-1 rounded-xl border border-line-strong bg-card px-2.5 text-[16px] sm:flex-none md:h-10 md:text-[13px]"
                   onChange={(e) => act(async () => replace(await updatePiece(p.id, { status: e.target.value as PieceStatus })), "Status updated.")}>
                   {STATUS_OPTIONS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
                 </select>
-                <Link href={editHref(p)} className="inline-flex h-10 items-center border border-line-strong px-3 text-[13px] hover:border-ink">Edit</Link>
+                <Link href={editHref(p)} className="inline-flex h-11 items-center rounded-full bg-terracotta px-6 text-[14px] text-white transition-colors hover:bg-terracotta-deep md:h-10">Edit</Link>
+                </div>
                 {(p.status === "available" || p.status === "reserved_in_store") && (
                   <a href={pieceHref(p.slug)} target="_blank" rel="noopener" className="inline-flex h-10 items-center px-2 text-[13px] text-ink-soft underline decoration-line-strong underline-offset-4">View</a>
                 )}

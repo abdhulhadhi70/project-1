@@ -33,9 +33,9 @@ function Edit() {
       {row && (
         <>
           <div className="flex flex-wrap gap-3">
-            <Link href={`/admin/pieces?shop=${row.id}`} className="inline-flex h-11 items-center border border-ink px-4 text-[14px]">Their pieces</Link>
-            <Link href={`/admin/piece?shop=${row.id}`} className="inline-flex h-11 items-center border border-ink px-4 text-[14px]">+ Add a piece for them</Link>
-            <Link href={`/admin/report?shop=${row.id}`} className="inline-flex h-11 items-center border border-ink px-4 text-[14px]">Report</Link>
+            <Link href={`/admin/pieces?shop=${row.id}`} className="inline-flex h-11 items-center rounded-full border border-ink px-5 text-[14px] hover:bg-limestone">Their pieces</Link>
+            <Link href={`/admin/piece?shop=${row.id}`} className="inline-flex h-11 items-center rounded-full border border-ink px-5 text-[14px] hover:bg-limestone">+ Add a piece for them</Link>
+            <Link href={`/admin/report?shop=${row.id}`} className="inline-flex h-11 items-center rounded-full border border-ink px-5 text-[14px] hover:bg-limestone">Report</Link>
           </div>
           <TeamPanel shopId={row.id} canManage canAddOwner me={admin?.email ?? ""} />
         </>

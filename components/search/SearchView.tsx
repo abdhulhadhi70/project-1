@@ -72,20 +72,20 @@ export function SearchView() {
           </div>
           <div className="flex items-center gap-2">
             <button type="button" onClick={() => toggle(savedHref, title)} aria-pressed={saved}
-              className={`inline-flex h-10 items-center gap-2 border px-3 text-[13px] ${saved ? "border-ink text-ink" : "border-line-strong text-ink-soft hover:border-ink hover:text-ink"}`}>
+              className={`inline-flex h-10 items-center gap-2 rounded-full border bg-card px-3.5 text-[13px] ${saved ? "border-ink text-ink" : "border-line-strong text-ink-soft hover:border-ink hover:text-ink"}`}>
               <BookmarkIcon filled={saved} className="size-4" /> {saved ? "Search saved" : "Save search"}
             </button>
-            <label className="relative hidden h-10 items-center gap-1.5 border border-line-strong px-3 text-[13px] text-stone lg:inline-flex">
+            <label className="relative hidden h-10 items-center gap-1.5 rounded-full border border-line-strong bg-card px-3.5 text-[13px] text-stone lg:inline-flex">
               Sort: <span className="text-ink">{SORTS.find((s) => s.id === query.sort)!.label}</span>
               <ChevronIcon className="size-3.5" />
               <select aria-label="Sort results" value={query.sort} onChange={(e) => set({ sort: e.target.value as Query["sort"] })} className="absolute inset-0 cursor-pointer opacity-0">
                 {SORTS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
               </select>
             </label>
-            <div role="group" aria-label="View" className="flex">
+            <div role="group" aria-label="View" className="flex rounded-full border border-line-strong bg-card p-0.5">
               {([["list", ListIcon, "List"], ["grid", GridIcon, "Grid"], ["map", MapIcon, "Map"]] as const).map(([v, Icon, label]) => (
                 <button key={v} type="button" onClick={() => setView(v)} aria-pressed={view === v} title={`${label} view`}
-                  className={`-ml-px inline-flex h-10 items-center gap-1.5 border px-2.5 text-[13px] first:ml-0 ${view === v ? "relative border-ink bg-ink text-chalk" : "border-line-strong text-ink-soft hover:text-ink"} ${v === "grid" ? "max-md:hidden" : ""}`}>
+                  className={`inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-[13px] ${view === v ? "bg-cocoa text-cream" : "text-ink-soft hover:text-ink"}`}>
                   <Icon className="size-4" /><span className="max-sm:sr-only">{label}</span>
                 </button>
               ))}
@@ -106,7 +106,7 @@ export function SearchView() {
             </div>
             <div className="order-1 lg:order-2">
               <div className="h-[46vh] lg:sticky lg:top-[calc(var(--header-h)+5.5rem)] lg:h-[calc(100dvh-var(--header-h)-7rem)]">
-                <ResultsMap shops={groupByShop(results)} onPick={(shop) => set({ shop })} className="size-full border border-line" />
+                <ResultsMap shops={groupByShop(results)} onPick={(shop) => set({ shop })} className="size-full overflow-hidden rounded-2xl border border-line" />
               </div>
               <p className="mt-1.5 text-[12px] text-stone">Pins show demonstration jewellers at approximate positions in real gold districts.</p>
             </div>
@@ -149,7 +149,7 @@ function ActiveChips({ query, set }: { query: Query; set: (p: Partial<Query>) =>
       {chips.map((c) => (
         <li key={c.label}>
           <button type="button" onClick={() => set(c.clear)} aria-label={`Remove filter ${c.label}`}
-            className="inline-flex h-8 items-center gap-1.5 bg-limestone pl-3 pr-2 text-[13px] text-ink hover:bg-limestone-deep">
+            className="inline-flex h-9 items-center gap-1.5 rounded-full bg-limestone pl-3.5 pr-2.5 text-[13px] text-ink hover:bg-limestone-deep">
             {c.label} <CloseIcon className="size-3.5 text-stone" />
           </button>
         </li>
@@ -160,14 +160,14 @@ function ActiveChips({ query, set }: { query: Query; set: (p: Partial<Query>) =>
 
 function Empty({ query, onReset }: { query: Query; onReset: () => void }) {
   return (
-    <div className="mt-6 border-t border-line py-16 text-center md:py-24">
+    <div className="mt-6 rounded-3xl border border-line bg-card px-5 py-16 text-center md:py-24">
       <p className="font-serif text-[28px] leading-tight">Nothing matches that yet.</p>
       <p className="mx-auto mt-3 max-w-sm text-[14px] text-stone">
         {query.q.trim()
           ? `No piece mentions “${query.q.trim()}” with these filters. Try a broader word, such as chain or ring.`
           : "No piece fits all of these filters together. Removing one usually helps."}
       </p>
-      <button type="button" onClick={onReset} className="mt-6 h-11 border border-ink px-5 text-[14px] hover:bg-ink hover:text-chalk">Clear filters</button>
+      <button type="button" onClick={onReset} className="mt-6 h-11 rounded-full border border-ink px-5 text-[14px] hover:bg-cocoa hover:text-cream">Clear filters</button>
     </div>
   );
 }

@@ -18,10 +18,10 @@ export default function AdminShops() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-end gap-3">
         <label className="min-w-[12rem] flex-1 text-[13px] text-stone">Search<input className={input} value={text} onChange={(e) => setText(e.target.value)} /></label>
-        <Link href="/admin/shop" className="inline-flex h-12 items-center bg-ink px-4 text-[14px] text-chalk hover:bg-ink-soft">+ New jeweller</Link>
+        <Link href="/admin/shop" className="inline-flex h-12 items-center rounded-full bg-terracotta px-5 text-[14px] text-white transition-colors hover:bg-terracotta-deep">+ New jeweller</Link>
       </div>
       {!shown.length ? <Empty title="No jewellers match." /> : (
-        <ul className="divide-y divide-line border-y border-line">
+        <ul className="divide-y divide-line rounded-2xl border border-line bg-card px-4">
           {shown.map((s) => (
             <li key={s.id}>
               <Link href={`/admin/shop?id=${s.id}`} className="flex flex-wrap items-center justify-between gap-2 py-3 hover:bg-limestone/40">
@@ -33,7 +33,7 @@ export default function AdminShops() {
                   {!s.is_approved && <span className="bg-[#f3ead8] px-2 py-0.5 text-[#6b4f1d]">Waiting for approval</span>}
                   {!s.is_active && <span className="bg-limestone px-2 py-0.5 text-stone">Suspended</span>}
                   {s.is_demo && <span className="bg-limestone px-2 py-0.5 text-stone">Demo</span>}
-                  {s.featured_order !== null && <span className="bg-ink px-2 py-0.5 text-chalk">Featured #{s.featured_order}</span>}
+                  {s.featured_order !== null && <span className="rounded-full bg-cocoa px-2.5 py-0.5 text-cream">Featured #{s.featured_order}</span>}
                   {s.is_approved && s.is_active && !s.is_demo && <span className="bg-[#e6eee6] px-2 py-0.5 text-[#2f5130]">Live</span>}
                 </span>
               </Link>
