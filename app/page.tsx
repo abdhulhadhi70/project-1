@@ -4,37 +4,23 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { HeroSearch } from "@/components/home/HeroSearch";
-import { QuickEstimator } from "@/components/home/QuickEstimator";
 import { ArrowIcon } from "@/components/Icons";
 import { PieceImage } from "@/components/PieceImage";
-import { Monogram, ResultCard } from "@/components/search/ResultCard";
-import { CATEGORIES, type Purity } from "@/data/catalogue";
-import { areaFor, coverFor, getCatalogue, useCatalogue } from "@/lib/catalogue-store";
-import { pieceHref, shopHref } from "@/lib/links";
-import { EMPTY_QUERY, liveAreas, liveTabs, parseQuery, runQuery, searchHref } from "@/lib/catalogue-query";
+import type { Purity } from "@/data/catalogue";
+import { getCatalogue, useCatalogue } from "@/lib/catalogue-store";
+import { pieceHref } from "@/lib/links";
+import { EMPTY_QUERY, liveTabs, runQuery } from "@/lib/catalogue-query";
 import { aed, dateText } from "@/lib/format";
 
 export default function Home() {
-  const { settings } = useCatalogue();
-  const on = (k: string) => settings?.sections?.[k] !== false; // the admin can switch sections off
+  // Short on purpose: search, then the full list. Testers found sideways
+  // rows of pieces on the homepage repeated what the list already does.
   return (
     <>
       <Hero />
-      {on("categories") && <Categories />}
-      {on("newest") && <Row title="Newest pieces" note="The latest pieces listed by jewellers" href={searchHref({ sort: "newest" })}
-        list={runQuery({ ...EMPTY_QUERY, tab: "jewellery" }).slice(0, 4)} />}
-      {on("bridal") && liveTabs().some((t) => t.id === "bridal") && <Row dark title={<>For the <em className="italic text-gold">wedding</em></>} note="Bridal sets, coin necklaces, bangle stacks and bands" href={searchHref({ tab: "bridal" })}
-        list={runQuery({ ...EMPTY_QUERY, tab: "bridal" }).slice(0, 4)} />}
-      {on("bullion") && liveTabs().some((t) => t.id === "coins_bars") && <Bullion />}
-      {/* With two jewellers, districts would repeat the jewellers row. */}
-      {on("districts") && liveAreas().length > 2 && <Districts />}
-      {on("jewellers") && <Jewellers />}
-      {on("estimator") && <Section title="What should it cost?" note="Gold at the day's rate, plus the making charge, plus VAT. Every price on the site is worked out this way.">
-        <QuickEstimator />
-      </Section>}
+      <SeeAll />
       <HowItWorks />
       <ListYourShop />
-      {on("popular") && <PopularSearches />}
     </>
   );
 }
@@ -140,56 +126,18 @@ function Rates() {
   );
 }
 
-function Categories() {
-  const { pieces } = useCatalogue();
-  const tiles = CATEGORIES.map((c) => {
-    const list = pieces.filter((p) => p.category === c.id);
-    return { ...c, count: list.length, image: list[0]?.images[0] };
-  }).filter((t) => t.count > 0);
+function SeeAll() {
+  const { pieces, shops } = useCatalogue();
   return (
-    <Section title="Browse by category">
-      <ul className="no-scrollbar -mx-4 flex gap-4 overflow-x-auto px-4 md:mx-0 md:flex-wrap md:gap-x-6 md:gap-y-6 md:overflow-visible md:px-0">
-        {tiles.map((t) => (
-          <li key={t.id} className="w-24 shrink-0 md:w-28">
-            <Link href={searchHref({ tab: t.section, category: t.id })} className="group block text-center">
-              <div className="aspect-square overflow-hidden rounded-full border border-line bg-card p-1.5 transition-colors group-hover:border-brass">
-                <PieceImage name={t.image} alt="" sizes="112px"
-                  className="size-full rounded-full object-cover transition-transform duration-700 ease-quiet group-hover:scale-[1.06]" />
-              </div>
-              <p className="mt-2.5 text-[14px] text-ink">{t.label}</p>
-              <p className="text-[12px] text-stone">{t.count} {t.count === 1 ? "piece" : "pieces"}</p>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </Section>
-  );
-}
-
-function Row({ title, note, href, list, dark = false }: { title: React.ReactNode; note: string; href: string; list: import("@/data/catalogue").Piece[]; dark?: boolean }) {
-  return (
-    <Section title={title} note={note} href={href} dark={dark}>
-      <ul className="no-scrollbar -mx-4 flex gap-3 overflow-x-auto px-4 md:mx-0 md:grid md:grid-cols-4 md:gap-5 md:overflow-visible md:px-0">
-        {list.map((p) => <li key={p.slug} className="w-[68vw] max-w-72 shrink-0 text-ink md:w-auto md:max-w-none"><ResultCard piece={p} layout="grid" /></li>)}
-      </ul>
-    </Section>
-  );
-}
-
-function Bullion() {
-  const list = runQuery({ ...EMPTY_QUERY, tab: "coins_bars", sort: "price-asc" }).slice(0, 3);
-  return (
-    <Section title="Coins and bars" note="Priced from the day's rate, with the premium shown separately." href={searchHref({ tab: "coins_bars" })}>
-      <div className="grid gap-5 lg:grid-cols-[1fr_3fr]">
-        <div className="rounded-2xl bg-limestone p-5 text-[14px] leading-relaxed text-ink-soft">
-          <p>Bars and coins of 99% purity or more are investment gold, which is zero-rated for VAT in the UAE. Jewellery, and coins below 99%, carry 5%.</p>
-          <p className="mt-3">The ten tola bar (116.6 g) is still the standard trading size in the Gulf.</p>
-        </div>
-        <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5">
-          {list.map((p) => <li key={p.slug}><ResultCard piece={p} layout="grid" /></li>)}
-        </ul>
-      </div>
-    </Section>
+    <section className="page page-x mt-10 md:mt-14">
+      <Link href="/search" className="flex items-center justify-between gap-4 rounded-3xl border border-line bg-card p-5 transition-colors hover:border-brass md:p-6">
+        <span>
+          <span className="block font-serif text-[26px] leading-tight md:text-[32px]">See all pieces</span>
+          <span className="mt-1 block text-[14px] text-stone">{pieces.length} designs from {shops.length} {shops.length === 1 ? "jeweller" : "jewellers"}, with every filter</span>
+        </span>
+        <span className="grid size-12 shrink-0 place-items-center rounded-full bg-terracotta text-white"><ArrowIcon /></span>
+      </Link>
+    </section>
   );
 }
 
@@ -210,63 +158,6 @@ function HowItWorks() {
           </li>
         ))}
       </ol>
-    </Section>
-  );
-}
-
-function Districts() {
-  return (
-    <Section title="Gold districts" note="Where the jewellers in this demo are, by area." href="/jewellers" link="All jewellers">
-      <ul className={`grid gap-3 sm:grid-cols-2 md:gap-5 ${liveAreas().length > 2 ? "lg:grid-cols-4" : ""}`}>
-        {liveAreas().map((a) => {
-          const { shops, pieces } = getCatalogue();
-          const here = shops.filter((s) => s.area === a.slug);
-          const count = pieces.filter((p) => here.some((s) => s.slug === p.shop)).length;
-          return (
-            <li key={a.slug}>
-              <Link href={searchHref({ location: a.slug })} className="flex h-full flex-col rounded-2xl border border-line bg-card p-5 transition-colors hover:border-brass">
-                <span className="text-[12px] text-stone">{a.emirate}</span>
-                <span className="mt-0.5 font-serif text-[22px] leading-tight text-ink">{a.name}</span>
-                <span className="mt-1.5 line-clamp-2 text-[13px] leading-snug text-ink-soft">{a.note}</span>
-                <span className="mt-auto pt-3 text-[13px] text-ink">{count} pieces · {here.length} {here.length === 1 ? "jeweller" : "jewellers"}</span>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </Section>
-  );
-}
-
-function Jewellers() {
-  const { shops } = useCatalogue();
-  return (
-    <Section title="Jewellers on the site" note="Every piece belongs to a shop you can visit." href="/jewellers" link="Find a jeweller">
-      <ul className={`no-scrollbar -mx-4 flex gap-3 overflow-x-auto px-4 md:mx-0 md:grid md:gap-5 md:overflow-visible md:px-0 ${shops.length <= 2 ? "md:grid-cols-2" : "md:grid-cols-4"}`}>
-        {shops.slice(0, 8).map((s) => {
-          const cover = coverFor(s);
-          const area = areaFor(s);
-          const count = getCatalogue().pieces.filter((p) => p.shop === s.slug).length;
-          return (
-            <li key={s.slug} className="w-64 shrink-0 md:w-auto">
-              <Link href={shopHref(s.slug)} className="group block rounded-2xl border border-line bg-card p-2 transition-shadow hover:shadow-[0_18px_36px_-24px_rgb(30_20_16/0.45)]">
-                <div className="aspect-[16/9] overflow-hidden rounded-xl bg-limestone">
-                  <PieceImage name={cover?.images[0] ?? "hero"} alt="" sizes="(min-width: 768px) 45vw, 256px"
-                    className="size-full object-cover transition-transform duration-700 ease-quiet group-hover:scale-[1.04]" />
-                </div>
-                <div className="flex items-center gap-3 px-2 pb-2 pt-3">
-                  <Monogram name={s.name} className="size-10 text-[12px]" />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-serif text-[20px] leading-tight text-ink">{s.name}</p>
-                    <p className="truncate text-[13px] text-stone">{area.name} · {s.speciality}</p>
-                  </div>
-                  <span className="shrink-0 rounded-full bg-limestone px-2.5 py-1 text-[12px] text-ink-soft">{count} {count === 1 ? "piece" : "pieces"}</span>
-                </div>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
     </Section>
   );
 }
@@ -300,51 +191,3 @@ function ListYourShop() {
   );
 }
 
-function PopularSearches() {
-  const col = (title: string, links: { label: string; href: string }[]) => ({ title, links });
-  const cols = [
-    col("Popular in Dubai", [
-      { label: "22K chains in Deira Gold Souk", href: searchHref({ category: "chains", purity: ["22K"], location: "deira-gold-souk" }) },
-      { label: "Bridal sets in Meena Bazaar", href: searchHref({ tab: "bridal", location: "meena-bazaar" }) },
-      { label: "Bangles in Karama", href: searchHref({ category: "bangles", location: "karama" }) },
-      { label: "Coin necklaces in Dubai", href: searchHref({ q: "coin", category: "necklaces", location: "dubai" }) },
-      { label: "Wedding bands in Dubai", href: searchHref({ tab: "bridal", category: "rings", location: "dubai" }) },
-      { label: "Gold bars in Dubai", href: searchHref({ tab: "coins_bars", category: "bars", location: "dubai" }) },
-    ]),
-    col("Popular in Abu Dhabi", [
-      { label: "Engagement rings in Abu Dhabi", href: searchHref({ category: "rings", occasion: "engagement", location: "abu-dhabi" }) },
-      { label: "Pearl jewellery on Hamdan Street", href: searchHref({ q: "pearl", location: "hamdan-street" }) },
-      { label: "Kids' gold in Abu Dhabi", href: searchHref({ wearer: "kids", location: "abu-dhabi" }) },
-    ]),
-    col("Popular in Sharjah", [
-      { label: "Men's gold in Sharjah", href: searchHref({ wearer: "men", location: "sharjah" }) },
-      { label: "Kadas in Rolla", href: searchHref({ category: "bangles", location: "rolla" }) },
-      { label: "21K gold in Sharjah", href: searchHref({ purity: ["21K"], location: "sharjah" }) },
-    ]),
-    col("By budget", [
-      { label: "Gold under AED 7,500", href: searchHref({ price: "3000-7500" }) },
-      { label: "Gold gifts under AED 3,000", href: searchHref({ price: "under-3000", occasion: "gift" }) },
-      { label: "Light pieces under 5 g", href: searchHref({ weight: "under-5" }) },
-      { label: "Lowest making charges", href: searchHref({ sort: "making-asc" }) },
-    ]),
-  ];
-  // Only searches that find something; a dead link here would be a broken promise.
-  const found = (href: string) => runQuery(parseQuery(new URLSearchParams(href.split("?")[1] ?? ""))).length > 0;
-  const live = cols.map((c) => ({ ...c, links: c.links.filter((l) => found(l.href)) })).filter((c) => c.links.length);
-  if (!live.length) return null;
-  return (
-    <section className="page page-x mt-16 border-t border-line pt-8 md:mt-20" aria-labelledby="popular">
-      <h2 id="popular" className="text-[15px] font-medium">Popular searches</h2>
-      <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {live.map((c) => (
-          <div key={c.title}>
-            <p className="text-[13px] text-stone">{c.title}</p>
-            <ul className="mt-2 space-y-1.5 text-[14px]">
-              {c.links.map((l) => <li key={l.href}><Link href={l.href} className="text-ink-soft hover:text-ink hover:underline">{l.label}</Link></li>)}
-            </ul>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}

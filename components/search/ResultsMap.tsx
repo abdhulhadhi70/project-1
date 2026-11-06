@@ -8,6 +8,8 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useEffect, useRef } from "react";
 import { areaFor } from "@/lib/catalogue-store";
+import { directionsHref } from "@/lib/links";
+import { track } from "@/lib/track";
 import type { MapShop } from "./map-shops";
 
 const escape = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
@@ -35,6 +37,8 @@ export default function ResultsMap({ shops, onPick, className = "" }: {
     map.current = m;
     // Clicks on a popup's button arrive here rather than through React.
     el.current.addEventListener("click", (e) => {
+      const d = (e.target as HTMLElement).closest<HTMLElement>("[data-directions]");
+      if (d) { if (d.dataset.directions) track("directions_click", d.dataset.directions); return; }
       const t = (e.target as HTMLElement).closest<HTMLElement>("[data-shop]");
       if (t) pick.current?.(t.dataset.shop!);
     });
@@ -60,7 +64,11 @@ export default function ResultsMap({ shops, onPick, className = "" }: {
       L.marker([shop.lat, shop.lng], { icon, title: shop.name, keyboard: true })
         .bindPopup(
           `<div class="tibr-pop"><strong>${escape(shop.name)}</strong><span>${escape(area.name)}, ${escape(area.emirate)}</span>` +
-          (pick.current ? `<button type="button" data-shop="${escape(shop.slug)}">Show ${count} ${count === 1 ? "piece" : "pieces"}</button>` : "") + `</div>`,
+          `<div class="tibr-pop-actions">` +
+          (pick.current ? `<button type="button" data-shop="${escape(shop.slug)}">Show ${count} ${count === 1 ? "piece" : "pieces"}</button>` : "") +
+          // Demo shops are not counted in results, so they carry no id here.
+          `<a href="${escape(directionsHref(shop))}" target="_blank" rel="noopener" data-directions="${shop.demo || !shop.id ? "" : escape(shop.id)}">Directions</a>` +
+          `</div></div>`,
           { closeButton: false },
         )
         .addTo(g);

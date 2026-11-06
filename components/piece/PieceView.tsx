@@ -15,7 +15,7 @@ import { CATEGORIES, OCCASIONS, STYLES, TABS, WEARERS, sectionOf, type Piece } f
 import { areaFor, catalogueSettled, shopFor, useCatalogue } from "@/lib/catalogue-store";
 import { searchHref } from "@/lib/catalogue-query";
 import { aed, dateText, makingChargeText, weightText } from "@/lib/format";
-import { shopHref } from "@/lib/links";
+import { directionsHref, shopHref } from "@/lib/links";
 import { track } from "@/lib/track";
 
 function priceNote(piece: Piece): string {
@@ -95,7 +95,7 @@ export function PieceView({ slug }: { slug: string }) {
     ["Stock confirmed", dateText(piece.stockConfirmedAt)],
     ["Reference", piece.code],
   ];
-  const directions = `https://www.google.com/maps/search/?api=1&query=${shop.lat},${shop.lng}`;
+  const directions = directionsHref(shop);
 
   return (
     <div className="pb-28 lg:pb-0">

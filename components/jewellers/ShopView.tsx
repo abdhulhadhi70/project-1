@@ -9,6 +9,7 @@ import { Monogram, ResultCard } from "@/components/search/ResultCard";
 import { CATEGORIES } from "@/data/catalogue";
 import { areaFor, catalogueSettled, useCatalogue } from "@/lib/catalogue-store";
 import { searchHref, sortPieces } from "@/lib/catalogue-query";
+import { directionsHref } from "@/lib/links";
 import { track } from "@/lib/track";
 
 export function ShopView({ slug }: { slug: string }) {
@@ -36,7 +37,7 @@ export function ShopView({ slug }: { slug: string }) {
   const area = areaFor(shop);
   const theirs = sortPieces(pieces.filter((p) => p.shop === shop.slug), "newest");
   const cats = CATEGORIES.filter((c) => theirs.some((p) => p.category === c.id));
-  const directions = `https://www.google.com/maps/search/?api=1&query=${shop.lat},${shop.lng}`;
+  const directions = directionsHref(shop);
   return (
     <>
       <section className="page page-x pt-5 md:pt-8">
