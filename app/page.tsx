@@ -3,6 +3,7 @@
 // renders it with the demo, so it is never blank while that loads.
 import Link from "next/link";
 import { Suspense } from "react";
+import { GoldRateButton } from "@/components/GoldRateButton";
 import { HeroSearch } from "@/components/home/HeroSearch";
 import { ResultCard } from "@/components/search/ResultCard";
 import { ArrowIcon } from "@/components/Icons";
@@ -19,6 +20,7 @@ export default function Home() {
   return (
     <>
       <Hero />
+      <GoldRateButton />
       <Featured />
       <ListYourShop />
     </>
