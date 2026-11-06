@@ -15,12 +15,12 @@ export function tabPatch(tab: Tab, q: Query): Partial<Query> {
 
 export function TabSwitch({ query, set, className = "" }: { query: Query; set: SetFn; className?: string }) {
   return (
-    <div role="tablist" aria-label="What are you looking for" className={`flex rounded-full border border-line-strong bg-card p-1 ${className}`}>
+    <div role="tablist" aria-label="What are you looking for" className={`inline-flex rounded-full border border-line-strong bg-card p-0.5 ${className}`}>
       {liveTabs().map((t) => {
         const on = query.tab === t.id;
         return (
           <button key={t.id} role="tab" type="button" aria-selected={on} onClick={() => !on && set(tabPatch(t.id, query))}
-            className={`h-11 flex-1 rounded-full px-4 text-[14px] transition-colors md:flex-none ${on ? "bg-cocoa text-cream" : "text-ink-soft hover:text-ink"}`}>
+            className={`h-9 rounded-full px-4 text-[13.5px] transition-colors md:h-10 ${on ? "bg-cocoa text-cream" : "text-ink-soft hover:text-ink"}`}>
             {t.label}
           </button>
         );

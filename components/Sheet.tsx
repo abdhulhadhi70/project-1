@@ -26,8 +26,8 @@ export const Sheet = forwardRef<SheetHandle, Props>(function Sheet({ title, kick
       aria-label={title}
       onClose={onClose}
       onClick={(e) => e.target === e.currentTarget && d.current?.close()}
-      className={`m-0 mt-auto w-full max-w-none overflow-hidden bg-chalk p-0 text-ink open:flex open:flex-col md:m-auto md:max-h-[85dvh] md:rounded-3xl md:border md:border-line ${
-        full ? "h-dvh max-h-none md:h-auto" : "max-h-[88dvh] rounded-t-3xl"
+      className={`m-0 mt-auto w-full max-w-none overflow-hidden bg-chalk p-0 text-ink open:flex open:flex-col md:m-auto md:max-h-[85dvh] md:rounded-2xl md:border md:border-line ${
+        full ? "h-dvh max-h-none md:h-auto" : "max-h-[88dvh] rounded-t-2xl"
       } ${wide ? "md:max-w-2xl" : "md:max-w-md"}`}
     >
       <div className="flex shrink-0 items-start justify-between gap-4 border-b border-line px-4 py-3 md:px-5">

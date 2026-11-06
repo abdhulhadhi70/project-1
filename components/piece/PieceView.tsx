@@ -31,7 +31,7 @@ function SellerCard({ piece, shopCount, withActions = false }: { piece: Piece; s
   const shop = shopFor(piece);
   const area = areaFor(shop);
   return (
-    <div className="rounded-3xl border border-line bg-card p-5">
+    <div className="rounded-xl border border-line bg-card p-5">
       <p className="text-[12px] text-stone">Sold by</p>
       <Link href={shopHref(shop.slug)} className="mt-2 flex items-center gap-3 hover:underline">
         <Monogram name={shop.name} className="size-11 text-[13px]" />
@@ -119,12 +119,12 @@ export function PieceView({ slug }: { slug: string }) {
                 <div className="-mr-2 -mt-1"><SaveButton slug={piece.slug} name={piece.name} /></div>
               </div>
               <p className="mt-1 text-[13px] leading-snug text-stone">{priceNote(piece)}</p>
-              <h1 className="mt-4 font-serif text-[32px] leading-[1.05] tracking-[-0.01em] md:text-[40px]">{piece.name}</h1>
+              <h1 className="mt-3 font-serif text-[30px] leading-[1.08] tracking-[-0.01em] md:text-[36px]">{piece.name}</h1>
               <p className="mt-2 inline-flex items-center gap-1.5 text-[14px] text-ink-soft"><PinIcon className="size-4 text-stone" />{area.name}, {area.emirate}</p>
 
-              <ul className="mt-5 grid grid-cols-3 gap-2">
+              <ul className="mt-5 grid grid-cols-3 divide-x divide-line rounded-xl border border-line bg-card">
                 {facts.map(({ icon: Icon, k, v }) => (
-                  <li key={k} className="rounded-2xl border border-line bg-card px-3 py-3">
+                  <li key={k} className="px-3 py-3">
                     <p className="inline-flex items-center gap-1.5 text-[12px] text-stone"><Icon className="size-4" />{k}</p>
                     <p className="mt-1 text-[14px] text-ink">{v}</p>
                   </li>
@@ -139,7 +139,7 @@ export function PieceView({ slug }: { slug: string }) {
           <div className="mt-10 grid gap-8 md:grid-cols-2">
             <section aria-labelledby="details">
               <h2 id="details" className="text-[15px] font-medium">Details</h2>
-              <dl className="mt-3 divide-y divide-line rounded-2xl border border-line bg-card px-4 text-[14px]">
+              <dl className="mt-3 divide-y divide-line border-y border-line text-[14px]">
                 {details.map(([k, v]) => (
                   <div key={k} className="grid grid-cols-[8.5rem_1fr] gap-4 py-2.5"><dt className="text-stone">{k}</dt><dd>{v}</dd></div>
                 ))}
@@ -185,7 +185,7 @@ export function PieceView({ slug }: { slug: string }) {
         ))}
 
       {/* Phone: the two actions stay within reach. */}
-      <div className="fixed inset-x-0 bottom-0 z-30 rounded-t-3xl border-t border-line bg-card px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 shadow-[0_-12px_30px_-20px_rgb(30_20_16/0.45)] lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-card px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 shadow-[0_-12px_30px_-20px_rgb(30_20_16/0.45)] lg:hidden">
         <div className="mb-2 flex items-baseline justify-between text-[13px]">
           <span className="truncate text-ink">{piece.price.kind === "on_request" ? "Price on request" : aed(piece.price.aed)}</span>
           <span className="shrink-0 text-stone">{shop.name}</span>

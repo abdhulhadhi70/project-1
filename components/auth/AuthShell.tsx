@@ -4,7 +4,7 @@ import Link from "next/link";
 export function AuthShell({ title, intro, children, foot }: { title: string; intro?: React.ReactNode; children: React.ReactNode; foot?: React.ReactNode }) {
   return (
     <section className="page page-x py-10 md:py-16">
-      <div className="mx-auto max-w-md rounded-3xl border border-line bg-card p-5 md:p-8">
+      <div className="mx-auto max-w-md rounded-xl border border-line bg-card p-5 md:p-8">
         <p className="text-[13px] text-stone">For jewellers and our team</p>
         <h1 className="mt-1 font-serif text-[36px] leading-none tracking-[-0.015em] md:text-[44px]">{title}</h1>
         {intro && <div className="mt-3 text-[15px] leading-relaxed text-ink-soft">{intro}</div>}

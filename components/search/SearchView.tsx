@@ -64,7 +64,7 @@ export function SearchView() {
 
         <div className="mt-3 flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
           <div>
-            <h1 className="font-serif text-[28px] leading-[1.05] tracking-[-0.01em] md:text-[36px]">{title}</h1>
+            <h1 className="font-serif text-[26px] leading-[1.1] tracking-[-0.01em] md:text-[32px]">{title}</h1>
             <p className="mt-1.5 text-[13px] text-stone" aria-live="polite">
               {results.length} {results.length === 1 ? "result" : "results"}
               {paged.pages > 1 && ` · page ${paged.page} of ${paged.pages}`}
@@ -93,7 +93,7 @@ export function SearchView() {
           </div>
         </div>
 
-        <TabSwitch query={query} set={set} className="mt-4 lg:hidden" />
+        <TabSwitch query={query} set={set} className="mt-3 lg:hidden" />
         <ActiveChips query={query} set={set} />
 
         {results.length === 0 ? (
@@ -160,7 +160,7 @@ function ActiveChips({ query, set }: { query: Query; set: (p: Partial<Query>) =>
 
 function Empty({ query, onReset }: { query: Query; onReset: () => void }) {
   return (
-    <div className="mt-6 rounded-3xl border border-line bg-card px-5 py-16 text-center md:py-24">
+    <div className="mt-6 rounded-xl border border-line bg-card px-5 py-16 text-center md:py-24">
       <p className="font-serif text-[28px] leading-tight">Nothing matches that yet.</p>
       <p className="mx-auto mt-3 max-w-sm text-[14px] text-stone">
         {query.q.trim()

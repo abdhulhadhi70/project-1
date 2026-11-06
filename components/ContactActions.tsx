@@ -85,7 +85,7 @@ export function ContactActions({ shop, subject, path, pieceId, onContact, layout
         ref={dialog}
         aria-labelledby={titleId}
         onClick={(e) => e.target === e.currentTarget && dialog.current?.close()}
-        className="m-0 mt-auto w-full max-w-none rounded-t-3xl bg-chalk p-0 text-ink md:m-auto md:max-w-md md:rounded-3xl"
+        className="m-0 mt-auto w-full max-w-none rounded-t-2xl bg-chalk p-0 text-ink md:m-auto md:max-w-md md:rounded-2xl"
       >
         <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">
           <div>

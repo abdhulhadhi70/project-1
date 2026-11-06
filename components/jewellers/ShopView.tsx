@@ -45,7 +45,7 @@ export function ShopView({ slug }: { slug: string }) {
           <Link href="/" className="hover:text-ink">Home</Link> <span aria-hidden>›</span> <Link href="/jewellers" className="hover:text-ink">Jewellers</Link> <span aria-hidden>›</span> {shop.name}
         </nav>
         <div className="mt-6 grid gap-8 lg:grid-cols-12 lg:gap-10">
-          <div className="rounded-3xl border border-line bg-card p-5 md:p-7 lg:col-span-7">
+          <div className="rounded-xl border border-line bg-card p-5 md:p-7 lg:col-span-7">
             <div className="flex items-center gap-4">
               <Monogram name={shop.name} className="size-14 text-[16px] md:size-16" />
               <div>
@@ -54,10 +54,10 @@ export function ShopView({ slug }: { slug: string }) {
               </div>
             </div>
             <p className="mt-6 max-w-[52ch] text-[16px] leading-relaxed text-ink-soft">{shop.about}</p>
-            <dl className="mt-6 grid gap-2 text-[14px] sm:grid-cols-3">
-              <div className="rounded-2xl bg-limestone/70 p-3"><dt className="text-[12px] text-stone">Listed</dt><dd className="mt-0.5">{theirs.length} pieces</dd></div>
-              <div className="rounded-2xl bg-limestone/70 p-3"><dt className="text-[12px] text-stone">Speaks</dt><dd className="mt-0.5">{shop.languages.join(", ")}</dd></div>
-              <div className="rounded-2xl bg-limestone/70 p-3"><dt className="text-[12px] text-stone">Hours</dt><dd className="mt-0.5">{shop.hours}</dd></div>
+            <dl className="mt-6 grid grid-cols-3 divide-x divide-line border-y border-line text-[14px]">
+              <div className="px-3 py-3 first:pl-0"><dt className="text-[12px] text-stone">Listed</dt><dd className="mt-0.5">{theirs.length} pieces</dd></div>
+              <div className="px-3 py-3 first:pl-0"><dt className="text-[12px] text-stone">Speaks</dt><dd className="mt-0.5">{shop.languages.join(", ")}</dd></div>
+              <div className="px-3 py-3 first:pl-0"><dt className="text-[12px] text-stone">Hours</dt><dd className="mt-0.5">{shop.hours}</dd></div>
             </dl>
             <div className="mt-6 max-w-md"><ContactActions shop={shop} /></div>
             {shop.demo && <p className="mt-4 rounded-xl bg-limestone px-3 py-2 text-[12px] text-stone">Demonstration jeweller. This shop, its hours and its pieces are invented for the prototype.</p>}
@@ -81,7 +81,7 @@ export function ShopView({ slug }: { slug: string }) {
           <p className="mb-4 text-[13px] text-stone">{cats.map((c) => `${theirs.filter((p) => p.category === c.id).length} ${c.label.toLowerCase()}`).join(" · ")}</p>
         )}
         <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 xl:grid-cols-4">
-          {theirs.map((p, i) => <li key={p.slug}><ResultCard piece={p} layout="grid" priority={i < 4} /></li>)}
+          {theirs.map((p, i) => <li key={p.slug}><ResultCard piece={p} layout="grid" priority={i < 4} showShop={false} /></li>)}
         </ul>
       </section>
     </>

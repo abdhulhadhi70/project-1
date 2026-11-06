@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Suspense } from "react";
 import { Instrument_Sans, Instrument_Serif } from "next/font/google";
 import { Footer } from "@/components/Footer";
-import { GoldRateButton } from "@/components/GoldRateButton";
 import { Header } from "@/components/Header";
 import { LiveCatalogue } from "@/components/LiveCatalogue";
 import { site } from "@/data/site";
@@ -31,7 +29,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
         <main id="main">{children}</main>
         <Footer />
-        <Suspense fallback={null}><GoldRateButton /></Suspense>
       </body>
     </html>
   );

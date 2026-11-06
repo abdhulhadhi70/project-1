@@ -7,6 +7,7 @@ import { liveTabs, searchHref } from "@/lib/catalogue-query";
 import { useSaved } from "@/lib/saved";
 import { useCatalogue } from "@/lib/catalogue-store";
 import { HeartIcon, MenuIcon } from "./Icons";
+import { GoldRateButton } from "./GoldRateButton";
 import { Sheet, type SheetHandle } from "./Sheet";
 import { Wordmark } from "./Wordmark";
 
@@ -64,8 +65,9 @@ export function Header() {
               <NavLinks className="flex gap-7 text-[14px]" item={(a) => `relative py-5 ${a ? "text-cream after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-gold" : "text-cream-soft hover:text-cream"}`} />
             </Suspense>
           </nav>
-          <div className="ml-auto flex items-center gap-2 lg:gap-5">
-            <Link href="/saved" className="relative inline-flex h-10 items-center gap-2 px-2 text-[14px] text-cream hover:text-gold" aria-label="Saved pieces and searches">
+          <div className="ml-auto flex items-center gap-1.5 lg:gap-4">
+            <Suspense fallback={null}><GoldRateButton /></Suspense>
+            <Link href="/saved" className="relative inline-flex h-10 items-center gap-2 px-1.5 text-[14px] text-cream hover:text-gold" aria-label="Saved pieces and searches">
               <span className="relative"><HeartIcon className="size-5" /><SavedCount /></span>
               <span className="hidden lg:inline">Saved</span>
             </Link>

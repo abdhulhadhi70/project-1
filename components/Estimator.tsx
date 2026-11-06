@@ -69,7 +69,7 @@ export function Estimator() {
         </label>
       </form>
 
-      <section aria-label="Estimate" className="overflow-hidden rounded-3xl border border-line bg-card">
+      <section aria-label="Estimate" className="overflow-hidden rounded-xl border border-line bg-card">
         <div className="border-b border-line bg-limestone/60 px-5 py-4">
           <p className="text-[13px] text-stone">Estimated total</p>
           <p className="mt-1 text-[34px] font-semibold tracking-[-0.01em]" aria-live="polite">{e ? aed(Math.round(e.total)) : "—"}</p>

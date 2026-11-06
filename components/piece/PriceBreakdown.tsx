@@ -28,7 +28,7 @@ export function PriceBreakdown({ piece }: { piece: Piece }) {
   ];
   if (extra > 0) rows.push([piece.stones ? "Stones and rounding, set by the jeweller" : "Rounding by the jeweller", aed(extra)]);
   return (
-    <section aria-labelledby="breakdown" className="overflow-hidden rounded-3xl border border-line bg-card">
+    <section aria-labelledby="breakdown" className="overflow-hidden rounded-xl border border-line bg-card">
       <div className="flex items-baseline justify-between gap-4 border-b border-line bg-limestone/60 px-4 py-3">
         <h2 id="breakdown" className="text-[15px] font-medium">How the price adds up</h2>
         <span className="text-[12px] text-stone">{rates.source === "sample" ? "Sample rate" : "Rate"}, {dateText(rates.asOf)}</span>

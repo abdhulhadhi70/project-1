@@ -83,7 +83,7 @@ export function Directory() {
       )}
 
       {list.length === 0 ? (
-        <div className="mt-6 rounded-3xl border border-line bg-card px-5 py-16 text-center">
+        <div className="mt-6 rounded-xl border border-line bg-card px-5 py-16 text-center">
           <p className="font-serif text-[26px]">No jeweller matches that.</p>
           <button type="button" onClick={() => { setText(""); setPlace(""); setLang(""); }} className="mt-5 h-11 rounded-full border border-ink px-5 text-[14px]">Show all jewellers</button>
         </div>
@@ -94,12 +94,12 @@ export function Directory() {
             const cover = coverFor(s);
             return (
               <li key={s.slug}>
-                <Link href={shopHref(s.slug)} className="group flex h-full flex-col rounded-2xl border border-line bg-card p-2 transition-shadow hover:shadow-[0_18px_36px_-24px_rgb(30_20_16/0.45)]">
-                  <div className="aspect-[16/9] overflow-hidden rounded-xl bg-limestone">
+                <Link href={shopHref(s.slug)} className="group flex h-full flex-col overflow-hidden rounded-xl border border-line bg-card transition-colors hover:border-line-strong">
+                  <div className="aspect-[16/9] overflow-hidden bg-limestone">
                     <PieceImage name={cover?.images[0] ?? "hero"} alt="" sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
                       className="size-full object-cover transition-transform duration-700 ease-quiet group-hover:scale-[1.04]" />
                   </div>
-                  <div className="flex flex-1 flex-col px-2 pb-2 pt-3">
+                  <div className="flex flex-1 flex-col p-4">
                     <div className="flex items-center gap-3">
                       <Monogram name={s.name} className="size-10 text-[12px]" />
                       <div className="min-w-0">

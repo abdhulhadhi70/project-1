@@ -20,7 +20,7 @@ export function QuickEstimator() {
   const ok = w > 0 && w < 5000 && m >= 0 && m < 1000;
   const e = ok ? estimatePrice({ ratePerGramAed: rates.perGram[purity], weightGrams: w, makingChargeType: "per_gram", makingChargeValue: m }) : null;
   return (
-    <div className="grid gap-6 rounded-3xl border border-line bg-card p-5 md:grid-cols-[1.2fr_1fr] md:p-7">
+    <div className="grid gap-6 rounded-xl border border-line bg-card p-5 md:grid-cols-[1.2fr_1fr] md:p-7">
       <form className="grid grid-cols-3 gap-3" onSubmit={(ev) => ev.preventDefault()}>
         <label className="block text-[13px] text-stone">Purity
           <select value={purity} onChange={(ev) => setPurity(ev.target.value as Purity)} className={field}>

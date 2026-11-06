@@ -45,16 +45,16 @@ export function Facts({ piece }: { piece: Piece }) {
   );
 }
 
-export function ResultCard({ piece, layout = "list", priority = false }: { piece: Piece; layout?: "list" | "grid"; priority?: boolean }) {
+export function ResultCard({ piece, layout = "list", priority = false, showShop = true }: { piece: Piece; layout?: "list" | "grid"; priority?: boolean; showShop?: boolean }) {
   const shop = shopFor(piece);
   const area = areaFor(shop);
   const href = pieceHref(piece.slug);
   const list = layout === "list";
 
   return (
-    <article className={`relative rounded-2xl border border-line bg-card p-2 transition-shadow hover:shadow-[0_18px_36px_-24px_rgb(30_20_16/0.45)] ${list ? "md:grid md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]" : ""}`}>
+    <article className={`relative overflow-hidden rounded-xl border border-line bg-card transition-colors hover:border-line-strong ${list ? "md:grid md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]" : ""}`}>
       {/* Above the title link's full-card overlay, so the arrows and heart work. */}
-      <div className="relative z-10 overflow-hidden rounded-xl">
+      <div className="relative z-10 overflow-hidden">
         <Link href={href} tabIndex={-1} aria-hidden className="block">
           <CardGallery images={piece.images} alt={piece.name} priority={priority}
             aspect={list ? "aspect-[4/3] md:aspect-auto md:h-full md:min-h-[17rem]" : "aspect-[4/5]"}
@@ -63,16 +63,16 @@ export function ResultCard({ piece, layout = "list", priority = false }: { piece
         <div className="absolute right-1 top-1"><SaveButton slug={piece.slug} name={piece.name} /></div>
       </div>
 
-      <div className={`flex flex-col ${list ? "gap-2 p-3 md:p-4" : "gap-1.5 px-2 pb-1.5 pt-3"}`}>
+      <div className={`flex flex-col ${list ? "gap-2 p-4 md:p-5" : "gap-1 p-3"}`}>
         {/* The jeweller first: this is a shop's design, found here, seen in their shop. */}
-        <Link href={shopHref(shop.slug)} className={`relative z-10 inline-flex min-w-0 items-center gap-2.5 self-start hover:underline ${list ? "" : "gap-2"}`}>
-          <Monogram name={shop.name} className={list ? "size-10 text-[12px]" : "size-8 text-[11px]"} />
+        {showShop && <Link href={shopHref(shop.slug)} className={`relative z-10 inline-flex min-w-0 max-w-full items-center gap-2.5 self-start hover:underline ${list ? "" : "gap-2"}`}>
+          <Monogram name={shop.name} className={list ? "size-9 text-[11px]" : "size-7 text-[10px]"} />
           <span className="min-w-0">
-            <span className={`block truncate font-medium text-ink ${list ? "text-[15px]" : "text-[13px]"}`}>{shop.name}</span>
+            <span className={`block truncate font-medium text-ink ${list ? "text-[14px]" : "text-[12.5px]"}`}>{shop.name}</span>
             <span className="flex items-center gap-1 truncate text-[12px] text-stone"><PinIcon className="size-3.5 shrink-0" />{area.name}{list ? `, ${area.emirate}` : ""}</span>
           </span>
-        </Link>
-        <h3 className={`${list ? "mt-1 font-serif text-[20px] md:text-[22px]" : "mt-0.5 font-serif text-[17px]"} leading-tight text-ink`}>
+        </Link>}
+        <h3 className={`${list ? "mt-1 font-serif text-[20px]" : "font-serif text-[16px]"} leading-snug text-ink`}>
           <Link href={href} className="after:absolute after:inset-0 after:content-[''] hover:underline">{piece.name}</Link>
         </h3>
         <Facts piece={piece} />

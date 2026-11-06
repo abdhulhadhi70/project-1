@@ -28,7 +28,7 @@ export function PieceGallery({ images, name }: { images: string[]; name: string 
     <div>
       {/* Phone: swipe between views; tap opens the viewer. */}
       <div className="relative md:hidden">
-        <div className="no-scrollbar flex snap-x snap-mandatory overflow-x-auto rounded-3xl"
+        <div className="no-scrollbar flex snap-x snap-mandatory overflow-x-auto rounded-2xl"
           onScroll={(e) => setIndex(Math.round(e.currentTarget.scrollLeft / e.currentTarget.clientWidth))}>
           {images.map((img, i) => (
             <button key={img} type="button" onClick={() => setViewer(true)} className="aspect-square w-full shrink-0 snap-center bg-limestone" aria-label="Open photo viewer">
@@ -43,7 +43,7 @@ export function PieceGallery({ images, name }: { images: string[]; name: string 
 
       {/* Desktop */}
       <div className="hidden md:block">
-        <button type="button" onClick={() => setViewer(true)} className="group relative block aspect-[4/5] w-full overflow-hidden rounded-3xl bg-limestone" aria-label="Open photo viewer">
+        <button type="button" onClick={() => setViewer(true)} className="group relative block aspect-[4/5] w-full overflow-hidden rounded-2xl bg-limestone" aria-label="Open photo viewer">
           <PieceImage name={images[index]} alt={alt(index)} sizes="(min-width: 1280px) 48vw, 56vw" priority className="size-full object-cover" />
           <span className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-card/95 px-3 py-1.5 text-[13px] text-ink opacity-90 group-hover:opacity-100">
             <ExpandIcon /> View {images.length > 1 ? `all ${images.length} photos` : "full size"}

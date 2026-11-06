@@ -35,7 +35,7 @@ export default function ForJewellers() {
       <section className="page page-x mt-10 md:mt-16" aria-label="Why list">
         <ul className="grid gap-3 md:grid-cols-3 md:gap-5">
           {reasons.map((r) => (
-            <li key={r.t} className="rounded-3xl border border-line bg-card p-5 md:p-6">
+            <li key={r.t} className="rounded-xl border border-line bg-card p-5 md:p-6">
               <span aria-hidden className="text-[18px] text-brass-deep">✦</span>
               <p className="mt-3 font-serif text-[24px] leading-tight">{r.t}</p>
               <p className="mt-2 text-[15px] leading-relaxed text-ink-soft">{r.d}</p>
@@ -48,7 +48,7 @@ export default function ForJewellers() {
         <h2 id="how" className="font-serif text-[32px] leading-none md:text-[44px]">How it works</h2>
         <ol className="mt-6 grid gap-3 md:grid-cols-3 md:gap-5">
           {steps.map((s, i) => (
-            <li key={s.t} className="flex gap-4 rounded-3xl bg-limestone/70 p-5 md:block md:p-6">
+            <li key={s.t} className="flex gap-4 rounded-xl bg-limestone/70 p-5 md:block md:p-6">
               <span className="grid size-10 shrink-0 place-items-center rounded-full bg-cocoa font-serif text-[18px] text-gold">{i + 1}</span>
               <div>
                 <p className="font-serif text-[22px] leading-tight md:mt-4">{s.t}</p>
@@ -60,7 +60,7 @@ export default function ForJewellers() {
       </section>
 
       <section className="page page-x mt-14 md:mt-20" aria-labelledby="not">
-        <div className="rounded-3xl border border-line bg-card p-5 md:p-8">
+        <div className="rounded-xl border border-line bg-card p-5 md:p-8">
           <h2 id="not" className="font-serif text-[28px] leading-none md:text-[36px]">What we do not do</h2>
           <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-ink-soft">
             No fee to list, no commission, no checkout, no online payment and no deposits. The sale is between you and the customer, in your shop.
@@ -69,7 +69,7 @@ export default function ForJewellers() {
       </section>
 
       <section id="register" className="page page-x mt-14 scroll-mt-24 md:mt-20" aria-labelledby="register-title">
-        <div className="grid gap-8 rounded-3xl border border-line bg-card p-5 md:p-10 lg:grid-cols-[1fr_1.3fr]">
+        <div className="grid gap-8 rounded-xl border border-line bg-card p-5 md:p-10 lg:grid-cols-[1fr_1.3fr]">
           <div>
             <h2 id="register-title" className="font-serif text-[32px] leading-none md:text-[44px]">Register your shop</h2>
             <p className="mt-3 text-[15px] leading-relaxed text-ink-soft">Tell us about your shop and we will get back to you to set up your page.</p>

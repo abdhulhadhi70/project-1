@@ -1,6 +1,7 @@
 "use client";
-// The floating "Gold price" button: one tap shows the day's rate per gram
-// for each purity, from anywhere on the public site.
+// The gold rate in the top bar: one tap shows the day's rate per gram for
+// each purity. It lives in the header rather than floating over the page,
+// so it can never cover a price or a button.
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef } from "react";
@@ -23,16 +24,15 @@ export function GoldRateButton() {
   if (HIDDEN.some((p) => pathname.startsWith(p))) return null;
   const list = ORDER.filter((k) => rates.perGram[k]);
   const time = new Date(rates.asOf).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Dubai" });
-  // On a piece page the WhatsApp/Call bar sits at the bottom of a phone, so the button rides above it.
-  const lift = pathname.startsWith("/piece") ? "bottom-[calc(7.25rem+env(safe-area-inset-bottom))] lg:bottom-6" : "bottom-[max(1rem,env(safe-area-inset-bottom))] md:bottom-6";
 
   return (
     <>
       <button type="button" onClick={() => sheet.current?.open()}
         aria-label={`Gold price${rates.perGram["22K"] ? `, 22K ${rate(rates.perGram["22K"])} AED per gram` : ""}. Open today's gold rates.`}
-        title="Today's gold price"
-        className={`fixed right-4 z-30 grid size-12 place-items-center rounded-full bg-cocoa shadow-[0_14px_30px_-12px_rgb(30_20_16/0.65)] ring-1 ring-gold/40 transition-transform active:scale-95 md:right-6 ${lift}`}>
-        <span aria-hidden className="grid size-8 place-items-center rounded-full bg-gold text-[14px] text-cocoa">✦</span>
+        className="inline-flex h-9 items-center gap-1.5 rounded-full border border-cocoa-line px-3 text-[12.5px] text-cream-soft transition-colors hover:border-gold hover:text-cream">
+        <span aria-hidden className="size-1.5 rounded-full bg-gold" />
+        <span className="max-[359px]:hidden">22K</span>
+        <span className="font-medium tabular-nums text-gold">{rates.perGram["22K"] ? rate(rates.perGram["22K"]) : "—"}</span>
       </button>
 
       <Sheet ref={sheet} title="Today's gold price" kicker={rates.source === "sample" ? "Sample rates, not live" : "Set by our team"}>
