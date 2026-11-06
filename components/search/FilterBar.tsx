@@ -1,7 +1,6 @@
 "use client";
 import { useRef } from "react";
-import { CATEGORIES, type Tab } from "@/data/catalogue";
-import { useCatalogue } from "@/lib/catalogue-store";
+import type { Tab } from "@/data/catalogue";
 import { EMPTY_QUERY, PRICE_BANDS, SORTS, activeFilterCount, liveTabs, moreFilterCount, optionsFor, type Query } from "@/lib/catalogue-query";
 import { ChevronIcon, SlidersIcon } from "../Icons";
 import { Sheet, type SheetHandle } from "../Sheet";
@@ -38,18 +37,12 @@ export function FilterBar({ query, set, reset, resultCount }: { query: Query; se
   const sheet = useRef<SheetHandle>(null);
   const more = moreFilterCount(query);
   const all = activeFilterCount(query);
-  const cat = CATEGORIES.find((c) => c.id === query.category);
   const band = PRICE_BANDS.find((b) => b.id === query.price);
   const chip = "inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border bg-card px-3.5 text-[13px]";
   // A filter with only one choice filters nothing, so it is not shown.
   const opts = optionsFor(query.tab);
   const showPurity = opts.purities.length > 1 || query.purity.length > 0;
   const showCategory = opts.categories.length > 1 || !!query.category;
-  // Bridal, one tap: the occasion filter, brought out of "More filters".
-  const bridalOn = query.occasion === "bridal" || query.tab === "bridal";
-  const { pieces } = useCatalogue();
-  const showBridal = bridalOn || pieces.some((p) => p.occasions.includes("bridal"));
-  const toggleBridal = () => set(bridalOn ? { occasion: null, tab: query.tab === "bridal" ? "jewellery" : query.tab } : { occasion: "bridal" });
 
   return (
     <div className="sticky top-[var(--header-h)] z-20 border-b border-line bg-chalk/95 backdrop-blur-sm">
@@ -57,15 +50,8 @@ export function FilterBar({ query, set, reset, resultCount }: { query: Query; se
       <div className="page page-x hidden items-center gap-2 py-3 lg:flex">
         <TabSwitch query={query} set={set} />
         <div className="min-w-0 flex-1"><LocationBox query={query} set={set} /></div>
-        {showCategory && <Popover label={cat?.label ?? "Category"} active={!!cat}><CategoryOptions query={query} set={set} /></Popover>}
         {showPurity && <Popover label={query.purity.length ? query.purity.join(", ") : "Purity"} active={query.purity.length > 0} width="w-60"><PurityOptions query={query} set={set} /></Popover>}
         <Popover label={band?.label ?? "Price"} active={!!band}><PriceOptions query={query} set={set} /></Popover>
-        {showBridal && (
-          <button type="button" aria-pressed={bridalOn} onClick={toggleBridal}
-            className={`inline-flex h-11 items-center rounded-full border px-4 text-[14px] transition-colors ${bridalOn ? "border-cocoa bg-cocoa text-cream" : "border-line-strong bg-card text-ink-soft hover:border-ink hover:text-ink"}`}>
-            Bridal
-          </button>
-        )}
         <button type="button" onClick={() => sheet.current?.open()}
           className={`inline-flex h-11 items-center gap-2 rounded-full border bg-card px-4 text-[14px] ${more ? "border-ink text-ink" : "border-line-strong text-ink-soft hover:border-ink hover:text-ink"}`}>
           <SlidersIcon className="size-4" /> More filters
@@ -86,7 +72,6 @@ export function FilterBar({ query, set, reset, resultCount }: { query: Query; se
             <SlidersIcon className="size-4" /> Filters{all > 0 && ` · ${all}`}
           </button>
           {[
-            showCategory && { label: cat?.label ?? "Category", on: !!cat },
             showPurity && { label: query.purity.length ? query.purity.join(", ") : "Purity", on: query.purity.length > 0 },
             { label: band?.label ?? "Price", on: !!band },
           ].filter((c): c is { label: string; on: boolean } => !!c).map((c) => (
@@ -94,11 +79,6 @@ export function FilterBar({ query, set, reset, resultCount }: { query: Query; se
               {c.label} <ChevronIcon className="size-3 text-stone" />
             </button>
           ))}
-          {showBridal && (
-            <button type="button" aria-pressed={bridalOn} onClick={toggleBridal} className={`${chip} ${bridalOn ? "border-cocoa bg-cocoa text-cream" : "border-line-strong text-ink-soft"}`}>
-              Bridal
-            </button>
-          )}
           <label className={`${chip} relative border-line-strong text-ink-soft`}>
             {SORTS.find((s) => s.id === query.sort)!.label} <ChevronIcon className="size-3 text-stone" />
             <select aria-label="Sort" value={query.sort} onChange={(e) => set({ sort: e.target.value as Query["sort"] })} className="absolute inset-0 opacity-0">

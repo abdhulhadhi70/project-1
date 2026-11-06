@@ -27,11 +27,11 @@ export function PriceLine({ piece, className = "" }: { piece: Piece; className?:
   );
 }
 
-export function Facts({ piece }: { piece: Piece }) {
+export function Facts({ piece, short = false }: { piece: Piece; short?: boolean }) {
   const items = [
     piece.purity && { icon: PurityIcon, text: piece.fineness ? `${piece.purity} · ${piece.fineness}` : piece.purity, label: "Purity" },
     piece.weightGrams && { icon: ScaleIcon, text: weightText(piece.weightGrams), label: "Weight" },
-    piece.makingCharge && { icon: HammerIcon, text: makingShort(piece.makingCharge), label: "Making charge" },
+    !short && piece.makingCharge && { icon: HammerIcon, text: makingShort(piece.makingCharge), label: "Making charge" },
   ].filter(Boolean) as { icon: typeof PurityIcon; text: string; label: string }[];
   return (
     <ul className="flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-ink-soft">
@@ -67,7 +67,7 @@ export function ResultCard({ piece, layout = "list", priority = false }: { piece
 
       <div className={`flex flex-col ${list ? "gap-2 p-3 md:p-4" : "gap-1.5 px-2 pb-1.5 pt-3"}`}>
         <PriceLine piece={piece} className={list ? "" : "[&>span:first-child]:text-[16px]"} />
-        <Facts piece={piece} />
+        <Facts piece={piece} short={!list} />
         <h3 className={`${list ? "font-serif text-[20px] md:text-[22px]" : "font-serif text-[18px]"} leading-tight text-ink`}>
           <Link href={href} className="after:absolute after:inset-0 after:content-[''] hover:underline">{piece.name}</Link>
         </h3>
@@ -82,7 +82,7 @@ export function ResultCard({ piece, layout = "list", priority = false }: { piece
             <Monogram name={shop.name} />
             <span className="min-w-0">
               <span className="block truncate">{shop.name}</span>
-              <span className="block text-[11px] text-stone">Stock confirmed {dateShort(piece.stockConfirmedAt)}</span>
+              {list && <span className="block text-[11px] text-stone">Stock confirmed {dateShort(piece.stockConfirmedAt)}</span>}
             </span>
           </Link>
           {list && (
