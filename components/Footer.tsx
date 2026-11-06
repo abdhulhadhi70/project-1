@@ -47,7 +47,7 @@ export function Footer() {
           </nav>
         ))}
       </div>
-      <div className="page page-x border-t border-cocoa-line py-5 text-[12px] text-cream-soft">
+      <div className="page page-x border-t border-cocoa-line pb-24 pt-5 text-[12px] text-cream-soft md:pb-5">
         © 2026 {name} · Prototype. Jewellers, prices, rates, contact details and images are demonstration data.
       </div>
     </footer>
