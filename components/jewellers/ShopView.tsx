@@ -66,7 +66,7 @@ export function ShopView({ slug }: { slug: string }) {
             <ShopMap shop={shop} className="h-64 lg:h-full lg:min-h-80" />
             <div className="mt-2 flex flex-wrap items-baseline justify-between gap-2 text-[13px]">
               <span className="text-ink-soft">{shop.address}</span>
-              <a href={directions} target="_blank" rel="noopener" onClick={() => !shop.demo && track("directions_click", shop.id)} className="inline-flex items-center gap-1 text-ink underline decoration-line-strong underline-offset-4">Get directions <ArrowIcon className="size-3.5" /></a>
+              <a href={directions} target="_blank" rel="noopener" onClick={() => !shop.demo && track("directions_click", shop.id)} className="inline-flex h-11 items-center gap-1.5 rounded-full border border-ink px-4 text-[14px] text-ink transition-colors hover:bg-limestone">Get directions <ArrowIcon className="size-3.5" /></a>
             </div>
           </div>
         </div>
@@ -75,7 +75,7 @@ export function ShopView({ slug }: { slug: string }) {
         <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3">
           <h2 className="font-serif text-[28px] leading-none md:text-[34px]">Pieces from {shop.name}</h2>
           <Link href={searchHref({ shop: shop.slug, tab: theirs.every((p) => p.category === "coins" || p.category === "bars") ? "coins_bars" : "jewellery" })}
-            className="text-[13px] text-ink underline decoration-line-strong underline-offset-4">Search and filter these</Link>
+            className="inline-flex min-h-11 items-center text-[14px] text-ink underline decoration-line-strong underline-offset-4">Search and filter these</Link>
         </div>
         {cats.length > 1 && (
           <p className="mb-4 text-[13px] text-stone">{cats.map((c) => `${theirs.filter((p) => p.category === c.id).length} ${c.label.toLowerCase()}`).join(" · ")}</p>

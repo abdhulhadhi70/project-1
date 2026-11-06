@@ -49,7 +49,7 @@ function SellerCard({ piece, shopCount, withActions = false }: { piece: Piece; s
         {withActions && <ContactActions shop={shop} subject={`${piece.name} (ref ${piece.code})`} pieceId={piece.id} layout="column" />}
         <VisitRequest shop={shop} pieceName={piece.name} pieceCode={piece.code} pieceId={piece.id} />
       </div>
-      <Link href={shopHref(shop.slug)} className="mt-4 inline-flex items-center gap-1.5 text-[13px] text-ink-soft underline decoration-line-strong underline-offset-4 hover:text-ink">
+      <Link href={shopHref(shop.slug)} className="mt-2 inline-flex min-h-11 items-center gap-1.5 text-[14px] text-ink underline decoration-line-strong underline-offset-4 hover:decoration-ink">
         All {shopCount} pieces from {shop.name} <ArrowIcon className="size-3.5" />
       </Link>
       <p className="mt-4 border-t border-line pt-3 text-[12px] leading-snug text-stone">
@@ -151,7 +151,7 @@ export function PieceView({ slug }: { slug: string }) {
           <section aria-labelledby="where" className="mt-10">
             <div className="flex flex-wrap items-baseline justify-between gap-3">
               <h2 id="where" className="text-[15px] font-medium">Where to see it</h2>
-              <a href={directions} target="_blank" rel="noopener" onClick={() => !piece.demo && track("directions_click", shop.id, piece.id)} className="inline-flex items-center gap-1.5 text-[13px] text-ink underline decoration-line-strong underline-offset-4">
+              <a href={directions} target="_blank" rel="noopener" onClick={() => !piece.demo && track("directions_click", shop.id, piece.id)} className="inline-flex h-11 items-center gap-1.5 rounded-full border border-ink px-4 text-[14px] text-ink transition-colors hover:bg-limestone">
                 Get directions <ArrowIcon className="size-3.5" />
               </a>
             </div>
@@ -176,7 +176,7 @@ export function PieceView({ slug }: { slug: string }) {
           <section key={s.title} className="page page-x mt-16">
             <div className="mb-5 flex items-baseline justify-between gap-4 border-t border-line pt-6">
               <h2 className="font-serif text-[24px] leading-none md:text-[30px]">{s.title}</h2>
-              <Link href={s.href} className="shrink-0 text-[13px] text-ink-soft underline decoration-line-strong underline-offset-4 hover:text-ink">See all</Link>
+              <Link href={s.href} className="inline-flex min-h-11 shrink-0 items-center text-[14px] text-ink underline decoration-line-strong underline-offset-4 hover:decoration-ink">See all</Link>
             </div>
             <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5">
               {s.list.map((p) => <li key={p.slug}><ResultCard piece={p} layout="grid" /></li>)}

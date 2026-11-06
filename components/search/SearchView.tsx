@@ -85,7 +85,7 @@ export function SearchView() {
             <div role="group" aria-label="View" className="flex rounded-full border border-line-strong bg-card p-0.5">
               {([["list", ListIcon, "List"], ["grid", GridIcon, "Grid"], ["map", MapIcon, "Map"]] as const).map(([v, Icon, label]) => (
                 <button key={v} type="button" onClick={() => setView(v)} aria-pressed={view === v} title={`${label} view`}
-                  className={`inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-[13px] ${view === v ? "bg-cocoa text-cream" : "text-ink-soft hover:text-ink"}`}>
+                  className={`inline-flex h-10 items-center gap-1.5 rounded-full px-3 text-[13px] ${view === v ? "bg-cocoa text-cream" : "text-ink-soft hover:text-ink"}`}>
                   <Icon className="size-4" /><span className="max-sm:sr-only">{label}</span>
                 </button>
               ))}
@@ -187,8 +187,8 @@ function RelatedSearches({ query }: { query: Query }) {
   return (
     <section className="mt-16 border-t border-line pt-6" aria-labelledby="related">
       <h2 id="related" className="text-[14px] font-medium">Related searches</h2>
-      <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-[13px]">
-        {live.map((l) => <li key={l.href}><Link href={l.href} className="text-ink-soft underline decoration-line-strong underline-offset-4 hover:text-ink">{l.label}</Link></li>)}
+      <ul className="mt-3 flex flex-wrap gap-2 text-[13.5px]">
+        {live.map((l) => <li key={l.href}><Link href={l.href} className="inline-flex h-10 items-center rounded-full border border-line-strong bg-card px-3.5 text-ink-soft transition-colors hover:border-ink hover:text-ink">{l.label}</Link></li>)}
       </ul>
     </section>
   );

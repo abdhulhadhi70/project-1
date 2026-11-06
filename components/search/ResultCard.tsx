@@ -11,7 +11,7 @@ import { HammerIcon, PinIcon, PurityIcon, ScaleIcon } from "../Icons";
 import { SaveButton } from "../SaveButton";
 import { CardGallery } from "./CardGallery";
 
-export function Monogram({ name, className = "size-8 text-[11px]" }: { name: string; className?: string }) {
+export function Monogram({ name, className = "size-8 text-[12px]" }: { name: string; className?: string }) {
   const letters = name.split(/\s+/).filter((w) => /^[A-Z]/.test(w)).slice(0, 2).map((w) => w[0]).join("");
   return <span aria-hidden className={`grid shrink-0 place-items-center rounded-full bg-limestone font-medium tracking-wide text-ink-soft ${className}`}>{letters}</span>;
 }
@@ -22,7 +22,7 @@ export function PriceLine({ piece, className = "" }: { piece: Piece; className?:
   return (
     <p className={`flex flex-wrap items-baseline gap-x-2 gap-y-1 ${className}`}>
       <span className="whitespace-nowrap text-[19px] font-semibold tracking-[-0.01em] text-ink md:text-[20px]">{aed(p.aed)}</span>
-      {p.kind === "indicative" && <span className="rounded-full border border-line-strong px-2 text-[11px] leading-[18px] text-stone">Indicative</span>}
+      {p.kind === "indicative" && <span className="rounded-full border border-line-strong px-2 text-[12px] leading-[18px] text-stone">Indicative</span>}
     </p>
   );
 }
@@ -66,7 +66,7 @@ export function ResultCard({ piece, layout = "list", priority = false, showShop 
       <div className={`flex flex-col ${list ? "gap-2 p-4 md:p-5" : "gap-1 p-3"}`}>
         {/* The jeweller first: this is a shop's design, found here, seen in their shop. */}
         {showShop && <Link href={shopHref(shop.slug)} className={`relative z-10 inline-flex min-w-0 max-w-full items-center gap-2.5 self-start hover:underline ${list ? "" : "gap-2"}`}>
-          <Monogram name={shop.name} className={list ? "size-9 text-[11px]" : "size-7 text-[10px]"} />
+          <Monogram name={shop.name} className={list ? "size-9 text-[12px]" : "size-7 text-[10px]"} />
           <span className="min-w-0">
             <span className={`block truncate font-medium text-ink ${list ? "text-[14px]" : "text-[12.5px]"}`}>{shop.name}</span>
             <span className="flex items-center gap-1 truncate text-[12px] text-stone"><PinIcon className="size-3.5 shrink-0" />{area.name}{list ? `, ${area.emirate}` : ""}</span>
@@ -82,10 +82,10 @@ export function ResultCard({ piece, layout = "list", priority = false, showShop 
         {list ? (
           <div className="relative z-10 mt-auto space-y-2 border-t border-line pt-3">
             <ContactActions shop={shop} subject={`${piece.name} (ref ${piece.code})`} path={href} pieceId={piece.id} layout="card" />
-            <p className="text-[11px] text-stone">Stock confirmed by the shop {dateShort(piece.stockConfirmedAt)}</p>
+            <p className="text-[12px] text-stone">Stock confirmed by the shop {dateShort(piece.stockConfirmedAt)}</p>
           </div>
         ) : (
-          <p className="mt-auto pt-1 text-[11px] text-stone">Stock confirmed {dateShort(piece.stockConfirmedAt)}</p>
+          <p className="mt-auto pt-1 text-[12px] text-stone">Stock confirmed {dateShort(piece.stockConfirmedAt)}</p>
         )}
       </div>
     </article>

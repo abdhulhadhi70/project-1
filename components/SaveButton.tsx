@@ -27,7 +27,7 @@ export function SaveButton({ slug, name, variant = "overlay" }: { slug: string; 
       aria-pressed={saved}
       aria-label={label}
       title={label}
-      className="grid size-10 place-items-center text-ink/80 transition-colors hover:text-ink"
+      className="grid size-11 place-items-center text-ink/80 transition-colors hover:text-ink"
     >
       <span className="grid size-8 place-items-center rounded-full bg-card/90 shadow-sm">
         <HeartIcon filled={saved} className={`size-[17px] ${saved ? "text-terracotta" : ""}`} />

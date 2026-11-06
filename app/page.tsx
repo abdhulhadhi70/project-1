@@ -59,7 +59,7 @@ function SectionHead({ title, note, href, link }: { title: string; note?: string
         <h2 className="font-serif text-[28px] leading-[1.1] tracking-[-0.01em] md:text-[34px]">{title}</h2>
         {note && <p className="mt-1 text-[14px] text-stone">{note}</p>}
       </div>
-      {href && <Link href={href} className="shrink-0 text-[14px] text-ink underline decoration-line-strong underline-offset-4 hover:decoration-ink">{link}</Link>}
+      {href && <Link href={href} className="inline-flex min-h-11 shrink-0 items-center text-[14px] text-ink underline decoration-line-strong underline-offset-4 hover:decoration-ink">{link}</Link>}
     </div>
   );
 }

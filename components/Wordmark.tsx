@@ -4,7 +4,7 @@ import { site } from "@/data/site";
 export function Wordmark({ withDescriptor = false, tone = "light" }: { withDescriptor?: boolean; tone?: "light" | "dark" }) {
   const dark = tone === "dark";
   return (
-    <Link href="/" className="group inline-flex items-baseline gap-3 leading-none" aria-label={`${site.name}, home`}>
+    <Link href="/" className="group inline-flex min-h-11 items-center gap-3 leading-none" aria-label={`${site.name}, home`}>
       <span className={`font-serif text-[28px] tracking-[-0.01em] ${dark ? "text-cream" : "text-ink"}`}>
         {site.name}<span aria-hidden className={`ml-0.5 align-super text-[13px] ${dark ? "text-gold" : "text-brass-deep"}`}>✦</span>
       </span>
