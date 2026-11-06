@@ -3,18 +3,17 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
-import { CATEGORIES } from "@/data/catalogue";
+import { CATEGORIES, TABS } from "@/data/catalogue";
 import { getCatalogue, useCatalogue } from "@/lib/catalogue-store";
 import {
-  EMPTY_QUERY, PRICE_BANDS, SORTS, WEIGHT_BANDS, liveAreas, locationLabel, paginate, parseQuery, runQuery, searchHref, toSearchParams, type Query,
+  PRICE_BANDS, SORTS, WEIGHT_BANDS, liveAreas, locationLabel, paginate, parseQuery, runQuery, searchHref, toSearchParams, type Query,
 } from "@/lib/catalogue-query";
 import { describeQuery } from "@/lib/describe";
 import { useSavedSearches } from "@/lib/saved-searches";
 import { useQueryState } from "@/lib/use-query-state";
 import { OCCASIONS, STYLES, WEARERS } from "@/data/catalogue";
 import { BookmarkIcon, ChevronIcon, CloseIcon, GridIcon, ListIcon, MapIcon } from "../Icons";
-import { CategoryRail } from "./CategoryRail";
-import { FilterBar } from "./FilterBar";
+import { FilterBar, TabSwitch } from "./FilterBar";
 import { Pagination } from "./Pagination";
 import { ResultCard } from "./ResultCard";
 import { groupByShop } from "./map-shops";
@@ -29,57 +28,52 @@ const ResultsMap = dynamic(() => import("./ResultsMap"), {
 type View = "list" | "grid" | "map";
 
 export function SearchView() {
+  const catalogue = useCatalogue(); // re-render when the live catalogue arrives
   const { query, set, reset } = useQueryState();
   const params = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  // Grid first: more pieces on a phone screen at once. List and map on request.
-  const view: View = (["list", "map"] as const).find((v) => v === params.get("view")) ?? "grid";
+  const view: View = (["grid", "map"] as const).find((v) => v === params.get("view")) ?? "list";
   const setView = (v: View) => {
     const p = new URLSearchParams(params.toString());
-    if (v === "grid") p.delete("view"); else p.set("view", v);
+    if (v === "list") p.delete("view"); else p.set("view", v);
     router.replace(`${pathname}${p.size ? `?${p}` : ""}`, { scroll: false });
   };
-  return <SearchBody query={query} set={set} reset={reset} view={view} setView={setView} />;
-}
-
-/** The first paint, before the browser has read the address: every piece,
- *  straight away, instead of a loading line. */
-export function SearchStatic() {
-  const noop = () => {};
-  return <SearchBody query={EMPTY_QUERY} set={noop} reset={noop} view="grid" setView={noop} />;
-}
-
-function SearchBody({ query, set, reset, view, setView }: {
-  query: Query; set: (p: Partial<Query>) => void; reset: () => void; view: View; setView: (v: View) => void;
-}) {
-  const catalogue = useCatalogue(); // re-render when the live catalogue arrives
 
   const results = useMemo(() => runQuery(query, catalogue.pieces), [query, catalogue]);
   const paged = paginate(results, query.page);
   const title = describeQuery(query);
-  const savedHref = `/?${toSearchParams({ ...query, page: 1 }).toString()}`.replace(/\?$/, "");
+  const savedHref = `/search?${toSearchParams({ ...query, page: 1 }).toString()}`.replace(/\?$/, "");
   const { isSaved, toggle } = useSavedSearches();
   const saved = isSaved(savedHref);
+  const tabLabel = TABS.find((t) => t.id === query.tab)!.label;
 
   return (
     <>
       <FilterBar query={query} set={set} reset={reset} resultCount={results.length} />
 
       <div className="page page-x pb-16">
-        <div className="pt-3 md:pt-5"><CategoryRail query={query} set={set} /></div>
-        <div className="mt-3 flex items-center justify-between gap-3 md:mt-5">
-          <div className="min-w-0">
-            <h1 className="truncate font-serif text-[22px] leading-tight tracking-[-0.01em] md:text-[34px]">{title}</h1>
-            <p className="text-[13px] text-stone" aria-live="polite">
-              {results.length} {results.length === 1 ? "piece" : "pieces"}
+        <nav aria-label="Breadcrumb" className="pt-4 text-[13px] text-stone">
+          <ol className="flex flex-wrap gap-1.5">
+            <li><Link href="/" className="hover:text-ink">Home</Link></li>
+            <li aria-hidden>›</li>
+            <li><Link href={searchHref({ tab: query.tab })} className="hover:text-ink">{tabLabel}</Link></li>
+            {query.location && (<><li aria-hidden>›</li><li className="text-ink-soft">{locationLabel(query.location).split(",")[0]}</li></>)}
+          </ol>
+        </nav>
+
+        <div className="mt-3 flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+          <div>
+            <h1 className="font-serif text-[28px] leading-[1.05] tracking-[-0.01em] md:text-[36px]">{title}</h1>
+            <p className="mt-1.5 text-[13px] text-stone" aria-live="polite">
+              {results.length} {results.length === 1 ? "result" : "results"}
               {paged.pages > 1 && ` · page ${paged.page} of ${paged.pages}`}
             </p>
           </div>
-          <div className="flex shrink-0 items-center gap-2">
-            <button type="button" onClick={() => toggle(savedHref, title)} aria-pressed={saved} aria-label={saved ? "Search saved" : "Save this search"} title={saved ? "Search saved" : "Save this search"}
-              className={`inline-flex size-10 items-center justify-center gap-2 rounded-full border bg-card text-[13px] md:w-auto md:px-3.5 ${saved ? "border-ink text-ink" : "border-line-strong text-ink-soft hover:border-ink hover:text-ink"}`}>
-              <BookmarkIcon filled={saved} className="size-4" /> <span className="hidden md:inline">{saved ? "Search saved" : "Save search"}</span>
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={() => toggle(savedHref, title)} aria-pressed={saved}
+              className={`inline-flex h-10 items-center gap-2 rounded-full border bg-card px-3.5 text-[13px] ${saved ? "border-ink text-ink" : "border-line-strong text-ink-soft hover:border-ink hover:text-ink"}`}>
+              <BookmarkIcon filled={saved} className="size-4" /> {saved ? "Search saved" : "Save search"}
             </button>
             <label className="relative hidden h-10 items-center gap-1.5 rounded-full border border-line-strong bg-card px-3.5 text-[13px] text-stone lg:inline-flex">
               Sort: <span className="text-ink">{SORTS.find((s) => s.id === query.sort)!.label}</span>
@@ -89,16 +83,17 @@ function SearchBody({ query, set, reset, view, setView }: {
               </select>
             </label>
             <div role="group" aria-label="View" className="flex rounded-full border border-line-strong bg-card p-0.5">
-              {([["grid", GridIcon, "Grid"], ["list", ListIcon, "List"], ["map", MapIcon, "Map"]] as const).map(([v, Icon, label]) => (
+              {([["list", ListIcon, "List"], ["grid", GridIcon, "Grid"], ["map", MapIcon, "Map"]] as const).map(([v, Icon, label]) => (
                 <button key={v} type="button" onClick={() => setView(v)} aria-pressed={view === v} title={`${label} view`}
-                  className={`inline-flex h-9 items-center gap-1.5 rounded-full px-2.5 text-[13px] md:px-3 ${view === v ? "bg-cocoa text-cream" : "text-ink-soft hover:text-ink"}`}>
-                  <Icon className="size-4" /><span className="max-md:sr-only">{label}</span>
+                  className={`inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-[13px] ${view === v ? "bg-cocoa text-cream" : "text-ink-soft hover:text-ink"}`}>
+                  <Icon className="size-4" /><span className="max-sm:sr-only">{label}</span>
                 </button>
               ))}
             </div>
           </div>
         </div>
 
+        <TabSwitch query={query} set={set} className="mt-4 lg:hidden" />
         <ActiveChips query={query} set={set} />
 
         {results.length === 0 ? (
@@ -118,7 +113,7 @@ function SearchBody({ query, set, reset, view, setView }: {
           </div>
         ) : (
           <>
-            <ul className={`mt-4 ${view === "grid" ? "grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 xl:grid-cols-4" : "grid gap-4 xl:grid-cols-2"}`}>
+            <ul className={`mt-5 ${view === "grid" ? "grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 xl:grid-cols-4" : "grid gap-4 xl:grid-cols-2"}`}>
               {paged.items.map((p, i) => (
                 <li key={p.slug}><ResultCard piece={p} layout={view === "grid" ? "grid" : "list"} priority={i < 2} /></li>
               ))}
@@ -139,12 +134,12 @@ function ActiveChips({ query, set }: { query: Query; set: (p: Partial<Query>) =>
   if (query.q.trim()) chips.push({ label: `“${query.q.trim()}”`, clear: { q: "" } });
   if (query.location) chips.push({ label: locationLabel(query.location), clear: { location: null } });
   if (query.shop) chips.push({ label: getCatalogue().shopBySlug.get(query.shop)?.name ?? query.shop, clear: { shop: null } });
-  // The category shows in the row of circles above; no second chip for it.
+  if (query.category) chips.push({ label: lab(CATEGORIES, query.category)!, clear: { category: null } });
   for (const p of query.purity) chips.push({ label: p, clear: { purity: query.purity.filter((x) => x !== p) } });
   if (query.price) chips.push({ label: lab(PRICE_BANDS, query.price)!, clear: { price: null } });
   if (query.weight) chips.push({ label: lab(WEIGHT_BANDS, query.weight)!, clear: { weight: null } });
   if (query.making) chips.push({ label: `Making up to AED ${query.making}/g`, clear: { making: null } });
-  if (query.occasion && query.occasion !== "bridal") chips.push({ label: lab(OCCASIONS, query.occasion)!, clear: { occasion: null } });
+  if (query.occasion) chips.push({ label: lab(OCCASIONS, query.occasion)!, clear: { occasion: null } });
   if (query.wearer) chips.push({ label: `For ${lab(WEARERS, query.wearer)!.toLowerCase()}`, clear: { wearer: null } });
   if (query.style) chips.push({ label: lab(STYLES, query.style)!, clear: { style: null } });
   if (query.stones) chips.push({ label: query.stones === "with" ? "With stones" : "Plain gold", clear: { stones: null } });

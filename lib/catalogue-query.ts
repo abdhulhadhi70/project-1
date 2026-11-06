@@ -164,7 +164,7 @@ export function toSearchParams(query: Query): URLSearchParams {
 
 export function searchHref(patch: Partial<Query>): string {
   const qs = toSearchParams({ ...EMPTY_QUERY, ...patch }).toString();
-  return `/${qs ? `?${qs}` : ""}`;
+  return `/search${qs ? `?${qs}` : ""}`;
 }
 
 // ---------------------------------------------------------------------------

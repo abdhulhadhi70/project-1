@@ -1,6 +1,6 @@
 "use client";
 import { useRef } from "react";
-import type { Tab } from "@/data/catalogue";
+import { CATEGORIES, type Tab } from "@/data/catalogue";
 import { EMPTY_QUERY, PRICE_BANDS, SORTS, activeFilterCount, liveTabs, moreFilterCount, optionsFor, type Query } from "@/lib/catalogue-query";
 import { ChevronIcon, SlidersIcon } from "../Icons";
 import { Sheet, type SheetHandle } from "../Sheet";
@@ -13,14 +13,10 @@ export function tabPatch(tab: Tab, q: Query): Partial<Query> {
   return { ...EMPTY_QUERY, tab, q: q.q, location: q.location, shop: q.shop, sort: q.sort };
 }
 
-// Bridal is a filter now, not a tab; the switch only appears once coins and
-// bars are listed alongside jewellery.
 export function TabSwitch({ query, set, className = "" }: { query: Query; set: SetFn; className?: string }) {
-  const tabs = liveTabs().filter((t) => t.id !== "bridal");
-  if (tabs.length < 2) return null;
   return (
     <div role="tablist" aria-label="What are you looking for" className={`flex rounded-full border border-line-strong bg-card p-1 ${className}`}>
-      {tabs.map((t) => {
+      {liveTabs().map((t) => {
         const on = query.tab === t.id;
         return (
           <button key={t.id} role="tab" type="button" aria-selected={on} onClick={() => !on && set(tabPatch(t.id, query))}
@@ -37,6 +33,7 @@ export function FilterBar({ query, set, reset, resultCount }: { query: Query; se
   const sheet = useRef<SheetHandle>(null);
   const more = moreFilterCount(query);
   const all = activeFilterCount(query);
+  const cat = CATEGORIES.find((c) => c.id === query.category);
   const band = PRICE_BANDS.find((b) => b.id === query.price);
   const chip = "inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border bg-card px-3.5 text-[13px]";
   // A filter with only one choice filters nothing, so it is not shown.
@@ -50,6 +47,7 @@ export function FilterBar({ query, set, reset, resultCount }: { query: Query; se
       <div className="page page-x hidden items-center gap-2 py-3 lg:flex">
         <TabSwitch query={query} set={set} />
         <div className="min-w-0 flex-1"><LocationBox query={query} set={set} /></div>
+        {showCategory && <Popover label={cat?.label ?? "Category"} active={!!cat}><CategoryOptions query={query} set={set} /></Popover>}
         {showPurity && <Popover label={query.purity.length ? query.purity.join(", ") : "Purity"} active={query.purity.length > 0} width="w-60"><PurityOptions query={query} set={set} /></Popover>}
         <Popover label={band?.label ?? "Price"} active={!!band}><PriceOptions query={query} set={set} /></Popover>
         <button type="button" onClick={() => sheet.current?.open()}
@@ -72,6 +70,7 @@ export function FilterBar({ query, set, reset, resultCount }: { query: Query; se
             <SlidersIcon className="size-4" /> Filters{all > 0 && ` · ${all}`}
           </button>
           {[
+            showCategory && { label: cat?.label ?? "Category", on: !!cat },
             showPurity && { label: query.purity.length ? query.purity.join(", ") : "Purity", on: query.purity.length > 0 },
             { label: band?.label ?? "Price", on: !!band },
           ].filter((c): c is { label: string; on: boolean } => !!c).map((c) => (

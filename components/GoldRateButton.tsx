@@ -1,11 +1,13 @@
 "use client";
 // The floating "Gold price" button: one tap shows the day's rate per gram
 // for each purity, from anywhere on the public site.
+import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import type { Purity } from "@/data/catalogue";
 import { useCatalogue } from "@/lib/catalogue-store";
 import { dateText } from "@/lib/format";
+import { ArrowIcon } from "./Icons";
 import { Sheet, type SheetHandle } from "./Sheet";
 
 // Portals and sign-in pages have their own work to do; the button stays off them.
@@ -18,18 +20,6 @@ export function GoldRateButton() {
   const pathname = usePathname();
   const sheet = useRef<SheetHandle>(null);
   const { rates } = useCatalogue();
-  // Shrinks to a round icon while scrolling down so it never sits on a price;
-  // opens out again on scrolling up or near the top.
-  const [compact, setCompact] = useState(false);
-  useEffect(() => {
-    let last = window.scrollY;
-    const on = () => {
-      const y = window.scrollY;
-      if (Math.abs(y - last) > 6) { setCompact(y > 240 && y > last); last = y; }
-    };
-    window.addEventListener("scroll", on, { passive: true });
-    return () => window.removeEventListener("scroll", on);
-  }, []);
   if (HIDDEN.some((p) => pathname.startsWith(p))) return null;
   const list = ORDER.filter((k) => rates.perGram[k]);
   const time = new Date(rates.asOf).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Dubai" });
@@ -40,12 +30,9 @@ export function GoldRateButton() {
     <>
       <button type="button" onClick={() => sheet.current?.open()}
         aria-label={`Gold price${rates.perGram["22K"] ? `, 22K ${rate(rates.perGram["22K"])} AED per gram` : ""}. Open today's gold rates.`}
-        className={`fixed right-4 z-30 inline-flex h-12 items-center overflow-hidden rounded-full bg-cocoa pl-2.5 text-[14px] font-medium text-cream shadow-[0_14px_30px_-12px_rgb(30_20_16/0.65)] ring-1 ring-gold/40 transition-[padding,transform] duration-200 active:scale-95 md:right-6 ${compact ? "pr-2.5" : "pr-5"} ${lift}`}>
-        <span aria-hidden className="grid size-7 shrink-0 place-items-center rounded-full bg-gold text-[13px] text-cocoa">✦</span>
-        <span aria-hidden className={`flex items-center gap-2 whitespace-nowrap transition-[max-width,opacity,margin] duration-200 ${compact ? "ml-0 max-w-0 opacity-0" : "ml-2 max-w-48 opacity-100"}`}>
-          Gold price
-          <span className="text-gold tabular-nums">{rates.perGram["22K"] ? rate(rates.perGram["22K"]) : ""}</span>
-        </span>
+        title="Today's gold price"
+        className={`fixed right-4 z-30 grid size-12 place-items-center rounded-full bg-cocoa shadow-[0_14px_30px_-12px_rgb(30_20_16/0.65)] ring-1 ring-gold/40 transition-transform active:scale-95 md:right-6 ${lift}`}>
+        <span aria-hidden className="grid size-8 place-items-center rounded-full bg-gold text-[14px] text-cocoa">✦</span>
       </button>
 
       <Sheet ref={sheet} title="Today's gold price" kicker={rates.source === "sample" ? "Sample rates, not live" : "Set by our team"}>
@@ -66,10 +53,10 @@ export function GoldRateButton() {
         <p className="mt-4 text-[13px] leading-relaxed text-stone">
           The rate for the gold alone. A piece also has a making charge and, for jewellery, 5% VAT. Each shop&apos;s own rate may differ slightly.
         </p>
-        <button type="button" onClick={() => sheet.current?.close()}
-          className="mt-4 inline-flex h-12 w-full items-center justify-center rounded-full border border-ink text-[15px] text-ink hover:bg-limestone">
-          Close
-        </button>
+        <Link href="/gold-price" onClick={() => sheet.current?.close()}
+          className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-terracotta text-[15px] text-white transition-colors hover:bg-terracotta-deep">
+          Work out a piece&apos;s price <ArrowIcon />
+        </Link>
       </Sheet>
     </>
   );

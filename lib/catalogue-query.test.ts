@@ -159,8 +159,8 @@ describe("URL state", () => {
   });
 
   it("builds clean links", () => {
-    expect(searchHref({ category: "chains", location: "karama" })).toBe("/?location=karama&category=chains");
-    expect(searchHref({})).toBe("/");
+    expect(searchHref({ category: "chains", location: "karama" })).toBe("/search?location=karama&category=chains");
+    expect(searchHref({})).toBe("/search");
   });
 });
 

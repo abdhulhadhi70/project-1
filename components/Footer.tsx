@@ -3,7 +3,7 @@ import Link from "next/link";
 import { CATEGORIES } from "@/data/catalogue";
 import { useCatalogue } from "@/lib/catalogue-store";
 import { site } from "@/data/site";
-import { searchHref } from "@/lib/catalogue-query";
+import { liveAreas, liveTabs, searchHref } from "@/lib/catalogue-query";
 
 const company = [
   { href: "/about", label: "About" },
@@ -18,18 +18,20 @@ export function Footer() {
   const { pieces, settings } = useCatalogue();
   const name = settings?.siteName ?? site.name;
   const browse = [
-    { href: "/", label: "All pieces" },
-    ...(pieces.some((p) => p.occasions.includes("bridal")) ? [{ href: searchHref({ occasion: "bridal" }), label: "Bridal" }] : []),
+    ...liveTabs().map((t) => ({ href: searchHref({ tab: t.id }), label: t.label })),
+    { href: "/jewellers", label: "Jewellers" },
+    { href: "/gold-price", label: "Gold price estimator" },
     { href: "/saved", label: "Saved" },
   ];
   const cols = [
     { title: "Browse", links: browse },
     { title: "Categories", links: CATEGORIES.filter((c) => c.section === "jewellery" && pieces.some((p) => p.category === c.id)).map((c) => ({ href: searchHref({ category: c.id }), label: c.label })) },
+    { title: "Gold districts", links: liveAreas().map((a) => ({ href: searchHref({ location: a.slug }), label: a.name })) },
     { title: name, links: company },
   ];
   return (
     <footer className="mt-20 bg-cocoa text-cream">
-      <div className="page page-x grid gap-8 py-12 md:py-14 sm:grid-cols-2 lg:grid-cols-[1.3fr_repeat(3,1fr)]">
+      <div className="page page-x grid gap-8 py-12 md:py-14 sm:grid-cols-2 lg:grid-cols-[1.3fr_repeat(4,1fr)]">
         <div className="max-w-xs">
           <p className="font-serif text-[30px] leading-none">{name}<span aria-hidden className="ml-0.5 align-super text-[13px] text-gold">✦</span></p>
           <p className="mt-3 text-[14px] leading-relaxed text-cream-soft">
