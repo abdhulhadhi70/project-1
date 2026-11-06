@@ -78,6 +78,7 @@ export async function fetchLiveCatalogue(): Promise<CatalogueData | null> {
       lat: s.lat ?? area?.lat ?? 25.2, lng: s.lng ?? area?.lng ?? 55.3,
       about: s.about ?? "", hours: s.hours ?? undefined, languages: s.languages ?? [], speciality: s.speciality ?? "",
       cover: theirs[0]?.slug ?? "", whatsapp: s.whatsapp ?? undefined, phone: s.phone ?? undefined, demo: s.is_demo,
+      featured: s.featured_order ?? undefined,
     };
   });
 

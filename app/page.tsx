@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { HeroSearch } from "@/components/home/HeroSearch";
+import { TopJewellers } from "@/components/home/TopJewellers";
 import { ArrowIcon } from "@/components/Icons";
 import { PieceImage } from "@/components/PieceImage";
 import type { Purity } from "@/data/catalogue";
@@ -18,31 +19,9 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <SeeAll />
-      <HowItWorks />
+      <TopJewellers />
       <ListYourShop />
     </>
-  );
-}
-
-function Section({ title, note, href, link = "See all", dark = false, children }: { title: React.ReactNode; note?: string; href?: string; link?: string; dark?: boolean; children: React.ReactNode }) {
-  return (
-    <section className={dark ? "cocoa-glow mt-16 py-14 text-cream md:mt-24 md:py-20" : "mt-16 md:mt-24"}>
-      <div className="page page-x">
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-x-6 gap-y-3 md:mb-8">
-          <div className="max-w-2xl">
-            <h2 className="font-serif text-[32px] leading-[1.02] tracking-[-0.015em] md:text-[44px]">{title}</h2>
-            {note && <p className={`mt-2 text-[15px] ${dark ? "text-cream-soft" : "text-stone"}`}>{note}</p>}
-          </div>
-          {href && (
-            <Link href={href} className={`inline-flex h-10 items-center gap-2 rounded-full border px-4 text-[14px] transition-colors ${dark ? "border-cocoa-line text-cream hover:border-gold hover:text-gold" : "border-line-strong text-ink hover:border-ink"}`}>
-              {link} <ArrowIcon className="size-3.5" />
-            </Link>
-          )}
-        </div>
-        {children}
-      </div>
-    </section>
   );
 }
 
@@ -123,42 +102,6 @@ function Rates() {
         </Link>
       </div>
     </div>
-  );
-}
-
-function SeeAll() {
-  const { pieces, shops } = useCatalogue();
-  return (
-    <section className="page page-x mt-10 md:mt-14">
-      <Link href="/search" className="flex items-center justify-between gap-4 rounded-3xl border border-line bg-card p-5 transition-colors hover:border-brass md:p-6">
-        <span>
-          <span className="block font-serif text-[26px] leading-tight md:text-[32px]">See all pieces</span>
-          <span className="mt-1 block text-[14px] text-stone">{pieces.length} designs from {shops.length} {shops.length === 1 ? "jeweller" : "jewellers"}, with every filter</span>
-        </span>
-        <span className="grid size-12 shrink-0 place-items-center rounded-full bg-terracotta text-white"><ArrowIcon /></span>
-      </Link>
-    </section>
-  );
-}
-
-function HowItWorks() {
-  const steps = [
-    { t: "Search every shop at once", d: "Pieces from different jewellers, side by side, by category, purity, price or area." },
-    { t: "Compare what matters", d: "Weight, purity and making charge on every listing, with the price worked out the same way." },
-    { t: "Message or visit the shop", d: "WhatsApp, call or tell the shop you are coming. You buy in the shop, never online." },
-  ];
-  return (
-    <Section title="How it works" note="We list jewellers' pieces for free. The sale is always between you and the shop.">
-      <ol className="grid gap-3 md:grid-cols-3 md:gap-5">
-        {steps.map((s, i) => (
-          <li key={s.t} className="rounded-2xl border border-line bg-card p-5 md:p-6">
-            <span className="grid size-9 place-items-center rounded-full bg-limestone font-serif text-[18px] text-brass-deep">{i + 1}</span>
-            <p className="mt-4 font-serif text-[22px] leading-tight">{s.t}</p>
-            <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">{s.d}</p>
-          </li>
-        ))}
-      </ol>
-    </Section>
   );
 }
 

@@ -111,3 +111,8 @@
     radial-gradient(60rem 30rem at 85% -10%, rgb(169 80 47 / 0.28), transparent 70%),
     radial-gradient(40rem 26rem at 5% 110%, rgb(212 173 110 / 0.14), transparent 70%);
 }
+
+/* Top jewellers on the homepage snap one at a time, like Reels. */
+html.snap-reels { scroll-snap-type: y proximity; scroll-padding-top: 0; }
+html.snap-reels .reel { scroll-snap-align: start; scroll-snap-stop: always; scroll-margin-top: calc(var(--header-h) + 1rem); }
+@media (width >= 48rem) { html.snap-reels { scroll-snap-type: none; } }

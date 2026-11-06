@@ -17,7 +17,9 @@ type Props = {
   pieceId?: string;
   /** Fires before the shop is contacted. */
   onContact?: (kind: "whatsapp" | "call") => void;
-  layout?: "stack" | "column" | "bar" | "card";
+  layout?: "stack" | "column" | "bar" | "card" | "whatsapp";
+  /** With layout "whatsapp": classes for the single button. */
+  buttonClass?: string;
 };
 
 function message(shop: Shop, subject: string | undefined, url: string) {
@@ -26,7 +28,7 @@ function message(shop: Shop, subject: string | undefined, url: string) {
     : `Hello ${shop.name}, I found your shop on Tibr: ${url}\nI would like to visit. When is a good time?`;
 }
 
-export function ContactActions({ shop, subject, path, pieceId, onContact, layout = "stack" }: Props) {
+export function ContactActions({ shop, subject, path, pieceId, onContact, layout = "stack", buttonClass = "" }: Props) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [mode, setMode] = useState<"whatsapp" | "call">("whatsapp");
   const [text, setText] = useState("");
@@ -55,7 +57,11 @@ export function ContactActions({ shop, subject, path, pieceId, onContact, layout
 
   return (
     <>
-      {layout === "card" ? (
+      {layout === "whatsapp" ? (
+        <button type="button" onClick={() => open("whatsapp")} className={buttonClass}>
+          <ChatIcon className="size-4" /> WhatsApp
+        </button>
+      ) : layout === "card" ? (
         <div className="flex gap-2">
           <button type="button" onClick={() => open("call")} className="inline-flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full border border-line-strong px-3 text-[13px] text-ink hover:border-ink">
             <PhoneIcon className="size-4" /> Call

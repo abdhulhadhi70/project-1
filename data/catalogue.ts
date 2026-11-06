@@ -72,6 +72,8 @@ export type Shop = {
   /** As dialled, e.g. "+971 4 xxx xxxx". Empty for demo shops. */
   phone?: string;
   demo: boolean;
+  /** Set by our team: 1 shows first among top jewellers. */
+  featured?: number;
 };
 
 export type Piece = {
