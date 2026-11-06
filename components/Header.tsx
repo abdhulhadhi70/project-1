@@ -58,7 +58,7 @@ export function Header() {
       )}
       <header className="sticky top-0 z-30 h-[var(--header-h)] border-b border-cocoa-line bg-cocoa/95 text-cream backdrop-blur-sm">
         <div className="page page-x flex h-full items-center gap-8">
-          <Wordmark withDescriptor tone="dark" />
+          <Wordmark tone="dark" />
           <nav aria-label="Main" className="hidden flex-1 lg:block">
             <Suspense fallback={null}>
               <NavLinks className="flex gap-7 text-[14px]" item={(a) => `relative py-5 ${a ? "text-cream after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-gold" : "text-cream-soft hover:text-cream"}`} />

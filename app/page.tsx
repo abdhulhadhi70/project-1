@@ -123,9 +123,6 @@ function Rates() {
             </div>
           ))}
         </dl>
-        <Link href="/gold-price" className="inline-flex h-10 items-center gap-2 rounded-full border border-cocoa-line px-4 text-[13px] text-cream hover:border-gold hover:text-gold">
-          Price estimator <ArrowIcon className="size-3.5" />
-        </Link>
       </div>
     </div>
   );
