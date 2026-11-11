@@ -63,9 +63,9 @@ export function FilterBar({ query, set, reset, resultCount }: { query: Query; se
       </div>
 
       {/* Phone and tablet: search box, then a row of filter chips. */}
-      <div className="page-x space-y-2 py-2.5 lg:hidden">
-        <LocationBox query={query} set={set} />
-        <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4">
+      <div className="lg:hidden">
+        <div className="bg-cocoa page-x pb-3 pt-1"><LocationBox query={query} set={set} /></div>
+        <div className="no-scrollbar page-x flex gap-2 overflow-x-auto py-2.5">
           <button type="button" onClick={() => sheet.current?.open()} className={`${chip} ${all ? "border-cocoa bg-cocoa text-cream" : "border-line-strong text-ink"}`}>
             <SlidersIcon className="size-4" /> Filters{all > 0 && ` · ${all}`}
           </button>
@@ -78,6 +78,10 @@ export function FilterBar({ query, set, reset, resultCount }: { query: Query; se
               {c.label} <ChevronIcon className="size-3 text-stone" />
             </button>
           ))}
+          <button type="button" aria-pressed={query.sort === "making-asc"} onClick={() => set({ sort: query.sort === "making-asc" ? "newest" : "making-asc" })}
+            className={`${chip} ${query.sort === "making-asc" ? "border-cocoa bg-cocoa text-cream" : "border-line-strong text-ink-soft"}`}>
+            Lowest making
+          </button>
           <label className={`${chip} relative border-line-strong text-ink-soft`}>
             {SORTS.find((s) => s.id === query.sort)!.label} <ChevronIcon className="size-3 text-stone" />
             <select aria-label="Sort" value={query.sort} onChange={(e) => set({ sort: e.target.value as Query["sort"] })} className="absolute inset-0 opacity-0">

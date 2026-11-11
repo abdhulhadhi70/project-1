@@ -38,7 +38,7 @@ function NavLinks({ onClick, className, item }: { onClick?: () => void; classNam
 function SavedCount() {
   const { saved } = useSaved();
   return saved.length > 0 ? (
-    <span className="absolute -right-1.5 -top-1 min-w-4 rounded-full bg-terracotta px-1 text-center text-[10px] leading-4 text-white">{saved.length}</span>
+    <span className="absolute -right-1.5 -top-1 min-w-4 rounded-full bg-gold px-1 text-center text-[10px] font-medium leading-4 text-cocoa">{saved.length}</span>
   ) : null;
 }
 
@@ -69,7 +69,7 @@ export function Header() {
               <span className="relative"><HeartIcon className="size-5" /><SavedCount /></span>
               <span className="hidden lg:inline">Saved</span>
             </Link>
-            <Link href="/for-jewellers" className="hidden h-10 items-center rounded-full bg-terracotta px-5 text-[14px] text-white transition-colors hover:bg-terracotta-deep lg:inline-flex">
+            <Link href="/for-jewellers" className="btn-gold hidden h-10 items-center rounded-full px-5 text-[14px] font-medium lg:inline-flex">
               List your shop
             </Link>
             <button type="button" onClick={() => menu.current?.open()} className="-mr-2 grid size-11 place-items-center text-cream lg:hidden" aria-label="Menu">

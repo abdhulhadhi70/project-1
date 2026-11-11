@@ -28,7 +28,7 @@ export function PieceGallery({ images, name }: { images: string[]; name: string 
     <div>
       {/* Phone: swipe between views; tap opens the viewer. */}
       <div className="relative md:hidden">
-        <div className="no-scrollbar flex snap-x snap-mandatory overflow-x-auto rounded-2xl"
+        <div className="no-scrollbar -mx-4 flex snap-x snap-mandatory overflow-x-auto"
           onScroll={(e) => setIndex(Math.round(e.currentTarget.scrollLeft / e.currentTarget.clientWidth))}>
           {images.map((img, i) => (
             <button key={img} type="button" onClick={() => setViewer(true)} className="aspect-square w-full shrink-0 snap-center bg-limestone" aria-label="Open photo viewer">
@@ -36,7 +36,7 @@ export function PieceGallery({ images, name }: { images: string[]; name: string 
             </button>
           ))}
         </div>
-        <span className="pointer-events-none absolute bottom-3 left-3 inline-flex items-center gap-1 rounded-full bg-cocoa/70 px-2.5 py-0.5 text-[12px] text-cream">
+        <span className="pointer-events-none absolute bottom-9 left-0 inline-flex items-center gap-1 rounded-full bg-cocoa/70 px-2.5 py-0.5 text-[12px] text-cream">
           <CameraIcon /> {index + 1}/{images.length}
         </span>
       </div>
@@ -80,7 +80,7 @@ export function PieceGallery({ images, name }: { images: string[]; name: string 
                 </>
               )}
             </div>
-            <p className="pb-4 text-center text-[12px] text-chalk/60">Demonstration render, not a photograph of stock.</p>
+            <p className="pb-4 text-center text-[12px] text-chalk/60">Demonstration image, not a photograph of real stock.</p>
           </div>
         </dialog>
       )}

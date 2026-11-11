@@ -1,7 +1,6 @@
 "use client";
-// The gold price button in the homepage's corner. Open at the top of the
-// page; while you scroll it shrinks to a small gold circle so it covers as
-// little as possible. One tap opens today's rates; a double click (or the
+// The gold price button in the homepage's corner: a small round gold button
+// once you have scrolled past the hero, where the rates are already shown. One tap opens today's rates; a double click (or the
 // button inside the panel) goes to the price calculator.
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -30,6 +29,16 @@ export function GoldRateButton() {
     window.addEventListener("scroll", on, { passive: true });
     return () => window.removeEventListener("scroll", on);
   }, []);
+  // The hero already shows the rates, so the button waits until that line
+  // has scrolled off the top; it never sits over the same numbers.
+  const [ratesInView, setRatesInView] = useState(true);
+  useEffect(() => {
+    const el = document.getElementById("hero-rates");
+    const on = () => setRatesInView(el ? el.getBoundingClientRect().bottom > 0 : false);
+    on();
+    window.addEventListener("scroll", on, { passive: true });
+    return () => window.removeEventListener("scroll", on);
+  }, []);
   useEffect(() => () => { if (tap.current) clearTimeout(tap.current); }, []);
 
   // One click opens the rates; a second click within a moment goes to the
@@ -47,8 +56,9 @@ export function GoldRateButton() {
     <>
       <button type="button" onClick={click} title="Tap for today's gold rates · double-click to calculate a price"
         aria-label={`Gold price${rates.perGram["22K"] ? `, 22K ${rate(rates.perGram["22K"])} AED per gram` : ""}. Open today's gold rates.`}
-        className={`fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 z-30 inline-flex h-12 touch-manipulation items-center overflow-hidden rounded-full bg-cocoa pl-2.5 text-[14px] font-medium text-cream shadow-[0_10px_24px_-12px_rgb(30_20_16/0.7)] ring-1 ring-gold/40 transition-[padding,transform] duration-200 active:scale-95 md:bottom-6 md:right-6 ${compact ? "pr-2.5" : "pr-5"}`}>
-        <span aria-hidden className="grid size-7 shrink-0 place-items-center rounded-full bg-gold text-[13px] text-cocoa">✦</span>
+        className={`fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 z-30 inline-flex h-12 touch-manipulation items-center overflow-hidden rounded-full border border-gold bg-[#081a16] pl-2 text-[14px] text-cream shadow-[0_14px_30px_-10px_rgb(0_0_0/0.7)] transition-[padding,transform,opacity] duration-200 active:scale-95 md:bottom-6 md:right-6 ${compact ? "pr-2" : "pr-5"} ${ratesInView ? "pointer-events-none opacity-0" : "opacity-100"}`}
+        tabIndex={ratesInView ? -1 : undefined} aria-hidden={ratesInView || undefined}>
+        <span aria-hidden className="btn-gold grid size-8 shrink-0 place-items-center rounded-full text-[10.5px] font-medium">22K</span>
         <span aria-hidden className={`flex items-center gap-2 whitespace-nowrap transition-[max-width,opacity,margin] duration-200 ${compact ? "ml-0 max-w-0 opacity-0" : "ml-2 max-w-48 opacity-100"}`}>
           Gold price
           <span className="text-gold tabular-nums">{rates.perGram["22K"] ? rate(rates.perGram["22K"]) : ""}</span>

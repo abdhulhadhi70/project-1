@@ -82,7 +82,7 @@ export function PieceView({ slug }: { slug: string }) {
   const facts = [
     piece.purity && { icon: PurityIcon, k: "Purity", v: piece.fineness ? `${piece.purity} (${piece.fineness})` : piece.purity },
     piece.weightGrams && { icon: ScaleIcon, k: "Weight", v: weightText(piece.weightGrams) },
-    piece.makingCharge && { icon: HammerIcon, k: "Making charge", v: makingChargeText(piece.makingCharge) },
+    piece.makingCharge && { icon: HammerIcon, k: "Making", v: makingChargeText(piece.makingCharge) },
   ].filter(Boolean) as { icon: typeof PurityIcon; k: string; v: string }[];
 
   const details: [string, string][] = [
@@ -99,7 +99,7 @@ export function PieceView({ slug }: { slug: string }) {
 
   return (
     <div className="pb-28 lg:pb-0">
-      <nav aria-label="Breadcrumb" className="page page-x py-4 text-[13px] text-stone">
+      <nav aria-label="Breadcrumb" className="page page-x hidden py-4 text-[13px] text-stone md:block">
         <ol className="flex flex-wrap gap-1.5">
           <li><Link href="/" className="hover:text-ink">Home</Link></li><li aria-hidden>›</li>
           <li><Link href={searchHref({ tab })} className="hover:text-ink">{TABS.find((t) => t.id === tab)!.label}</Link></li><li aria-hidden>›</li>
@@ -111,22 +111,27 @@ export function PieceView({ slug }: { slug: string }) {
       <div className="page page-x grid gap-8 lg:grid-cols-12 lg:gap-10">
         {/* Main column */}
         <div className="min-w-0 lg:col-span-8">
-          <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-8 lg:grid-cols-1 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
+          <div className="grid md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-8 lg:grid-cols-1 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
             <PieceGallery images={piece.images} name={piece.name} />
-            <div>
+            {/* Phone: an ivory sheet rising over the photograph. */}
+            <div className="relative z-10 -mx-4 -mt-6 rounded-t-3xl bg-chalk px-4 pt-6 md:mx-0 md:mt-0 md:rounded-none md:bg-transparent md:px-0 md:pt-0">
               <div className="flex items-start justify-between gap-3">
-                <PriceLine piece={piece} className="[&>span:first-child]:text-[28px] [&>span:first-child]:md:text-[32px]" />
-                <div className="-mr-2 -mt-1"><SaveButton slug={piece.slug} name={piece.name} /></div>
+                <p className="label-caps pt-1 text-brass-deep">{cat.singular}{piece.purity ? ` · ${piece.purity}` : ""}</p>
+                <div className="-mr-2 -mt-2"><SaveButton slug={piece.slug} name={piece.name} /></div>
               </div>
+              <h1 className="font-serif text-[32px] leading-[1.06] tracking-[-0.01em] md:text-[40px]">{piece.name}</h1>
+              <p className="mt-2 text-[14px] text-stone">
+                by <Link href={shopHref(shop.slug)} className="font-medium text-ink hover:underline">{shop.name}</Link>
+                <span className="whitespace-nowrap"> · <PinIcon className="inline size-4 align-[-3px]" /> {area.name}, {area.emirate}</span>
+              </p>
+              <PriceLine piece={piece} className="mt-4 [&>span:first-child]:text-[30px] [&>span:first-child]:font-medium [&>span:first-child]:md:text-[34px]" />
               <p className="mt-1 text-[13px] leading-snug text-stone">{priceNote(piece)}</p>
-              <h1 className="mt-3 font-serif text-[30px] leading-[1.08] tracking-[-0.01em] md:text-[36px]">{piece.name}</h1>
-              <p className="mt-2 inline-flex items-center gap-1.5 text-[14px] text-ink-soft"><PinIcon className="size-4 text-stone" />{area.name}, {area.emirate}</p>
 
-              <ul className="mt-5 grid grid-cols-3 divide-x divide-line rounded-xl border border-line bg-card">
-                {facts.map(({ icon: Icon, k, v }) => (
-                  <li key={k} className="px-3 py-3">
-                    <p className="inline-flex items-center gap-1.5 text-[12px] text-stone"><Icon className="size-4" />{k}</p>
-                    <p className="mt-1 text-[14px] text-ink">{v}</p>
+              <ul className="mt-5 grid grid-cols-3 divide-x divide-line border-y border-line">
+                {facts.map(({ k, v }) => (
+                  <li key={k} className="px-3 py-3 first:pl-0">
+                    <p className="label-caps text-[10.5px] text-stone">{k}</p>
+                    <p className="mt-1 text-[16px] text-ink">{v}</p>
                   </li>
                 ))}
               </ul>

@@ -42,39 +42,31 @@ function SiteImage({ name, alt, className, priority = false }: { name: string; a
 const priceText = (p: Piece) => (p.price.kind === "on_request" ? "Price on request" : aed(p.price.aed));
 
 function Hero() {
-  const words = (
-    <>
-      <p className="label-caps text-gold">Gold jewellers of the UAE</p>
-      <h1 className="mt-3 font-serif text-[40px] leading-[1.04] tracking-[-0.01em] md:text-[56px] lg:text-[68px]">
-        Every jeweller&rsquo;s window, <em className="italic text-gold">before you go.</em>
-      </h1>
-      <p className="mt-3 max-w-md text-[16px] font-light leading-relaxed text-cream/85 md:text-[18px]">
-        See the piece, the price and the shop. Then visit, and buy it there.
-      </p>
-      <div className="mt-6 max-w-xl">
-        <Suspense fallback={<div className="h-[4.25rem] rounded-full bg-chalk" />}>
-          <HeroSearch />
-        </Suspense>
-      </div>
-      <Rates />
-    </>
-  );
+  // One block. On a phone the photograph leads and the words rise over its
+  // lower edge; on a wide screen the words sit beside it.
   return (
     <section className="bg-cocoa text-cream">
-      {/* Phone and tablet: the photograph leads, the words rise over its lower edge. */}
-      <div className="lg:hidden">
-        <div className="relative">
+      <div className="page items-center lg:grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-14 lg:px-10 lg:py-12">
+        <div className="relative lg:order-2">
           <SiteImage name="hero-model" alt="A woman wearing a gold coin necklace and jhumka earrings against green velvet" priority
-            className="aspect-[4/5] max-h-[78vh] w-full object-cover object-[center_20%]" />
-          <div aria-hidden className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-cocoa via-cocoa/70 to-transparent" />
+            className="h-[25rem] w-full object-cover object-[center_30%] sm:h-[32rem] lg:aspect-[4/5] lg:h-auto lg:max-h-[42rem] lg:rounded-[2rem] lg:object-[center_20%]" />
+          <div aria-hidden className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-cocoa to-transparent lg:hidden" />
         </div>
-        <div className="page-x relative -mt-24 pb-6">{words}</div>
-      </div>
-      {/* Desktop: words and search beside the photograph. */}
-      <div className="page page-x hidden items-center gap-14 py-12 lg:grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-        <div>{words}</div>
-        <SiteImage name="hero-model" alt="A woman wearing a gold coin necklace and jhumka earrings against green velvet" priority
-          className="aspect-[4/5] max-h-[42rem] w-full rounded-[2rem] object-cover object-[center_20%]" />
+        <div className="page-x relative -mt-6 pb-7 lg:order-1 lg:mt-0 lg:px-0 lg:pb-0">
+          <p className="label-caps text-gold">Gold jewellers of the UAE</p>
+          <h1 className="mt-3 text-balance font-serif text-[36px] leading-[1.06] tracking-[-0.01em] md:text-[56px] lg:text-[68px]">
+            Every jeweller&rsquo;s window, <em className="italic text-gold">before you go.</em>
+          </h1>
+          <p className="mt-3 max-w-md text-[16px] font-light leading-relaxed text-cream/85 md:text-[18px]">
+            See the piece, the price and the shop. Then visit, and buy it there.
+          </p>
+          <div className="mt-6 max-w-xl">
+            <Suspense fallback={<div className="h-[4.25rem] rounded-full bg-chalk" />}>
+              <HeroSearch />
+            </Suspense>
+          </div>
+          <Rates />
+        </div>
       </div>
       <div aria-hidden className="mx-auto h-px max-w-[90rem] bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
     </section>
@@ -87,16 +79,16 @@ function Rates() {
   const order: Purity[] = (["24K", "22K", "21K", "18K"] as Purity[]).filter((k) => rates.perGram[k]);
   const fils = (n: number) => n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   return (
-    <div className="mt-6 max-w-xl">
+    <div id="hero-rates" className="mt-5 max-w-xl">
       <h2 className="text-[13px] text-cream-soft">
         <span className="text-gold">Gold today</span>, AED per gram
         <span className="text-cream-soft/80"> · {rates.source === "sample" ? `sample rates, ${dateText(rates.asOf)}` : dateText(rates.asOf)}</span>
       </h2>
-      <dl className="mt-2 flex flex-wrap gap-x-6 gap-y-1">
+      <dl className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 md:gap-x-6">
         {order.map((k) => (
-          <div key={k} className="flex items-baseline gap-2">
-            <dt className="text-[13px] text-cream-soft">{k}</dt>
-            <dd className="text-[17px] font-medium tabular-nums text-cream">{fils(rates.perGram[k])}</dd>
+          <div key={k} className="flex items-baseline gap-1.5">
+            <dt className="text-[12px] text-cream-soft md:text-[13px]">{k}</dt>
+            <dd className="text-[15px] font-medium tabular-nums text-cream md:text-[17px]">{fils(rates.perGram[k])}</dd>
           </div>
         ))}
       </dl>

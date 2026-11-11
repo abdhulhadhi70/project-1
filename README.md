@@ -6,7 +6,7 @@ directly. There is no cart, no checkout and no payment: the sale happens in
 the shop.
 
 **Everything in the catalogue is demonstration data.** The jewellers are
-invented, the prices are illustrative, the images are 3D renders and no
+invented, the prices are illustrative, the images are AI-generated placeholders and no
 contact detail reaches a real person. The site says so at the top of every
 page.
 
@@ -80,21 +80,19 @@ heavy traffic, move to a paid tile plan or self-hosted tiles.
 
 ## The images
 
-The catalogue images are rendered in 3D by `scripts/render/`, not
-photographed and not AI-generated. Each piece is modelled at real size: a
-cable chain from interlocking links, a solitaire with four claws and a
-faceted stone, a kada with a continuous twist. Each one is lit by the same
-studio on the same limestone surface, so the set reads as one shoot.
+The demonstration pictures are AI-generated placeholders (made with
+Magnific): gold pieces on dark emerald velvet, a model for the homepage and
+a goldsmith's hands for the jeweller band. None of them shows a real person
+or real stock. They are there so the demo looks like the finished product,
+and the site labels them as demonstration images.
 
-```bash
-npm run render                    # every image (about 5 minutes)
-npm run render -- --fast ring     # quick half-resolution preview of matching shots
-```
+- Piece images: `public/images/pieces/<name>.jpg|webp` and `<name>-600.jpg|webp`.
+- Homepage images: `public/images/site/`.
 
-Shots are defined in `scripts/render/shots.js`, models in `pieces.js` and
-the lights and surface in `studio.js`. When real shop photography arrives,
-it replaces these files one for one. Keep the same 4:5 crop and a plain,
-light background so the grid stays coherent.
+**Before real jewellers go live, replace every piece image with the shop's
+own photographs** (uploaded from the jeweller portal), so customers are never
+shown gold that does not exist. The earlier 3D renders can still be produced
+with `npm run render`.
 
 ## Checks
 

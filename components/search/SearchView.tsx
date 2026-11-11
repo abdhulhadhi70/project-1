@@ -64,11 +64,11 @@ export function SearchView() {
 
         <div className="mt-3 flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
           <div>
-            <h1 className="font-serif text-[26px] leading-[1.1] tracking-[-0.01em] md:text-[32px]">{title}</h1>
-            <p className="mt-1.5 text-[13px] text-stone" aria-live="polite">
-              {results.length} {results.length === 1 ? "result" : "results"}
+            <p className="label-caps text-brass-deep" aria-live="polite">
+              {results.length} {results.length === 1 ? "piece" : "pieces"}
               {paged.pages > 1 && ` · page ${paged.page} of ${paged.pages}`}
             </p>
+            <h1 className="mt-1.5 font-serif text-[30px] leading-[1.08] tracking-[-0.01em] md:text-[40px]">{title}</h1>
           </div>
           <div className="flex items-center gap-2">
             <button type="button" onClick={() => toggle(savedHref, title)} aria-pressed={saved}
@@ -100,7 +100,7 @@ export function SearchView() {
           <Empty query={query} onReset={reset} />
         ) : view === "map" ? (
           <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
-            <div className="order-2 space-y-4 lg:order-1">
+            <div className="order-2 border-t border-line lg:order-1">
               {paged.items.map((p, i) => <ResultCard key={p.slug} piece={p} priority={i < 2} />)}
               <div className="pt-4"><Pagination page={paged.page} pages={paged.pages} onPage={(page) => set({ page })} /></div>
             </div>
@@ -113,7 +113,7 @@ export function SearchView() {
           </div>
         ) : (
           <>
-            <ul className={`mt-5 ${view === "grid" ? "grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 xl:grid-cols-4" : "grid gap-4 xl:grid-cols-2"}`}>
+            <ul className={`mt-5 ${view === "grid" ? "grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 xl:grid-cols-4" : "grid border-t border-line xl:grid-cols-2 xl:gap-x-12"}`}>
               {paged.items.map((p, i) => (
                 <li key={p.slug}><ResultCard piece={p} layout={view === "grid" ? "grid" : "list"} priority={i < 2} /></li>
               ))}

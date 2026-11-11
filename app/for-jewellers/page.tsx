@@ -23,7 +23,7 @@ export default function ForJewellers() {
       <PageHeader kicker="For jewellers" title={<>Your designs, <em className="italic text-gold">seen across the UAE.</em></>}
         intro="List your pieces for free. Customers find them here, then contact you and buy in your shop.">
         <div className="mt-6 flex flex-wrap gap-3">
-          <a href="#register" className="inline-flex h-12 items-center gap-2 rounded-full bg-terracotta px-6 text-[15px] text-white transition-colors hover:bg-terracotta-deep">
+          <a href="#register" className="btn-gold inline-flex h-12 items-center gap-2 rounded-full px-6 text-[15px] font-medium">
             Register your shop <ArrowIcon />
           </a>
           <Link href="/login" className="inline-flex h-12 items-center rounded-full border border-cocoa-line px-6 text-[15px] text-cream hover:border-gold hover:text-gold">
