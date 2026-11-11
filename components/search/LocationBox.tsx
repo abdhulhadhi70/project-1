@@ -15,11 +15,15 @@ type Props = {
   size?: "md" | "lg";
   autoFocus?: boolean;
   onDone?: () => void;
+  /** No border or fill of its own: for sitting inside the hero's search pill. */
+  bare?: boolean;
+  /** Something at the end of the field, inside the form: the hero's Search button. */
+  trailing?: React.ReactNode;
 };
 
 const KIND_LABEL = { place: "Location", category: "Category", shop: "Jeweller" } as const;
 
-export function LocationBox({ query, set, placeholder = "Area, souk, jeweller or piece", size = "md", autoFocus, onDone }: Props) {
+export function LocationBox({ query, set, placeholder = "Area, souk, jeweller or piece", size = "md", autoFocus, onDone, bare = false, trailing }: Props) {
   const [text, setText] = useState(query.q);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
@@ -56,7 +60,7 @@ export function LocationBox({ query, set, placeholder = "Area, souk, jeweller or
         submit();
       }}
     >
-      <div className={`flex flex-wrap items-center gap-1.5 rounded-xl border border-line-strong bg-card pl-3 pr-1 focus-within:border-ink ${h}`}>
+      <div className={`flex flex-wrap items-center gap-1.5 pl-3 pr-1 ${bare ? "rounded-full bg-transparent" : "rounded-full border border-line-strong bg-card focus-within:border-ink"} ${h}`}>
         {chips.length ? <PinIcon className="size-[17px] shrink-0 text-stone" /> : <SearchIcon className="size-[17px] shrink-0 text-stone" />}
         {chips.map((c) => (
           <span key={c.label} className="inline-flex h-7 items-center gap-1 rounded-full bg-limestone pl-2.5 pr-1 text-[13px] text-ink">
@@ -98,6 +102,7 @@ export function LocationBox({ query, set, placeholder = "Area, souk, jeweller or
             <CloseIcon className="size-4" />
           </button>
         )}
+        {trailing}
       </div>
       {open && items.length > 0 && (
         <ul id={listId} role="listbox" className="absolute inset-x-0 top-full z-40 mt-1 overflow-hidden rounded-xl border border-line bg-card py-1 shadow-[0_16px_32px_-20px_rgb(30_20_16/0.35)]">

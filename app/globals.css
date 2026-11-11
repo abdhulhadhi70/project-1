@@ -1,33 +1,35 @@
 @import "tailwindcss";
 
-/* Two grounds: warm cream for browsing, deep cocoa for the header, hero,
-   feature bands and footer. Gold is for details on cocoa only; on cream,
-   text that needs to read as gold uses brass-deep. Terracotta is the one
-   colour for a primary action. */
+/* Two grounds. Deep emerald velvet with gold is the emotional side: the
+   header, hero, photographs and bands. Warm ivory is the information side:
+   lists, prices and forms. On ivory, text that needs to read as gold uses
+   brass-deep; the primary action there is emerald. On emerald, the primary
+   action is gold (.btn-gold).
+   The dark tokens keep their old "cocoa" names so every component follows. */
 @theme {
-  --color-chalk: #f7f1e8;        /* page */
-  --color-card: #fffdf9;         /* cards and inputs on the page */
-  --color-limestone: #efe5d6;
-  --color-limestone-deep: #e4d6c1;
-  --color-ink: #2a1d16;
-  --color-ink-soft: #55463b;
-  --color-stone: #6e5f54;        /* secondary text: 5.4:1 on chalk */
-  --color-brass: #b8925a;
-  --color-brass-deep: #84602c;   /* 5.3:1 on chalk */
-  --color-line: #e7dccb;
-  --color-line-strong: #d2c2aa;
+  --color-chalk: #f6f1e6;        /* page */
+  --color-card: #fffdf8;         /* cards and inputs on the page */
+  --color-limestone: #ece4d3;
+  --color-limestone-deep: #e0d6c0;
+  --color-ink: #0d1b17;
+  --color-ink-soft: #33423c;
+  --color-stone: #5e6b64;        /* secondary text: 5.2:1 on chalk */
+  --color-brass: #b8935a;
+  --color-brass-deep: #7d5f24;   /* 5.2:1 on chalk */
+  --color-line: #ddd3bf;
+  --color-line-strong: #cbbfa6;
 
-  --color-cocoa: #1e1410;        /* dark ground */
-  --color-cocoa-2: #2a1c16;      /* raised surface on cocoa */
-  --color-cocoa-line: #3d2b22;
-  --color-cream: #f4ead9;        /* text on cocoa: 14:1 */
-  --color-cream-soft: #c9b8a3;   /* secondary text on cocoa: 8.6:1 */
-  --color-gold: #d4ad6e;         /* accent on cocoa: 8.5:1 */
-  --color-terracotta: #a9502f;   /* primary action, white text 5.6:1 */
-  --color-terracotta-deep: #8e4126;
+  --color-cocoa: #0c2620;        /* dark ground: emerald velvet */
+  --color-cocoa-2: #12362d;      /* raised surface on emerald */
+  --color-cocoa-line: #25594b;
+  --color-cream: #f6f1e6;        /* text on emerald: 14:1 */
+  --color-cream-soft: #a9bdb4;   /* secondary text on emerald: 8:1 */
+  --color-gold: #d9b872;         /* accent on emerald: 8.5:1 */
+  --color-terracotta: #12362d;   /* primary action on ivory, white text 13:1 */
+  --color-terracotta-deep: #0c2620;
 
-  --font-serif: var(--font-instrument-serif), "Times New Roman", serif;
-  --font-sans: var(--font-instrument-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-display), "Didot", "Bodoni MT", "Times New Roman", serif;
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
 
   --text-display: 3.75rem;
   --text-display--line-height: 1;
@@ -63,7 +65,7 @@
     outline-color: var(--color-gold);
   }
   ::selection { background: var(--color-limestone-deep); }
-  dialog::backdrop { background: rgb(30 20 16 / 0.5); }
+  dialog::backdrop { background: rgb(8 26 22 / 0.5); }
 }
 
 @utility page-x {
@@ -94,7 +96,7 @@
 .tibr-pin {
   display: grid; place-items: center; width: 34px; height: 34px; border-radius: 9999px;
   background: var(--color-cocoa); color: var(--color-cream); font: 600 13px/1 var(--font-sans);
-  box-shadow: 0 0 0 3px var(--color-chalk), 0 4px 10px rgb(30 20 16 / 0.35);
+  box-shadow: 0 0 0 3px var(--color-chalk), 0 4px 10px rgb(8 26 22 / 0.35);
 }
 .leaflet-marker-icon:focus-visible .tibr-pin, .leaflet-marker-icon:hover .tibr-pin { background: var(--color-terracotta); }
 .tibr-pop { display: grid; gap: 2px; font: 14px/1.35 var(--font-sans); color: var(--color-ink); min-width: 11rem; }
@@ -102,7 +104,7 @@
 .tibr-pop-actions { display: flex; gap: 6px; margin-top: 8px; }
 .tibr-pop-actions a { flex: 1; display: grid; place-items: center; height: 40px; border-radius: 9999px; border: 1px solid var(--color-ink); color: var(--color-ink) !important; text-decoration: none; font-size: 13px; }
 .tibr-pop button { flex: 1; height: 40px; border-radius: 9999px; background: var(--color-terracotta); color: #fff; font-size: 13px; cursor: pointer; }
-.leaflet-popup-content-wrapper { box-shadow: 0 12px 28px -18px rgb(30 20 16 / 0.6); }
+.leaflet-popup-content-wrapper { box-shadow: 0 12px 28px -18px rgb(8 26 22 / 0.6); }
 .leaflet-container { font-family: var(--font-sans); background: var(--color-limestone); }
 /* Quiet the standard OSM colours so pins and the page lead. */
 .tibr-tiles { filter: grayscale(0.85) sepia(0.18) brightness(1.04) contrast(0.92); }
@@ -110,10 +112,24 @@
 .leaflet-bar { border-radius: 12px !important; overflow: hidden; }
 .leaflet-bar a { width: 40px !important; height: 40px !important; line-height: 40px !important; font-size: 20px !important; }
 
-/* The silk light behind the hero: two soft warm pools on cocoa. */
+/* The light on the velvet: a paler emerald pool and a faint gold one. */
 @utility cocoa-glow {
   background-color: var(--color-cocoa);
   background-image:
-    radial-gradient(60rem 30rem at 85% -10%, rgb(169 80 47 / 0.28), transparent 70%),
-    radial-gradient(40rem 26rem at 5% 110%, rgb(212 173 110 / 0.14), transparent 70%);
+    radial-gradient(60rem 30rem at 85% -10%, rgb(27 74 62 / 0.9), transparent 70%),
+    radial-gradient(40rem 26rem at 5% 110%, rgb(217 184 114 / 0.10), transparent 70%);
+}
+
+/* The primary action on emerald: a soft gold bar with dark text (9:1). */
+@utility btn-gold {
+  background-image: linear-gradient(180deg, #e2c483, #c5a15a);
+  color: #1a1408;
+  &:hover { background-image: linear-gradient(180deg, #ecd198, #cfab63); }
+}
+
+/* Small gold capitals above a heading on emerald, brass on ivory. */
+@utility label-caps {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
 }

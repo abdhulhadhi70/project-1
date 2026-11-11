@@ -1,104 +1,83 @@
 "use client";
-// The homepage. Client-rendered so it follows the live catalogue; the build
-// renders it with the demo, so it is never blank while that loads.
+// The homepage. Emerald velvet and gold on top for the first impression
+// (photograph, headline, search, today's rates), then what there is to
+// find, how it works, and the pitch to jewellers. Client-rendered so it
+// follows the live catalogue; the build renders it with the demo.
 import Link from "next/link";
 import { Suspense } from "react";
 import { GoldRateButton } from "@/components/GoldRateButton";
 import { HeroSearch } from "@/components/home/HeroSearch";
-import { ResultCard } from "@/components/search/ResultCard";
 import { ArrowIcon } from "@/components/Icons";
 import { PieceImage } from "@/components/PieceImage";
-import type { Purity } from "@/data/catalogue";
-import { getCatalogue, useCatalogue } from "@/lib/catalogue-store";
+import { CATEGORIES, type Piece, type Purity } from "@/data/catalogue";
+import { areaFor, shopFor, useCatalogue } from "@/lib/catalogue-store";
 import { pieceHref } from "@/lib/links";
-import { EMPTY_QUERY, liveTabs, runQuery, searchHref } from "@/lib/catalogue-query";
+import { EMPTY_QUERY, runQuery, searchHref } from "@/lib/catalogue-query";
 import { aed, dateText } from "@/lib/format";
 
 export default function Home() {
-  // Search first, then the pieces themselves, then the pitch to shops.
-  // Category is in the search box, so there is no separate category row.
   return (
     <>
       <Hero />
       <GoldRateButton />
-      <Featured />
+      <Categories />
+      <JustListed />
+      <HowItWorks />
       <ListYourShop />
     </>
   );
 }
 
-function Hero() {
-  const pick = runQuery({ ...EMPTY_QUERY, sort: "newest" })[0];
+/** A photograph from public/images/site, WebP with a JPEG fallback. */
+function SiteImage({ name, alt, className, priority = false }: { name: string; alt: string; className?: string; priority?: boolean }) {
   return (
-    <section className="cocoa-glow relative overflow-hidden text-cream">
-      <div className="page page-x grid gap-8 pb-8 pt-8 md:pt-12 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-center lg:gap-14 lg:pb-12 lg:pt-12">
-        <div>
-          <p className="text-[13px] text-gold">Gold jewellers across the UAE, in one place</p>
-          <h1 className="mt-3 font-serif text-[38px] leading-[1.02] tracking-[-0.02em] md:text-[54px] lg:text-[64px]">
-            Every jeweller&rsquo;s window, <em className="italic text-gold">before you go.</em>
-          </h1>
-          <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-cream-soft md:text-[16px]">
-            See the pieces, prices and shops of {liveTabs().some((t) => t.id === "coins_bars") ? "jewellers, coin and bar sellers" : "jewellers"} near you. Compare, save the ones you like, then visit the shop to buy.
-          </p>
-          <div className="mt-6 rounded-2xl bg-card p-3 text-ink sm:p-4">
-            <Suspense fallback={<div className="h-28" />}>
-              <HeroSearch />
-            </Suspense>
-          </div>
-        </div>
-        {pick && <JustListed piece={pick} />}
+    <picture>
+      <source type="image/webp" srcSet={`/images/site/${name}-600.webp 640w, /images/site/${name}.webp 1100w`} sizes="(min-width: 1024px) 45vw, 100vw" />
+      <img src={`/images/site/${name}.jpg`} srcSet={`/images/site/${name}-600.jpg 640w, /images/site/${name}.jpg 1100w`} sizes="(min-width: 1024px) 45vw, 100vw"
+        alt={alt} className={className} loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : undefined} decoding="async" />
+    </picture>
+  );
+}
+
+const priceText = (p: Piece) => (p.price.kind === "on_request" ? "Price on request" : aed(p.price.aed));
+
+function Hero() {
+  const words = (
+    <>
+      <p className="label-caps text-gold">Gold jewellers of the UAE</p>
+      <h1 className="mt-3 font-serif text-[40px] leading-[1.04] tracking-[-0.01em] md:text-[56px] lg:text-[68px]">
+        Every jeweller&rsquo;s window, <em className="italic text-gold">before you go.</em>
+      </h1>
+      <p className="mt-3 max-w-md text-[16px] font-light leading-relaxed text-cream/85 md:text-[18px]">
+        See the piece, the price and the shop. Then visit, and buy it there.
+      </p>
+      <div className="mt-6 max-w-xl">
+        <Suspense fallback={<div className="h-[4.25rem] rounded-full bg-chalk" />}>
+          <HeroSearch />
+        </Suspense>
       </div>
       <Rates />
+    </>
+  );
+  return (
+    <section className="bg-cocoa text-cream">
+      {/* Phone and tablet: the photograph leads, the words rise over its lower edge. */}
+      <div className="lg:hidden">
+        <div className="relative">
+          <SiteImage name="hero-model" alt="A woman wearing a gold coin necklace and jhumka earrings against green velvet" priority
+            className="aspect-[4/5] max-h-[78vh] w-full object-cover object-[center_20%]" />
+          <div aria-hidden className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-cocoa via-cocoa/70 to-transparent" />
+        </div>
+        <div className="page-x relative -mt-24 pb-6">{words}</div>
+      </div>
+      {/* Desktop: words and search beside the photograph. */}
+      <div className="page page-x hidden items-center gap-14 py-12 lg:grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+        <div>{words}</div>
+        <SiteImage name="hero-model" alt="A woman wearing a gold coin necklace and jhumka earrings against green velvet" priority
+          className="aspect-[4/5] max-h-[42rem] w-full rounded-[2rem] object-cover object-[center_20%]" />
+      </div>
+      <div aria-hidden className="mx-auto h-px max-w-[90rem] bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
     </section>
-  );
-}
-
-/** One heading style for every homepage section, so none shouts over the jewellery. */
-function SectionHead({ title, note, href, link }: { title: string; note?: string; href?: string; link?: string }) {
-  return (
-    <div className="mb-4 flex items-end justify-between gap-4 md:mb-6">
-      <div>
-        <h2 className="font-serif text-[28px] leading-[1.1] tracking-[-0.01em] md:text-[34px]">{title}</h2>
-        {note && <p className="mt-1 text-[14px] text-stone">{note}</p>}
-      </div>
-      {href && <Link href={href} className="inline-flex min-h-11 shrink-0 items-center text-[14px] text-ink underline decoration-line-strong underline-offset-4 hover:decoration-ink">{link}</Link>}
-    </div>
-  );
-}
-
-function Featured() {
-  const list = runQuery({ ...EMPTY_QUERY, sort: "newest" }).slice(0, 8);
-  if (!list.length) return null;
-  return (
-    <section className="page page-x mt-12 md:mt-16">
-      <SectionHead title="Featured jewellery" note="Recently listed by jewellers on Tibr" href={searchHref({})} link="See all pieces" />
-      <ul className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5">
-        {list.map((p, i) => <li key={p.slug}><ResultCard piece={p} layout="grid" priority={i < 2} /></li>)}
-      </ul>
-    </section>
-  );
-}
-
-function JustListed({ piece }: { piece: import("@/data/catalogue").Piece }) {
-  const shop = getCatalogue().shops.find((s) => s.slug === piece.shop);
-  return (
-    <Link href={pieceHref(piece.slug)} className="group hidden flex-col rounded-2xl border border-cocoa-line bg-cocoa-2/70 p-3 lg:flex">
-      <div className="flex items-center justify-between px-2 pb-3 pt-1">
-        <p className="text-[13px] text-gold">Just listed</p>
-        <span className="grid size-9 place-items-center rounded-full border border-cocoa-line text-cream transition-colors group-hover:border-gold group-hover:text-gold"><ArrowIcon className="size-4" /></span>
-      </div>
-      <div className="aspect-square overflow-hidden rounded-xl bg-limestone">
-        <PieceImage name={piece.images[0]} alt={piece.name} sizes="30vw" priority
-          className="size-full object-cover transition-transform duration-700 ease-quiet group-hover:scale-[1.03]" />
-      </div>
-      <div className="px-2 pb-1 pt-4">
-        <p className="font-serif text-[21px] leading-tight">{piece.name}</p>
-        <p className="mt-1 flex items-center justify-between gap-3 text-[14px] text-cream-soft">
-          <span className="truncate">{shop?.name}</span>
-          <span className="shrink-0 font-semibold text-cream">{piece.price.kind === "on_request" ? "Price on request" : aed(piece.price.aed)}</span>
-        </p>
-      </div>
-    </Link>
   );
 }
 
@@ -106,56 +85,144 @@ function Rates() {
   const { rates, settings } = useCatalogue();
   if (settings?.sections?.rates === false) return null;
   const order: Purity[] = (["24K", "22K", "21K", "18K"] as Purity[]).filter((k) => rates.perGram[k]);
+  const fils = (n: number) => n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   return (
-    <div className="border-t border-cocoa-line">
-      <div className="page page-x flex flex-wrap items-center gap-x-8 gap-y-3 py-4">
-        <div className="min-w-0">
-          <h2 className="text-[14px] font-medium text-cream">Gold today, AED per gram</h2>
-          <p className="text-[12px] text-cream-soft">
-            {rates.source === "sample"
-              ? `Sample rates · ${dateText(rates.asOf)} · not live`
-              : `Set by our team · ${dateText(rates.asOf)}, ${new Date(rates.asOf).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Dubai" })} · shops' own rates may differ`}
-          </p>
-        </div>
-        <dl className="flex flex-1 flex-wrap gap-x-7 gap-y-2">
-          {order.map((k) => (
-            <div key={k} className="flex items-baseline gap-2">
-              <dt className="text-[13px] text-cream-soft">{k}</dt>
-              <dd className="text-[18px] font-semibold tabular-nums text-gold">{aed(rates.perGram[k]).replace("AED ", "")}</dd>
-            </div>
-          ))}
-        </dl>
-      </div>
+    <div className="mt-6 max-w-xl">
+      <h2 className="text-[13px] text-cream-soft">
+        <span className="text-gold">Gold today</span>, AED per gram
+        <span className="text-cream-soft/80"> · {rates.source === "sample" ? `sample rates, ${dateText(rates.asOf)}` : dateText(rates.asOf)}</span>
+      </h2>
+      <dl className="mt-2 flex flex-wrap gap-x-6 gap-y-1">
+        {order.map((k) => (
+          <div key={k} className="flex items-baseline gap-2">
+            <dt className="text-[13px] text-cream-soft">{k}</dt>
+            <dd className="text-[17px] font-medium tabular-nums text-cream">{fils(rates.perGram[k])}</dd>
+          </div>
+        ))}
+      </dl>
     </div>
   );
 }
 
-function ListYourShop() {
-  const points = ["Free to list, no commission", "Add and edit pieces from your phone", "Customers message, call or visit you directly"];
+function Categories() {
+  const { pieces } = useCatalogue();
+  const tiles = CATEGORIES.map((c) => ({ ...c, first: pieces.find((p) => p.category === c.id) })).filter((t) => t.first);
+  if (tiles.length < 2) return null;
   return (
-    <section className="page page-x mt-12 md:mt-16">
-      <div className="cocoa-glow grid gap-8 overflow-hidden rounded-2xl p-6 text-cream md:grid-cols-[1.3fr_1fr] md:items-center md:p-10">
-        <div>
-          <p className="text-[13px] text-gold">For jewellers</p>
-          <h2 className="mt-2 font-serif text-[30px] leading-[1.05] tracking-[-0.015em] md:text-[40px]">
-            Your shop, <em className="italic text-gold">seen by more customers.</em>
-          </h2>
-          <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-cream-soft">
-            No website or Instagram needed. List your designs, change photos and prices whenever your stock changes, and customers find you.
-          </p>
-          <Link href="/for-jewellers" className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-terracotta px-6 text-[15px] text-white transition-colors hover:bg-terracotta-deep">
-            List your shop <ArrowIcon />
-          </Link>
+    <section aria-label="Browse by category" className="bg-cocoa text-cream">
+      <ul className="page page-x grid grid-cols-4 gap-x-3 gap-y-5 py-8 sm:grid-cols-7 md:py-10 lg:flex lg:justify-center lg:gap-10">
+        {tiles.map((t) => (
+          <li key={t.id}>
+            <Link href={searchHref({ tab: t.section, category: t.id })} className="group flex flex-col items-center text-center">
+              <span className="block size-[4.5rem] rounded-full border border-gold/70 p-[3px] transition-colors group-hover:border-gold md:size-24">
+                <PieceImage name={t.first!.images[0]} alt="" sizes="96px" className="size-full rounded-full object-cover" />
+              </span>
+              <span className="mt-2 text-[13px] text-cream md:text-[14px]">{t.label}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function Tile({ piece }: { piece: Piece }) {
+  const shop = shopFor(piece);
+  return (
+    <Link href={pieceHref(piece.slug)} className="group block">
+      <div className="aspect-square overflow-hidden rounded-2xl bg-cocoa-2">
+        <PieceImage name={piece.images[0]} alt={piece.name} sizes="(min-width: 1024px) 22vw, 46vw"
+          className="size-full object-cover transition-transform duration-700 ease-quiet group-hover:scale-[1.04]" />
+      </div>
+      <h3 className="mt-3 font-serif text-[18px] leading-tight">{piece.name}</h3>
+      <p className="mt-1 text-[13px] text-cream-soft">by {shop.name} · {areaFor(shop).name}</p>
+      <p className="mt-1.5 text-[15px] tabular-nums text-gold">{priceText(piece)}</p>
+    </Link>
+  );
+}
+
+function JustListed() {
+  const all = runQuery({ ...EMPTY_QUERY, sort: "newest" });
+  if (!all.length) return null;
+  // The showpiece is the newest bridal piece when there is one.
+  const feature = all.find((p) => p.occasions.includes("bridal") && p.category === "sets") ?? all.find((p) => p.occasions.includes("bridal")) ?? all[0];
+  const rest = all.filter((p) => p.slug !== feature.slug).slice(0, 4);
+  const shop = shopFor(feature);
+  return (
+    <section className="bg-cocoa pb-14 text-cream md:pb-20" aria-labelledby="just-listed">
+      <div className="page page-x">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <p className="label-caps text-gold">Just listed</p>
+            <h2 id="just-listed" className="mt-2 font-serif text-[32px] leading-[1.05] md:text-[44px]">New from the <em className="italic">souk</em></h2>
+          </div>
+          <Link href={searchHref({})} className="inline-flex min-h-11 shrink-0 items-center border-b border-gold pb-0.5 text-[14px] text-gold">All {all.length} pieces</Link>
         </div>
-        <ul className="grid gap-2.5">
-          {points.map((p) => (
-            <li key={p} className="flex items-center gap-3 border-b border-cocoa-line py-3 text-[15px] last:border-0">
-              <span aria-hidden className="text-gold">✦</span>{p}
-            </li>
-          ))}
-        </ul>
+        <div className="mt-5 grid gap-4 md:mt-8 lg:grid-cols-2 lg:gap-6">
+          <Link href={pieceHref(feature.slug)} className="group relative block overflow-hidden rounded-3xl">
+            <PieceImage name={feature.images[0]} alt={feature.name} sizes="(min-width: 1024px) 45vw, 100vw"
+              className="aspect-[4/5] w-full object-cover transition-transform duration-700 ease-quiet group-hover:scale-[1.03] lg:aspect-auto lg:h-full" />
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-cocoa via-cocoa/80 to-transparent p-5 pt-20">
+              <p className="label-caps text-[10px] text-gold">{feature.occasions.includes("bridal") ? "Bridal" : "Newest"}</p>
+              <h3 className="mt-1 font-serif text-[26px] leading-tight md:text-[32px]">{feature.name}</h3>
+              <p className="mt-1.5 flex flex-wrap justify-between gap-x-4 text-[14px]">
+                <span className="text-cream/85">by {shop.name} · {areaFor(shop).name}</span>
+                <span className="tabular-nums text-gold">{priceText(feature)}</span>
+              </p>
+            </div>
+          </Link>
+          <ul className="grid grid-cols-2 gap-x-4 gap-y-7 lg:gap-x-6">
+            {rest.map((p) => <li key={p.slug}><Tile piece={p} /></li>)}
+          </ul>
+        </div>
       </div>
     </section>
   );
 }
 
+function HowItWorks() {
+  const steps = [
+    { t: "Free to browse. No account.", d: "Pieces from different jewellers, side by side." },
+    { t: "Priced from today's gold rate.", d: "Weight, purity and making charge on every piece." },
+    { t: "You buy in the shop.", d: "WhatsApp, call or get directions. We never take payment." },
+  ];
+  return (
+    <section className="bg-chalk py-12 md:py-16" aria-labelledby="how">
+      <div className="page page-x">
+        <p id="how" className="label-caps text-brass-deep">How it works</p>
+        <ol className="mt-5 grid gap-6 md:grid-cols-3 md:gap-10">
+          {steps.map((s, i) => (
+            <li key={s.t} className="flex gap-4">
+              <span aria-hidden className="w-7 shrink-0 font-serif text-[34px] leading-none text-brass-deep">{i + 1}</span>
+              <div>
+                <p className="text-[16px] font-medium text-ink">{s.t}</p>
+                <p className="mt-0.5 text-[15px] text-stone">{s.d}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}
+
+function ListYourShop() {
+  return (
+    <section className="relative isolate overflow-hidden bg-cocoa text-cream">
+      <SiteImage name="craft" alt="" className="absolute inset-0 -z-10 size-full object-cover" />
+      <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-t from-cocoa via-cocoa/85 to-cocoa/40 md:bg-gradient-to-r" />
+      <div className="page page-x flex min-h-[22rem] flex-col justify-end py-10 md:min-h-[26rem] md:justify-center md:py-16">
+        <p className="label-caps text-gold">For jewellers</p>
+        <h2 className="mt-2 max-w-xl font-serif text-[32px] leading-[1.05] md:text-[48px]">
+          Your shop, seen by <em className="italic text-gold">more customers.</em>
+        </h2>
+        <p className="mt-3 max-w-md text-[16px] font-light leading-relaxed text-cream/85">
+          Free to list. No website needed. Change your designs from your phone, and customers message, call or visit you.
+        </p>
+        <Link href="/for-jewellers" className="btn-gold mt-6 inline-flex h-12 items-center gap-2 self-start rounded-full px-6 text-[15px] font-medium">
+          List your shop <ArrowIcon />
+        </Link>
+      </div>
+    </section>
+  );
+}
